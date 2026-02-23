@@ -1,61 +1,47 @@
+/* App.module.css */
 .container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #121212;
   min-height: 100vh;
-  background-color: #f5f6f8;
-  padding: 40px;
-  font-family: "Inter", sans-serif;
-  color: #1f2937;
+  font-family: 'Poppins', sans-serif;
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 30px;
+  font-size: 36px;
+  font-weight: 700;
+  color: #ff77aa;
+  margin-bottom: 32px;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
-.card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  border: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
+p {
+  font-size: 18px;
+  color: #cccccc;
+  margin-top: 24px;
+  text-align: center;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+/* Responsivo */
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 12px;
+  }
+  .title {
+    font-size: 28px;
+  }
 }
 
-.taskTitle {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.meta {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.statusBadge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-right: 8px;
-  background-color: #e5e7eb;
-  color: #374151;
-}
-
-.priorityHigh {
-  color: #dc2626;
-}
-
-.priorityMedium {
-  color: #d97706;
-}
-
-.priorityLow {
-  color: #16a34a;
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 8px;
+  }
+  .title {
+    font-size: 24px;
+  }
 }

@@ -1,9 +1,31 @@
 import styles from "./App.module.css";
-import { useTasks } from "./hooks/useTasks";
+import { useTasks } from "./hooks/useTasks"; 
+import { useState, useEffect } from "react";
+import type { Task } from "./types/task";
 import { TaskCard } from "./components/TaskCard";
+import { CreateTaskForm } from "./components/CreateTaskForm/CreateTaskForm";
 
 function App() {
-  const { tasks, loading, error } = useTasks();
+  const { tasks: initialTasks, loading, error } = useTasks();
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
+
+  const handleUpdate = (updatedTask: Task) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
+    );
+  };
+
+  const handleDelete = (id: number) => {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleCreate = (newTask: Task) => {
+    setTasks((prev) => [newTask, ...prev]); // adiciona no topo da lista
+  };
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
@@ -12,8 +34,17 @@ function App() {
     <div className={styles.container}>
       <h1 className={styles.title}>Weekly Checklist</h1>
 
+      {/* Formulário para criar tarefas */}
+      <CreateTaskForm onCreate={handleCreate} />
+
+      {/* Lista de tarefas */}
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard
+          key={task.id}
+          task={task}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
       ))}
     </div>
   );

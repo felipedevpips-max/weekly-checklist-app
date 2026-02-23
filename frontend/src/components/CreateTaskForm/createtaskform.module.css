@@ -1,0 +1,40 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input,
+select,
+textarea,
+button {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #222;
+  color: #fff;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+button {
+  background-color: #9b5de5;
+  color: white;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background-color: #7a3cc1;
+}
+
+button:disabled {
+  background-color: #777;
+  cursor: not-allowed;
+}

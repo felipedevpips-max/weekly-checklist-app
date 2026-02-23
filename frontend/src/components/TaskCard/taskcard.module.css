@@ -1,164 +1,70 @@
-/* taskcard.module.css */
 .card {
-  background: #1e1e2f;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  width: 100%;
-  max-width: 700px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.7);
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #ff77aa;
+  font-size: 18px;
+  margin: 0;
 }
 
-.meta {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+.high { color: #ff4d4f; }
+.medium { color: #ffa500; }
+.low { color: #00bfff; }
+
+.description {
+  margin: 10px 0;
   font-size: 14px;
-  font-weight: 500;
-  flex-wrap: wrap; /* quebra em celular */
+  color: #ccc;
 }
 
-.status {
-  padding: 4px 10px;
-  border-radius: 12px;
-  background-color: #2b2b3a;
-  color: #ff77aa;
-  text-transform: capitalize;
+.dueDate {
+  font-size: 12px;
+  color: #aaa;
 }
 
-.high {
-  color: #fff;
-  background-color: #e63946;
-  padding: 4px 10px;
-  border-radius: 12px;
-}
-
-.medium {
-  color: #fff;
-  background-color: #f4a261;
-  padding: 4px 10px;
-  border-radius: 12px;
-}
-
-.low {
-  color: #fff;
-  background-color: #2a9d8f;
-  padding: 4px 10px;
-  border-radius: 12px;
-}
-
-.progress {
+.progressContainer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  flex-wrap: wrap; /* para caber no celular */
+  gap: 10px;
+  margin: 10px 0;
 }
 
-.progressBar {
+.slider {
   flex: 1;
-  background-color: #2b2b3a;
-  border-radius: 12px;
-  height: 14px;
-  overflow: hidden;
-}
-
-.progressFill {
-  background-color: #ff77aa;
-  height: 100%;
-  border-radius: 12px;
-  transition: width 0.3s ease-in-out;
 }
 
 .actions {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-wrap: wrap; /* botões empilham no celular */
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.actions button {
-  flex: 1;
-  padding: 8px 0;
+button {
+  padding: 6px 10px;
   border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-.actions button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.actions button:first-child {
+  border-radius: 5px;
   background-color: #9b5de5;
-  color: #fff;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
 }
 
-.actions button:first-child:hover {
-  background-color: #7a3cc3;
-  transform: translateY(-2px);
+button:hover:not(:disabled) {
+  background-color: #7a3cc1;
 }
 
-.actions button:last-child {
-  background-color: #e63946;
-  color: #fff;
-}
-
-.actions button:last-child:hover {
-  background-color: #b92b36;
-  transform: translateY(-2px);
-}
-
-.dueDate {
-  font-size: 13px;
-  color: #cccccc;
-  text-align: right;
-  font-style: italic;
-}
-
-/* Responsivo: tablets e celular */
-@media (max-width: 768px) {
-  .card {
-    padding: 16px;
-  }
-  .title {
-    font-size: 18px;
-  }
-  .progress {
-    gap: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .card {
-    padding: 12px;
-  }
-  .title {
-    font-size: 16px;
-  }
-  .actions button {
-    flex: 100%; /* botões ocupam largura total */
-  }
-  .meta {
-    gap: 8px;
-  }
-  .progress {
-    gap: 6px;
-  }
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
 }

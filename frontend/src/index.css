@@ -1,0 +1,108 @@
+/* frontend/src/index.css */
+
+/* Reset básico e box-sizing */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fonte e fundo global */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212; /* dark background */
+  color: #fff;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Scrollbar customizada para dark mode */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #9b5de5;
+  border-radius: 5px;
+  border: 2px solid #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7a3cc1;
+}
+
+/* Links padrão */
+a {
+  color: #9b5de5;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Inputs, selects e textareas */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border: 1px solid #9b5de5;
+}
+
+/* Button hover */
+button:hover:not(:disabled) {
+  background-color: #7a3cc1;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+/* Form labels */
+label {
+  font-size: 13px;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Paragraphs e textos */
+p {
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5 {
+  color: #f5a623;
+  margin-bottom: 10px;
+}
+
+/* Container global padding */
+#root {
+  padding: 0 10px;
+}

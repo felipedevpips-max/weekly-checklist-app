@@ -1,12 +1,9 @@
-// frontend/src/components/CreateTaskForm.tsx
 import { useState } from "react";
 import { api } from "../../services/api";
 import type { Task } from "../../types/task";
 import styles from "./CreateTaskForm.module.css";
 
-type Props = {
-  onCreate: (task: Task) => void;
-};
+type Props = { onCreate: (task: Task) => void };
 
 export function CreateTaskForm({ onCreate }: Props) {
   const [title, setTitle] = useState("");
@@ -19,7 +16,7 @@ export function CreateTaskForm({ onCreate }: Props) {
 
   function getNextSaturday(): string {
     const today = new Date();
-    const diff = 6 - today.getDay(); // 6 = sábado
+    const diff = 6 - today.getDay();
     const saturday = new Date(today);
     saturday.setDate(today.getDate() + (diff >= 0 ? diff : diff + 7));
     return saturday.toISOString();
@@ -40,11 +37,9 @@ export function CreateTaskForm({ onCreate }: Props) {
         status: "pending" as const,
         dueDate: getNextSaturday(),
       };
-
       const res = await api.post<Task>("/tasks", newTask);
       onCreate(res.data);
 
-      // reset do formulário
       setTitle("");
       setDescription("");
       setPriority("low");

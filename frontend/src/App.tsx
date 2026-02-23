@@ -1,9 +1,9 @@
 import styles from "./App.module.css";
-import { useTasks } from "./hooks/useTasks"; 
+import { useTasks } from "./hooks/useTasks";
 import { useState, useEffect } from "react";
 import type { Task } from "./types/task";
-import { TaskCard } from "./components/TaskCard";
 import { CreateTaskForm } from "./components/CreateTaskForm/CreateTaskForm";
+import { TaskCard } from "./components/TaskCard";
 
 function App() {
   const { tasks: initialTasks, loading, error } = useTasks();
@@ -24,7 +24,7 @@ function App() {
   };
 
   const handleCreate = (newTask: Task) => {
-    setTasks((prev) => [newTask, ...prev]); // adiciona no topo da lista
+    setTasks((prev) => [newTask, ...prev]);
   };
 
   if (loading) return <p>Carregando...</p>;
@@ -34,10 +34,8 @@ function App() {
     <div className={styles.container}>
       <h1 className={styles.title}>Weekly Checklist</h1>
 
-      {/* Formulário para criar tarefas */}
       <CreateTaskForm onCreate={handleCreate} />
 
-      {/* Lista de tarefas */}
       {tasks.map((task) => (
         <TaskCard
           key={task.id}

@@ -1,10 +1,10 @@
 const taskService = require("../services/taskService");
 
 function createTask(req, res) {
-  const { title, priority, status, progress, dueDate } = req.body;
+  const { title, priority, status, progress, description, notify, dueDate } = req.body;
   if (!title) return res.status(400).json({ message: "Title is required" });
 
-  const task = taskService.createTask({ title, priority, status, progress, dueDate });
+  const task = taskService.createTask({ title, priority, status, progress, description, notify, dueDate });
   return res.status(201).json(task);
 }
 
@@ -16,11 +16,8 @@ function getTasks(req, res) {
 
 function updateTask(req, res) {
   const { id } = req.params;
-  const { title, priority, status, progress } = req.body;
-
-  const updatedTask = taskService.updateTask(Number(id), { title, priority, status, progress });
+  const updatedTask = taskService.updateTask(Number(id), req.body);
   if (!updatedTask) return res.status(404).json({ message: "Task not found" });
-
   return res.json(updatedTask);
 }
 
@@ -28,7 +25,6 @@ function deleteTask(req, res) {
   const { id } = req.params;
   const deleted = taskService.deleteTask(Number(id));
   if (!deleted) return res.status(404).json({ message: "Task not found" });
-
   return res.status(204).send();
 }
 
@@ -38,10 +34,4 @@ function closeWeek(req, res) {
   return res.json({ message: "Week closed and pending tasks moved" });
 }
 
-module.exports = {
-  createTask,
-  getTasks,
-  updateTask,
-  deleteTask,
-  closeWeek,
-};
+module.exports = { createTask, getTasks, updateTask, deleteTask, closeWeek };

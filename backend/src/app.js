@@ -10,6 +10,9 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+const taskRoutes = require("./routes/task.routes");
+app.use("/tasks", taskRoutes);
+
 const PORT = 3000;
 
 app.listen(PORT, () => {

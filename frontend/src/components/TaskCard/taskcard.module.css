@@ -1,0 +1,46 @@
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  border: 1px solid #e5e7eb;
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.meta {
+  font-size: 13px;
+  display: flex;
+  gap: 12px;
+  color: #6b7280;
+}
+
+.status {
+  background: #f3f4f6;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.high {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.medium {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.low {
+  color: #16a34a;
+  font-weight: 500;
+}

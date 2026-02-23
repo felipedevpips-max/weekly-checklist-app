@@ -1,0 +1,61 @@
+.container {
+  min-height: 100vh;
+  background-color: #f5f6f8;
+  padding: 40px;
+  font-family: "Inter", sans-serif;
+  color: #1f2937;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.taskTitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.meta {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 8px;
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.priorityHigh {
+  color: #dc2626;
+}
+
+.priorityMedium {
+  color: #d97706;
+}
+
+.priorityLow {
+  color: #16a34a;
+}

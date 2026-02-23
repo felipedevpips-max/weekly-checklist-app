@@ -1,29 +1,17 @@
-/* ===== TASK CARD ===== */
-
 .card {
   background-color: #131526;
   border-radius: 12px;
-  padding: 20px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
 }
 
 .title {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #ffffff;
-}
-
-.description {
-  font-size: 0.95rem;
-  color: #c7c7d9;
+  color: #fff;
 }
 
 .meta {
@@ -45,88 +33,79 @@
   color: #00ffff;
   font-weight: bold;
 }
-
 .medium {
   color: #00bfff;
   font-weight: bold;
 }
-
 .low {
   color: #0099cc;
   font-weight: bold;
 }
 
+.description {
+  font-size: 0.95rem;
+  color: #c7c7d9;
+}
 .dueDate {
   font-size: 0.85rem;
   color: #8888aa;
   font-style: italic;
 }
-
 .notify {
   font-size: 0.9rem;
   color: #00ffff;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
-
-/* ===== ACTION BUTTONS ===== */
 
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 8px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .startButton {
-  flex: 1;
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  background-color: #1f2038;
+  color: #00ffff;
 }
 
 .startButton:hover:not(:disabled) {
-  background-color: #2980b9;
+  background-color: #00bfff;
+  color: #111;
 }
 
 .finishButton {
-  flex: 1;
-  background-color: #2ecc71;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  background-color: #00bfff;
+  color: #111;
 }
 
 .finishButton:hover:not(:disabled) {
-  background-color: #27ae60;
+  background-color: #00ffff;
 }
 
 .deleteButton {
-  flex: 1;
-  background-color: #e74c3c;
+  background-color: #900000;
   color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 .deleteButton:hover:not(:disabled) {
-  background-color: #c0392b;
+  background-color: #ff0000;
 }
 
 .actions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Slider */
+.sliderWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }

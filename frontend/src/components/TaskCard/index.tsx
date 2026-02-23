@@ -2,7 +2,6 @@ import type { Task } from "../../types/task";
 import { useState } from "react";
 import { api } from "../../services/api";
 import styles from "./TaskCard.module.css";
-import { ProgressSliderWithCat } from "../ProgressSliderWithCat/ProgressSliderWithCat";
 
 type Props = {
   task: Task;
@@ -12,25 +11,7 @@ type Props = {
 
 export function TaskCard({ task, onUpdate, onDelete }: Props) {
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(task.progress);
 
-  // Slider progress
-  const handleProgressChange = async (newProgress: number) => {
-    setProgress(newProgress);
-    setLoading(true);
-    try {
-      const res = await api.patch(`/tasks/${task.id}`, {
-        progress: newProgress,
-      });
-      onUpdate?.(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Avançar status
   const handleNextStatus = async () => {
     let newStatus: Task["status"];
     if (task.status === "pending") newStatus = "in_progress";
@@ -87,18 +68,6 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
           {task.priority}
         </span>
       </div>
-
-      <ProgressSliderWithCat
-        progress={progress}
-        onChange={handleProgressChange}
-        loading={loading}
-      />
-
-      {task.dueDate && (
-        <div className={styles.dueDate}>
-          Prazo: {new Date(task.dueDate).toLocaleDateString()}
-        </div>
-      )}
 
       {task.notify && (
         <div className={styles.notify}>🔔 Recebe notificações</div>

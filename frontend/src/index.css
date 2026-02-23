@@ -7,17 +7,15 @@
 
 :root {
   --background-page: linear-gradient(180deg, #0b0f1a, #0e1324);
-  --background-header: linear-gradient(180deg, #0a0f1d, #020617);
-  --background-logo: linear-gradient(90deg, #0d54ee, #06b6d4);
   --background-logo-hover: linear-gradient(90deg, #5c0dee, #064ed4);
-  --background-hover-text: #e5e7eb;
-  --text-color: #afb7c0;
+  --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
+  --text: #e5e7eb;
+  --text-secundary: #afb7c0;
   --border-color: #7c6cff;
   --background-card: linear-gradient(180deg, #0b0f1a, #0e1324);
   --border-card: rgba(99, 102, 241, 0.3);
-  --background-techs: rgba(255, 255, 255, 0.03);
-  --background-li: rgba(99, 102, 241, 0.15);
-  --card-border: rgba(255, 255, 255, 0.06);
+  --button-submit-start: rgba(255, 255, 255, 0.03);
+  --button-submit-finish: rgba(255, 255, 255, 0.03);
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
 }
 

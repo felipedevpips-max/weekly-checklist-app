@@ -1,0 +1,27 @@
+.sliderWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  position: relative;
+}
+
+.handleWrapper {
+  position: relative;
+}
+
+.cat {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  pointer-events: none;
+}
+
+.progressLabel {
+  min-width: 40px;
+  text-align: right;
+  font-weight: bold;
+  color: #00ffff;
+}

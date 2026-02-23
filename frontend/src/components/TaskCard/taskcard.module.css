@@ -1,14 +1,14 @@
-/* taskcard.module.css */
+/* ===== TASK CARD ===== */
 
 .card {
-  background-color: #131526; /* card escuro */
+  background-color: #131526;
   border-radius: 12px;
-  padding: 15px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  transition: transform 0.2s;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease;
 }
 
 .card:hover {
@@ -16,9 +16,14 @@
 }
 
 .title {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  color: #fff;
+  color: #ffffff;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: #c7c7d9;
 }
 
 .meta {
@@ -30,7 +35,7 @@
 .status {
   text-transform: capitalize;
   font-weight: bold;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
   background-color: #1f2038;
   color: #00ffff;
@@ -51,74 +56,77 @@
   font-weight: bold;
 }
 
-.progress {
+.dueDate {
+  font-size: 0.85rem;
+  color: #8888aa;
+  font-style: italic;
+}
+
+.notify {
+  font-size: 0.9rem;
+  color: #00ffff;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
-.slider {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 8px;
-  background: #1f2038;
-  border-radius: 4px;
-  outline: none;
-  transition: 0.2s;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #00ffff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  background: #00ffff;
-  border-radius: 50%;
-  cursor: pointer;
-}
+/* ===== ACTION BUTTONS ===== */
 
 .actions {
   display: flex;
   gap: 10px;
+  margin-top: 8px;
 }
 
-.actions button {
+.startButton {
   flex: 1;
-  padding: 6px 10px;
+  background-color: #3498db;
+  color: #fff;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
+  padding: 8px 12px;
   font-weight: bold;
-  background-color: #1f2038;
-  color: #00ffff;
-  transition: 0.3s;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.actions button:hover:not(:disabled) {
-  background-color: #00bfff;
-  color: #111;
+.startButton:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.finishButton {
+  flex: 1;
+  background-color: #2ecc71;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.finishButton:hover:not(:disabled) {
+  background-color: #27ae60;
+}
+
+.deleteButton {
+  flex: 1;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #c0392b;
 }
 
 .actions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.description {
-  font-size: 0.95rem;
-  color: #c7c7d9;
-}
-
-.dueDate {
-  font-size: 0.85rem;
-  color: #8888aa;
-  font-style: italic;
 }

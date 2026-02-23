@@ -1,66 +1,56 @@
-/* Reset básico */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+  font-family: "Work Sans", sans-serif;
   box-sizing: border-box;
 }
 
-/* Fonte global + fundo */
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
+:root {
+  --background-page: linear-gradient(180deg, #0b0f1a, #0e1324);
+  --background-header: linear-gradient(180deg, #0a0f1d, #020617);
+  --background-logo: linear-gradient(90deg, #0d54ee, #06b6d4);
+  --background-logo-hover: linear-gradient(90deg, #5c0dee, #064ed4);
+  --background-hover-text: #e5e7eb;
+  --text-color: #afb7c0;
+  --border-color: #7c6cff;
+  --background-card: linear-gradient(180deg, #0b0f1a, #0e1324);
+  --border-card: rgba(99, 102, 241, 0.3);
+  --background-techs: rgba(255, 255, 255, 0.03);
+  --background-li: rgba(99, 102, 241, 0.15);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
 }
 
-body {
-  font-family: "Inter", sans-serif;
-  background-color: #0d0d1a;
-  color: #e6e6e6;
-  line-height: 1.6;
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
-/* Links */
-a {
-  color: #ff7eb9;
-  text-decoration: none;
-  transition: 0.3s;
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  background: var(--background-page);
 }
 
-a:hover {
-  color: #ffa3c9;
-}
-
-/* Seções */
 section {
-  padding: 60px 20px;
-  width: 100%;
+  scroll-margin-top: 90px; /* altura do header */
 }
 
-/* Conteiner central */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+.reveal {
+  opacity: 0;
+  transform: translateY(60px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
 }
 
-/* Títulos */
-h1, h2, h3, h4 {
-  font-weight: 700;
-  color: #fff;
-}
-
-h1 {
-  font-size: 2.8rem;
-  margin-bottom: 0.5rem;
-}
-
-h2 {
-  font-size: 2.2rem;
-  margin-bottom: 0.4rem;
-}
-
-p {
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  color: #c7c7d9;
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
 }

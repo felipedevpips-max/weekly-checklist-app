@@ -1,21 +1,26 @@
+/* App.module.css */
+
 .container {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 15px;
-  background-color: #121212;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #0b0c1b; /* fundo escuro */
   min-height: 100vh;
-  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .title {
+  color: #00ffff; /* ciano */
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 20px;
-  color: #f5a623;
+  margin-bottom: 1rem;
 }
 
-/* Responsividade */
-@media (max-width: 600px) {
-  .container {
-    padding: 10px;
-  }
+p {
+  color: #c7c7d9;
+  font-size: 1.2rem;
+  text-align: center;
 }

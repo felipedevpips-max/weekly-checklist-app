@@ -1,70 +1,124 @@
+/* taskcard.module.css */
+
 .card {
-  background-color: #1e1e1e;
-  color: #fff;
+  background-color: #131526; /* card escuro */
+  border-radius: 12px;
   padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
 }
 
-.header {
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.title {
-  font-size: 18px;
-  margin: 0;
+.status {
+  text-transform: capitalize;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background-color: #1f2038;
+  color: #00ffff;
 }
 
-.high { color: #ff4d4f; }
-.medium { color: #ffa500; }
-.low { color: #00bfff; }
-
-.description {
-  margin: 10px 0;
-  font-size: 14px;
-  color: #ccc;
+.high {
+  color: #00ffff;
+  font-weight: bold;
 }
 
-.dueDate {
-  font-size: 12px;
-  color: #aaa;
+.medium {
+  color: #00bfff;
+  font-weight: bold;
 }
 
-.progressContainer {
+.low {
+  color: #0099cc;
+  font-weight: bold;
+}
+
+.progress {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 10px 0;
 }
 
 .slider {
   flex: 1;
+  -webkit-appearance: none;
+  height: 8px;
+  background: #1f2038;
+  border-radius: 4px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #00ffff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #00ffff;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
 }
 
-button {
+.actions button {
+  flex: 1;
   padding: 6px 10px;
   border: none;
-  border-radius: 5px;
-  background-color: #9b5de5;
+  border-radius: 6px;
   cursor: pointer;
-  color: white;
-  font-size: 14px;
+  font-weight: bold;
+  background-color: #1f2038;
+  color: #00ffff;
+  transition: 0.3s;
 }
 
-button:hover:not(:disabled) {
-  background-color: #7a3cc1;
+.actions button:hover:not(:disabled) {
+  background-color: #00bfff;
+  color: #111;
 }
 
-button:disabled {
-  background-color: #555;
+.actions button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: #c7c7d9;
+}
+
+.dueDate {
+  font-size: 0.85rem;
+  color: #8888aa;
+  font-style: italic;
 }

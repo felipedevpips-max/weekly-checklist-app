@@ -1,40 +1,61 @@
+/* CreateTaskForm.module.css */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  background-color: #131526;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-input,
-select,
-textarea,
-button {
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #555;
-  background-color: #222;
+.form input,
+.form textarea,
+.form select {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background-color: #1f2038;
   color: #fff;
+  font-size: 1rem;
+  outline: none;
 }
 
-textarea {
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #aaa;
+}
+
+.form textarea {
   resize: vertical;
   min-height: 60px;
 }
 
-button {
-  background-color: #9b5de5;
-  color: white;
-  cursor: pointer;
+.form label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.form button {
+  padding: 10px;
+  font-weight: bold;
   border: none;
-  transition: background 0.2s;
+  border-radius: 8px;
+  background-color: #00ffff;
+  color: #111;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-button:hover:not(:disabled) {
-  background-color: #7a3cc1;
+.form button:hover:not(:disabled) {
+  background-color: #00bfff;
 }
 
-button:disabled {
-  background-color: #555;
+.form button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }

@@ -10,17 +10,16 @@ export function useTasks() {
   useEffect(() => {
     async function fetchTasks() {
       try {
-        const response = await api.get<Task[]>("/tasks");
-        setTasks(response.data);
+        const res = await api.get<Task[]>("/tasks");
+        setTasks(res.data);
       } catch {
         setError("Erro ao buscar tarefas");
       } finally {
         setLoading(false);
       }
     }
-
     fetchTasks();
   }, []);
 
-  return { tasks, loading, error, setTasks };
+  return { tasks, loading, error };
 }

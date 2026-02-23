@@ -1,7 +1,7 @@
 import type { Task } from "../../types/task";
-import styles from "./TaskCard.module.css";
-import { api } from "../../services/api";
 import { useState } from "react";
+import { api } from "../../services/api";
+import styles from "./TaskCard.module.css";
 
 type Props = {
   task: Task;
@@ -13,16 +13,13 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(task.progress);
 
-  const handleProgressChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  // Slider progress
+  const handleProgressChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newProgress = Number(e.target.value);
     setProgress(newProgress);
     setLoading(true);
     try {
-      const res = await api.patch<Task>(`/tasks/${task.id}`, {
-        progress: newProgress,
-      });
+      const res = await api.patch(`/tasks/${task.id}`, { progress: newProgress });
       onUpdate?.(res.data);
     } catch (err) {
       console.error(err);
@@ -31,16 +28,16 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
     }
   };
 
+  // Avançar status
   const handleNextStatus = async () => {
-    if (task.status === "done") return;
-    const newStatus: Task["status"] =
-      task.status === "pending" ? "in_progress" : "done";
+    let newStatus: Task["status"];
+    if (task.status === "pending") newStatus = "in_progress";
+    else if (task.status === "in_progress") newStatus = "done";
+    else return;
 
     setLoading(true);
     try {
-      const res = await api.patch<Task>(`/tasks/${task.id}`, {
-        status: newStatus,
-      });
+      const res = await api.patch(`/tasks/${task.id}`, { status: newStatus });
       onUpdate?.(res.data);
     } catch (err) {
       console.error(err);
@@ -63,30 +60,16 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
 
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>{task.title}</h3>
-        <span
-          className={
-            task.priority === "high"
-              ? styles.high
-              : task.priority === "medium"
-                ? styles.medium
-                : styles.low
-          }
-        >
+      <h3 className={styles.title}>{task.title}</h3>
+
+      {task.description && <p className={styles.description}>{task.description}</p>}
+
+      <div className={styles.meta}>
+        <span className={styles.status}>{task.status}</span>
+        <span className={task.priority === "high" ? styles.high : task.priority === "medium" ? styles.medium : styles.low}>
           {task.priority}
         </span>
       </div>
-
-      {task.description && (
-        <p className={styles.description}>{task.description}</p>
-      )}
-
-      {task.dueDate && (
-        <p className={styles.dueDate}>
-          Prazo: {new Date(task.dueDate).toLocaleDateString()}
-        </p>
-      )}
 
       <div className={styles.progressContainer}>
         <input
@@ -100,6 +83,14 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
         />
         <span>{progress}%</span>
       </div>
+
+      {task.dueDate && (
+        <div className={styles.dueDate}>
+          Prazo: {new Date(task.dueDate).toLocaleDateString()}
+        </div>
+      )}
+
+      {task.notify && <div className={styles.notify}>🔔 Recebe notificações</div>}
 
       <div className={styles.actions}>
         {task.status !== "done" && (

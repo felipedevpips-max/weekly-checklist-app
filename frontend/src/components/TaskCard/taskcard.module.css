@@ -1,18 +1,11 @@
-/* taskcard.module.css */
-
 .card {
-  background-color: #131526; /* card escuro */
+  background-color: #131526;
   border-radius: 12px;
   padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .title {
@@ -30,7 +23,7 @@
 .status {
   text-transform: capitalize;
   font-weight: bold;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
   background-color: #1f2038;
   color: #00ffff;
@@ -40,49 +33,27 @@
   color: #00ffff;
   font-weight: bold;
 }
-
 .medium {
   color: #00bfff;
   font-weight: bold;
 }
-
 .low {
   color: #0099cc;
   font-weight: bold;
 }
 
-.progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.description {
+  font-size: 0.95rem;
+  color: #c7c7d9;
 }
-
-.slider {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 8px;
-  background: #1f2038;
-  border-radius: 4px;
-  outline: none;
-  transition: 0.2s;
+.dueDate {
+  font-size: 0.85rem;
+  color: #8888aa;
+  font-style: italic;
 }
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #00ffff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  background: #00ffff;
-  border-radius: 50%;
-  cursor: pointer;
+.notify {
+  font-size: 0.9rem;
+  color: #00ffff;
 }
 
 .actions {
@@ -92,19 +63,39 @@
 
 .actions button {
   flex: 1;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-weight: bold;
-  background-color: #1f2038;
-  color: #00ffff;
-  transition: 0.3s;
+  cursor: pointer;
 }
 
-.actions button:hover:not(:disabled) {
+.startButton {
+  background-color: #1f2038;
+  color: #00ffff;
+}
+
+.startButton:hover:not(:disabled) {
   background-color: #00bfff;
   color: #111;
+}
+
+.finishButton {
+  background-color: #00bfff;
+  color: #111;
+}
+
+.finishButton:hover:not(:disabled) {
+  background-color: #00ffff;
+}
+
+.deleteButton {
+  background-color: #900000;
+  color: #fff;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #ff0000;
 }
 
 .actions button:disabled {
@@ -112,13 +103,9 @@
   cursor: not-allowed;
 }
 
-.description {
-  font-size: 0.95rem;
-  color: #c7c7d9;
-}
-
-.dueDate {
-  font-size: 0.85rem;
-  color: #8888aa;
-  font-style: italic;
+/* Slider */
+.sliderWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }

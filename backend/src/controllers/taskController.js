@@ -1,37 +1,90 @@
 const taskService = require("../services/taskService");
 
-function createTask(req, res) {
-  const { title, priority, status, progress, description, notify, dueDate } = req.body;
-  if (!title) return res.status(400).json({ message: "Title is required" });
+// CREATE
+async function createTask(req, res) {
+  try {
+    const { title, priority, status, description, dueDate } = req.body;
 
-  const task = taskService.createTask({ title, priority, status, progress, description, notify, dueDate });
-  return res.status(201).json(task);
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+
+    const task = await taskService.createTask({
+      title,
+      priority,
+      status,
+      description,
+      dueDate,
+    });
+
+    return res.status(201).json(task);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao criar task" });
+  }
 }
 
-function getTasks(req, res) {
-  const { weekId } = req.query;
-  const tasks = taskService.getTasks(weekId ? Number(weekId) : null);
-  return res.json(tasks);
+// GET
+async function getTasks(req, res) {
+  try {
+    const { weekId } = req.query;
+
+    const tasks = await taskService.getTasks(weekId ? Number(weekId) : null);
+
+    return res.json(tasks);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao buscar tasks" });
+  }
 }
 
-function updateTask(req, res) {
-  const { id } = req.params;
-  const updatedTask = taskService.updateTask(Number(id), req.body);
-  if (!updatedTask) return res.status(404).json({ message: "Task not found" });
-  return res.json(updatedTask);
+// UPDATE
+async function updateTask(req, res) {
+  try {
+    const { id } = req.params;
+
+    const updatedTask = await taskService.updateTask(Number(id), req.body);
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    return res.json(updatedTask);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao atualizar task" });
+  }
 }
 
-function deleteTask(req, res) {
-  const { id } = req.params;
-  const deleted = taskService.deleteTask(Number(id));
-  if (!deleted) return res.status(404).json({ message: "Task not found" });
-  return res.status(204).send();
+// DELETE
+async function deleteTask(req, res) {
+  try {
+    const { id } = req.params;
+
+    await taskService.deleteTask(Number(id));
+
+    return res.json({ message: "Task deletada com sucesso" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao deletar task" });
+  }
 }
 
-function closeWeek(req, res) {
-  const closed = taskService.closeCurrentWeek();
-  if (!closed) return res.status(400).json({ message: "Week already closed" });
-  return res.json({ message: "Week closed and pending tasks moved" });
+// CLOSE WEEK
+async function closeWeek(req, res) {
+  try {
+    await taskService.closeCurrentWeek();
+    return res.json({ message: "Week closed successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao fechar semana" });
+  }
 }
 
-module.exports = { createTask, getTasks, updateTask, deleteTask, closeWeek };
+module.exports = {
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+  closeWeek,
+};

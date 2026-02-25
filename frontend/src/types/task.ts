@@ -1,11 +1,21 @@
 export type Task = {
   id: number;
+
   title: string;
-  description?: string;
+
+  description: string;
+
   status: "pending" | "in_progress" | "done";
+
   priority: "low" | "medium" | "high";
-  progress: number;
-  notify?: boolean;
-  createdAt: string;
-  dueDate?: string;
+
+  due_date: string;
+
+  created_at: string;
+
+  notify: boolean;
+
+  week_id: number;
+
+  week_closed?: boolean;
 };

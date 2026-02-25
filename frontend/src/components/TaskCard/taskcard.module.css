@@ -109,3 +109,50 @@
   align-items: center;
   width: 100%;
 }
+/* datas gerais */
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #8a8ab5;
+  margin-top: 4px;
+}
+
+.createdAt {
+  color: #6a6a9a;
+}
+
+.completedAt {
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.overdue {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+/* badge done */
+
+.done {
+  background-color: #00ffcc;
+  color: #111;
+}
+
+/* animação hover mais forte */
+
+.card:hover {
+  transform: translateY(-3px);
+  transition: 0.2s;
+  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.15);
+}
+
+/* separador visual */
+
+.divider {
+  height: 1px;
+  background: #1f2038;
+  margin: 6px 0;
+}

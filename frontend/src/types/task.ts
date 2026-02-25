@@ -1,21 +1,29 @@
+export type TaskStatus = "pending" | "in_progress" | "done";
+
+export type TaskPriority = "low" | "medium" | "high";
+
 export type Task = {
   id: number;
 
   title: string;
 
-  description: string;
+  description?: string;
 
-  status: "pending" | "in_progress" | "done";
+  status: TaskStatus;
 
-  priority: "low" | "medium" | "high";
-
-  due_date: string;
-
-  created_at: string;
+  priority: TaskPriority;
 
   notify: boolean;
 
+  // datas (formato do backend postgres)
+  created_at: string;
+
+  due_date?: string;
+
+  completed_at?: string;
+
+  // relacionamento com semana
   week_id: number;
 
-  week_closed?: boolean;
+  week_closed: boolean;
 };

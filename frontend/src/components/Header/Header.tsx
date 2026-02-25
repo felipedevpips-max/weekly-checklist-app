@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import Logo from "../../assets/logo.svg?react";
+import Logout from "../../assets/logout.svg?react";
 
 export function Header() {
   return (
@@ -18,7 +19,9 @@ export function Header() {
           </nav>
         </div>
         <div className={styles.logoutContainer}>
-          <Link to="/logout">Logout</Link>
+          <Link to="/logout">
+            <Logout className={styles.logoutIcon} />
+          </Link>
         </div>
       </div>
     </header>

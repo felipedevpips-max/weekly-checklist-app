@@ -2,7 +2,9 @@ import type { Task } from "../../types/task";
 import { useState } from "react";
 import { api } from "../../services/api";
 import styles from "./TaskCard.module.css";
+
 import { EditTaskModal } from "../EditTaskModal/EditTaskModal";
+import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 
 type Props = {
   task: Task;
@@ -12,13 +14,16 @@ type Props = {
 
 export function TaskCard({ task, onUpdate, onDelete }: Props) {
   const [loading, setLoading] = useState(false);
+
   const [editing, setEditing] = useState<Task | null>(null);
+
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const isClosed = task.week_closed;
 
-  // ============================
+  // =====================
   // ALTERAR STATUS
-  // ============================
+  // =====================
 
   const handleNextStatus = async () => {
     if (isClosed) return;
@@ -37,42 +42,36 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
       });
 
       onUpdate?.(res.data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // ============================
-  // EDITAR
-  // ============================
-
-  // ============================
+  // =====================
   // DELETAR
-  // ============================
+  // =====================
 
-  const handleDelete = async () => {
+  const handleDelete = async (id: number) => {
     if (isClosed) return;
-
-    if (!confirm("Deseja deletar esta tarefa?")) return;
 
     setLoading(true);
 
     try {
-      await api.delete(`/tasks/${task.id}`);
+      await api.delete(`/tasks/${id}`);
 
-      onDelete?.(task.id);
-    } catch (err) {
-      console.error(err);
+      onDelete?.(id);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // ============================
+  // =====================
   // FORMAT DATE
-  // ============================
+  // =====================
 
   function formatDate(date?: string) {
     if (!date) return "-";
@@ -92,18 +91,16 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
       <div className={styles.header}>
         <h3 className={styles.title}>{task.title}</h3>
 
-        {/* 🔔 BADGE NOTIFY */}
-
         {task.notify && <span className={styles.notifyBadge}>🔔</span>}
       </div>
 
-      {/* DESCRIÇÃO */}
+      {/* DESCRIPTION */}
 
       {task.description && (
         <p className={styles.description}>{task.description}</p>
       )}
 
-      {/* STATUS E PRIORIDADE */}
+      {/* META */}
 
       <div className={styles.meta}>
         <span className={styles.status}>{task.status}</span>
@@ -121,7 +118,7 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
         </span>
       </div>
 
-      {/* DATAS */}
+      {/* DATES */}
 
       <div className={styles.dates}>
         <span>📅 Criado: {formatDate(task.created_at)}</span>
@@ -129,13 +126,13 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
         <span>⏰ Encerra: {formatDate(task.due_date)}</span>
       </div>
 
-      {/* TEXTO NOTIFY */}
+      {/* NOTIFY TEXT */}
 
       {task.notify && (
         <div className={styles.notifyText}>Notificação ativa</div>
       )}
 
-      {/* BLOQUEADO */}
+      {/* CLOSED */}
 
       {isClosed && <div className={styles.closed}>🔒 Semana encerrada</div>}
 
@@ -162,7 +159,7 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
           </button>
 
           <button
-            onClick={handleDelete}
+            onClick={() => setOpenConfirm(true)}
             disabled={loading}
             className={styles.deleteButton}
           >
@@ -171,13 +168,32 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
         </div>
       )}
 
+      {/* EDIT MODAL */}
+
       {editing && (
         <EditTaskModal
           task={editing}
           onClose={() => setEditing(null)}
-          onSave={(task) => onUpdate?.(task)}
+          onSave={(updatedTask) => {
+            onUpdate?.(updatedTask);
+
+            setEditing(null);
+          }}
         />
       )}
+
+      {/* DELETE MODAL */}
+
+      <ConfirmDeleteModal
+        isOpen={openConfirm}
+        taskTitle={task.title}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={() => {
+          handleDelete(task.id);
+
+          setOpenConfirm(false);
+        }}
+      />
     </div>
   );
 }

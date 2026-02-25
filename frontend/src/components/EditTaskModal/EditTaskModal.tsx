@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { Task } from "../../types/task";
 import { api } from "../../services/api";
-import styles from "./EditTaskModal.module.css";
+import styles from "./editTaskModal.module.css";
 
 type Props = {
   task: Task;

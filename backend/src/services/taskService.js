@@ -13,7 +13,6 @@ const allowedPriority = ["low", "medium", "high"];
 // =============================
 
 async function createTask(data) {
-   console.log("BODY RECEBIDO:", data);
   const week = await ensureActiveWeek();
 
   const status = data.status || "pending";

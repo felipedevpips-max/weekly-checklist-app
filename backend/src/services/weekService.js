@@ -1,23 +1,89 @@
 const pool = require("../config/db");
 
-// 🔎 Buscar semana atual com tasks
-async function getCurrentWeekWithTasks() {
-  // 🔥 GARANTE que sempre existe semana válida
-  const week = await ensureActiveWeek();
+// =============================
+// 📅 GERAR DATAS FIXAS DA SEMANA
+// domingo 00:00 → sábado 23:59
+// =============================
+function getWeekDates(baseDate = new Date()) {
+  const start = new Date(baseDate);
 
-  const tasksResult = await pool.query(
-    `SELECT * FROM tasks
-     WHERE week_id = $1`,
-    [week.id],
-  );
+  // volta para domingo
+  start.setDate(baseDate.getDate() - baseDate.getDay());
 
-  return {
-    week,
-    tasks: tasksResult.rows,
-  };
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+
+  end.setDate(start.getDate() + 6);
+
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
 }
 
-// 🔐 Fecha semana manualmente (caso queira usar endpoint)
+// =============================
+// 🧠 GARANTIR SEMPRE UMA SEMANA ATIVA
+// cria automaticamente se não existir
+// fecha automaticamente se venceu
+// =============================
+async function ensureActiveWeek() {
+  // buscar semana aberta mais recente
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM weeks
+    WHERE closed = false
+    ORDER BY start_date DESC
+    LIMIT 1
+    `,
+  );
+
+  // se não existe → criar primeira
+  if (result.rows.length === 0) {
+    const { start, end } = getWeekDates();
+
+    const newWeek = await pool.query(
+      `
+      INSERT INTO weeks (start_date, end_date, closed)
+      VALUES ($1, $2, false)
+      RETURNING *
+      `,
+      [start, end],
+    );
+
+    return newWeek.rows[0];
+  }
+
+  const currentWeek = result.rows[0];
+
+  const now = new Date();
+
+  const endDate = new Date(currentWeek.end_date);
+
+  // se semana venceu → fechar automaticamente
+  if (now > endDate) {
+    const closeResult = await closeWeek(currentWeek.id);
+
+    const newWeek = await pool.query(
+      `
+      SELECT *
+      FROM weeks
+      WHERE id = $1
+      `,
+      [closeResult.newWeekId],
+    );
+
+    return newWeek.rows[0];
+  }
+
+  return currentWeek;
+}
+
+// =============================
+// 🔒 FECHAR SEMANA MANUALMENTE OU AUTOMÁTICO
+// move tarefas pendentes
+// cria nova semana
+// =============================
 async function closeWeek(weekId) {
   const client = await pool.connect();
 
@@ -25,7 +91,12 @@ async function closeWeek(weekId) {
     await client.query("BEGIN");
 
     const weekResult = await client.query(
-      "SELECT * FROM weeks WHERE id = $1 AND closed = false",
+      `
+      SELECT *
+      FROM weeks
+      WHERE id = $1
+      AND closed = false
+      `,
       [weekId],
     );
 
@@ -35,98 +106,136 @@ async function closeWeek(weekId) {
 
     const currentWeek = weekResult.rows[0];
 
-    // Criar próxima semana baseada no end_date da atual
-    const newStartDate = new Date(currentWeek.end_date);
-    const newEndDate = new Date(newStartDate);
-    newEndDate.setDate(newEndDate.getDate() + 7);
+    // nova semana baseada na próxima semana real
+    const nextWeekBase = new Date(currentWeek.end_date);
 
+    nextWeekBase.setDate(nextWeekBase.getDate() + 1);
+
+    const { start, end } = getWeekDates(nextWeekBase);
+
+    // criar nova semana
     const newWeekResult = await client.query(
-      `INSERT INTO weeks (start_date, end_date, closed)
-       VALUES ($1, $2, false)
-       RETURNING *`,
-      [newStartDate, newEndDate],
+      `
+      INSERT INTO weeks (start_date, end_date, closed)
+      VALUES ($1, $2, false)
+      RETURNING *
+      `,
+      [start, end],
     );
 
     const newWeekId = newWeekResult.rows[0].id;
 
-    // Mover tasks pendentes
+    // mover tarefas pendentes
     await client.query(
-      `UPDATE tasks
-       SET week_id = $1
-       WHERE week_id = $2
-       AND status != 'done'`,
+      `
+      UPDATE tasks
+      SET week_id = $1
+      WHERE week_id = $2
+      AND status != 'done'
+      `,
       [newWeekId, weekId],
     );
 
-    // Fechar semana atual
-    await client.query("UPDATE weeks SET closed = true WHERE id = $1", [
-      weekId,
-    ]);
+    // fechar semana atual
+    await client.query(
+      `
+      UPDATE weeks
+      SET closed = true
+      WHERE id = $1
+      `,
+      [weekId],
+    );
 
     await client.query("COMMIT");
 
     return {
       message: "Semana fechada com sucesso",
+
       newWeekId,
     };
   } catch (error) {
     await client.query("ROLLBACK");
+
     throw error;
   } finally {
     client.release();
   }
 }
 
-// 🧠 FUNÇÃO PRINCIPAL (Substitui cron)
-async function ensureActiveWeek() {
-  // 1️⃣ Buscar semana aberta
-  const result = await pool.query(
-    `SELECT * FROM weeks
-     WHERE closed = false
-     ORDER BY start_date DESC
-     LIMIT 1`,
+// =============================
+// 📋 BUSCAR SEMANA ATUAL COM TASKS
+// =============================
+async function getCurrentWeekWithTasks() {
+  const week = await ensureActiveWeek();
+
+  const tasksResult = await pool.query(
+    `
+    SELECT
+      t.*,
+      w.closed as week_closed,
+      w.start_date,
+      w.end_date
+    FROM tasks t
+    JOIN weeks w ON w.id = t.week_id
+    WHERE t.week_id = $1
+    ORDER BY t.id ASC
+    `,
+    [week.id],
   );
 
-  // 2️⃣ Se não existir nenhuma → criar primeira
-  if (result.rows.length === 0) {
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setDate(startDate.getDate() + 7);
+  return {
+    week,
 
-    const newWeek = await pool.query(
-      `INSERT INTO weeks (start_date, end_date, closed)
-       VALUES ($1, $2, false)
-       RETURNING *`,
-      [startDate, endDate],
-    );
-
-    return newWeek.rows[0];
-  }
-
-  const currentWeek = result.rows[0];
-
-  const today = new Date();
-  const endDate = new Date(currentWeek.end_date);
-
-  // 3️⃣ Se venceu → fechar automaticamente
-  if (today > endDate) {
-    // reutiliza sua função closeWeek
-    const result = await closeWeek(currentWeek.id);
-
-    // buscar nova semana criada
-    const newWeekResult = await pool.query(
-      `SELECT * FROM weeks WHERE id = $1`,
-      [result.newWeekId],
-    );
-
-    return newWeekResult.rows[0];
-  }
-
-  return currentWeek;
+    tasks: tasksResult.rows,
+  };
 }
 
+// =============================
+// 📚 BUSCAR HISTÓRICO DE SEMANAS
+// =============================
+async function getAllWeeks() {
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM weeks
+    ORDER BY start_date DESC
+    `,
+  );
+
+  return result.rows;
+}
+
+// =============================
+// 📚 BUSCAR TASKS DE UMA SEMANA
+// =============================
+async function getWeekTasks(weekId) {
+  const result = await pool.query(
+    `
+    SELECT
+      t.*,
+      w.closed as week_closed,
+      w.start_date,
+      w.end_date
+    FROM tasks t
+    JOIN weeks w ON w.id = t.week_id
+    WHERE t.week_id = $1
+    ORDER BY t.id ASC
+    `,
+    [weekId],
+  );
+
+  return result.rows;
+}
+
+// =============================
 module.exports = {
-  getCurrentWeekWithTasks,
-  closeWeek,
   ensureActiveWeek,
+
+  closeWeek,
+
+  getCurrentWeekWithTasks,
+
+  getAllWeeks,
+
+  getWeekTasks,
 };

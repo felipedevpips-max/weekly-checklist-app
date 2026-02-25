@@ -3,24 +3,39 @@ const taskService = require("../services/taskService");
 // CREATE
 async function createTask(req, res) {
   try {
-    const { title, priority, status, description, dueDate } = req.body;
-
-    if (!title) {
-      return res.status(400).json({ message: "Title is required" });
-    }
-
-    const task = await taskService.createTask({
+    const {
       title,
       priority,
       status,
       description,
       dueDate,
+      notify, // ✅ agora recebe notify
+    } = req.body;
+
+    console.log("BODY RECEBIDO:", req.body);
+
+    if (!title) {
+      return res.status(400).json({
+        message: "Title is required",
+      });
+    }
+
+    const task = await taskService.createTask({
+      title,
+      priority: priority || "low",
+      status: status || "pending",
+      description: description || "",
+      dueDate,
+      notify: notify || false, // ✅ salva notify
     });
 
     return res.status(201).json(task);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Erro ao criar task" });
+    console.error("CREATE TASK ERROR:", error);
+
+    return res.status(500).json({
+      error: "Erro ao criar task",
+    });
   }
 }
 
@@ -33,8 +48,11 @@ async function getTasks(req, res) {
 
     return res.json(tasks);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Erro ao buscar tasks" });
+    console.error("GET TASKS ERROR:", error);
+
+    return res.status(500).json({
+      error: "Erro ao buscar tasks",
+    });
   }
 }
 
@@ -43,16 +61,30 @@ async function updateTask(req, res) {
   try {
     const { id } = req.params;
 
-    const updatedTask = await taskService.updateTask(Number(id), req.body);
+    const { title, priority, status, description, dueDate, notify } = req.body;
+
+    const updatedTask = await taskService.updateTask(Number(id), {
+      title,
+      priority,
+      status,
+      description,
+      dueDate,
+      notify, // ✅ suporta update notify
+    });
 
     if (!updatedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        message: "Task not found",
+      });
     }
 
     return res.json(updatedTask);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Erro ao atualizar task" });
+    console.error("UPDATE TASK ERROR:", error);
+
+    return res.status(500).json({
+      error: "Erro ao atualizar task",
+    });
   }
 }
 
@@ -63,10 +95,15 @@ async function deleteTask(req, res) {
 
     await taskService.deleteTask(Number(id));
 
-    return res.json({ message: "Task deletada com sucesso" });
+    return res.json({
+      message: "Task deletada com sucesso",
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Erro ao deletar task" });
+    console.error("DELETE TASK ERROR:", error);
+
+    return res.status(500).json({
+      error: "Erro ao deletar task",
+    });
   }
 }
 
@@ -74,10 +111,16 @@ async function deleteTask(req, res) {
 async function closeWeek(req, res) {
   try {
     await taskService.closeCurrentWeek();
-    return res.json({ message: "Week closed successfully" });
+
+    return res.json({
+      message: "Week closed successfully",
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Erro ao fechar semana" });
+    console.error("CLOSE WEEK ERROR:", error);
+
+    return res.status(500).json({
+      error: "Erro ao fechar semana",
+    });
   }
 }
 

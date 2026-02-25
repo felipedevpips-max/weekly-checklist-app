@@ -2,11 +2,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.75rem 1.5rem;
   background: var(--background-page);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
+
+/* ================= LOGO ================= */
+
 .logo {
-  color: var(--text-secundary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.85;
 }
 
 .logo path {
@@ -21,20 +38,29 @@
   fill: white;
 }
 
+/* ================= NAV ================= */
+
 .navContainer {
   display: flex;
   align-items: center;
+  gap: 2rem;
 }
 .nav {
   display: flex;
+  align-items: center;
   gap: 2rem;
 }
 
 .nav a {
+  position: relative;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+
   color: var(--text-secundary);
   text-decoration: none;
-  font-size: 0.95rem;
-  position: relative;
+
   transition: color 0.2s ease;
 }
 
@@ -47,19 +73,32 @@
   position: absolute;
   bottom: -6px;
   left: 0;
+
   width: 0%;
-  height: 2px;
-  background: #034ba3;
-  transition: width 0.3s ease;
+  height: 3px;
+
+  background: var(--check-color);
+  border-radius: 4px;
+
+  transition: width 0.25s ease;
 }
 
 .nav a:hover::after {
   width: 100%;
 }
 
+.nav a.active::after {
+  width: 100%;
+}
+
+.active {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .logoutIcon {
-  width: 40px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
   filter: brightness(0) invert();
 
   transition:
@@ -68,6 +107,6 @@
 }
 
 .logoutIcon:hover {
-  opacity: 0.8;
+  opacity: 1;
   transform: scale(1.1);
 }

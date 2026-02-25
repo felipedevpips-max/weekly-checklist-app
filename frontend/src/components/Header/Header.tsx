@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import styles from "./Header.module.css";
 import Logo from "../../assets/logo.svg?react";
 import Logout from "../../assets/logout.svg?react";
@@ -13,15 +13,39 @@ export function Header() {
 
         <div className={styles.navContainer}>
           <nav className={styles.nav}>
-            <Link to="/">Início</Link>
-            <Link to="/history">Histórico</Link>
-            <Link to="/about">Sobre</Link>
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                isActive ? `${styles.active}` : undefined
+              }
+            >
+              Início
+            </NavLink>
+
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive ? `${styles.active}` : undefined
+              }
+            >
+              Histórico
+            </NavLink>
+
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive ? `${styles.active}` : undefined
+              }
+            >
+              Sobre
+            </NavLink>
           </nav>
         </div>
         <div className={styles.logoutContainer}>
-          <Link to="/logout">
+          <NavLink to="/logout">
             <Logout className={styles.logoutIcon} />
-          </Link>
+          </NavLink>
         </div>
       </div>
     </header>

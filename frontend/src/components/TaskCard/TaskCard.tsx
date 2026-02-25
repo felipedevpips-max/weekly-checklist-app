@@ -43,11 +43,39 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
   };
 
   // ============================
+  // EDITAR
+  // ============================
+
+  const handleEdit = async () => {
+    if (isClosed) return;
+
+    const newTitle = prompt("Editar título:", task.title);
+
+    if (!newTitle) return;
+
+    setLoading(true);
+
+    try {
+      const res = await api.patch(`/tasks/${task.id}`, {
+        title: newTitle,
+      });
+
+      onUpdate?.(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ============================
   // DELETAR
   // ============================
 
   const handleDelete = async () => {
     if (isClosed) return;
+
+    if (!confirm("Deseja deletar esta tarefa?")) return;
 
     setLoading(true);
 
@@ -63,33 +91,31 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
   };
 
   // ============================
-  // TEXTO BOTÃO
+  // FORMAT DATE
   // ============================
+
+  function formatDate(date?: string) {
+    if (!date) return "-";
+
+    return new Date(date).toLocaleDateString("pt-BR");
+  }
 
   const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
 
   const statusButtonClass =
     task.status === "pending" ? styles.startButton : styles.finishButton;
 
-  // ============================
-  // FORMATAÇÃO DATA
-  // ============================
-
-  function formatDate(date?: string) {
-    if (!date) return "-";
-
-    return new Date(date).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  }
-
   return (
     <div className={styles.card}>
-      {/* TITULO */}
+      {/* HEADER */}
 
-      <h3 className={styles.title}>{task.title}</h3>
+      <div className={styles.header}>
+        <h3 className={styles.title}>{task.title}</h3>
+
+        {/* 🔔 BADGE NOTIFY */}
+
+        {task.notify && <span className={styles.notifyBadge}>🔔</span>}
+      </div>
 
       {/* DESCRIÇÃO */}
 
@@ -97,7 +123,7 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
         <p className={styles.description}>{task.description}</p>
       )}
 
-      {/* PRIORIDADE + STATUS */}
+      {/* STATUS E PRIORIDADE */}
 
       <div className={styles.meta}>
         <span className={styles.status}>{task.status}</span>
@@ -118,28 +144,22 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
       {/* DATAS */}
 
       <div className={styles.dates}>
-        <span>
-          📅 Criado:
-          {formatDate(task.created_at)}
-        </span>
+        <span>📅 Criado: {formatDate(task.created_at)}</span>
 
-        <span>
-          ⏰ Encerra:
-          {formatDate(task.due_date)}
-        </span>
+        <span>⏰ Encerra: {formatDate(task.due_date)}</span>
       </div>
 
-      {/* NOTIFICAÇÃO */}
+      {/* TEXTO NOTIFY */}
 
       {task.notify && (
-        <div className={styles.notify}>🔔 Notificações ativas</div>
+        <div className={styles.notifyText}>Notificação ativa</div>
       )}
 
-      {/* BLOQUEIO */}
+      {/* BLOQUEADO */}
 
       {isClosed && <div className={styles.closed}>🔒 Semana encerrada</div>}
 
-      {/* AÇÕES */}
+      {/* ACTIONS */}
 
       {!isClosed && (
         <div className={styles.actions}>
@@ -152,6 +172,14 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
               {statusButtonText}
             </button>
           )}
+
+          <button
+            onClick={handleEdit}
+            disabled={loading}
+            className={styles.editButton}
+          >
+            Editar
+          </button>
 
           <button
             onClick={handleDelete}

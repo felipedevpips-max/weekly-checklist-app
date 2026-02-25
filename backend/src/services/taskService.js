@@ -4,34 +4,49 @@ const { ensureActiveWeek } = require("./weekService");
 // =============================
 // VALORES PERMITIDOS
 // =============================
+
 const allowedStatus = ["pending", "in_progress", "done"];
 const allowedPriority = ["low", "medium", "high"];
 
 // =============================
 // CRIAR TASK
 // =============================
+
 async function createTask(data) {
-  // ✅ Garante que existe semana ativa
+   console.log("BODY RECEBIDO:", data);
   const week = await ensureActiveWeek();
 
   const status = data.status || "pending";
+
   const priority = data.priority || "low";
 
-  if (!allowedStatus.includes(status)) throw new Error("Invalid status value");
-  if (!allowedPriority.includes(priority))
-    throw new Error("Invalid priority value");
+  const notify = data.notify === true;
+
+  const dueDate = data.dueDate || data.due_date || week.end_date;
 
   const result = await pool.query(
-    `INSERT INTO tasks 
-     (title, description, priority, status, due_date, week_id)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING *`,
+    `INSERT INTO tasks
+    (
+      title,
+      description,
+      priority,
+      status,
+      notify,
+      due_date,
+      week_id
+    )
+
+    VALUES ($1,$2,$3,$4,$5,$6,$7)
+
+    RETURNING *`,
+
     [
       data.title,
       data.description || "",
       priority,
       status,
-      data.dueDate || week.end_date,
+      notify,
+      dueDate,
       week.id,
     ],
   );
@@ -42,53 +57,68 @@ async function createTask(data) {
 // =============================
 // LISTAR TASKS
 // =============================
-async function getTasks(weekId = null) {
-  const query = weekId
-    ? ["SELECT * FROM tasks WHERE week_id = $1 ORDER BY id ASC", [weekId]]
-    : ["SELECT * FROM tasks ORDER BY id ASC", []];
 
-  const result = await pool.query(...query);
+async function getTasks() {
+  const result = await pool.query(
+    `SELECT
+      t.*,
+      w.closed as week_closed
+
+    FROM tasks t
+
+    JOIN weeks w
+      ON w.id = t.week_id
+
+    ORDER BY t.id DESC`,
+  );
+
   return result.rows;
 }
 
 // =============================
-// ATUALIZAR TASK (PROTEGIDO)
+// UPDATE TASK
 // =============================
+
 async function updateTask(id, data) {
-  // ✅ Verifica se a tarefa existe e se a semana está fechada
   const checkResult = await pool.query(
     `SELECT w.closed
      FROM tasks t
-     JOIN weeks w ON t.week_id = w.id
+     JOIN weeks w ON w.id = t.week_id
      WHERE t.id = $1`,
+
     [id],
   );
 
-  if (checkResult.rows.length === 0) throw new Error("Tarefa não encontrada");
+  if (checkResult.rows.length === 0) throw new Error("Task not found");
 
-  if (checkResult.rows[0].closed) {
-    throw new Error("Não é possível editar tarefa de semana encerrada");
-  }
+  if (checkResult.rows[0].closed) throw new Error("Week closed");
 
   if (data.status && !allowedStatus.includes(data.status))
-    throw new Error("Invalid status value");
+    throw new Error("Invalid status");
+
   if (data.priority && !allowedPriority.includes(data.priority))
-    throw new Error("Invalid priority value");
+    throw new Error("Invalid priority");
 
   const result = await pool.query(
     `UPDATE tasks SET
-      title = COALESCE($1, title),
-      description = COALESCE($2, description),
-      priority = COALESCE($3, priority),
-      status = COALESCE($4, status),
-      due_date = COALESCE($5, due_date)
-     WHERE id = $6
-     RETURNING *`,
+
+      title = COALESCE($1,title),
+      description = COALESCE($2,description),
+      priority = COALESCE($3,priority),
+      status = COALESCE($4,status),
+      notify = COALESCE($5,notify),
+      due_date = COALESCE($6,due_date)
+
+    WHERE id = $7
+
+    RETURNING *`,
+
     [
       data.title,
       data.description,
       data.priority,
       data.status,
+      data.notify,
       data.dueDate,
       id,
     ],
@@ -98,35 +128,54 @@ async function updateTask(id, data) {
 }
 
 // =============================
-// DELETAR TASK (PROTEGIDO)
+// DELETE
 // =============================
+
 async function deleteTask(id) {
   const checkResult = await pool.query(
     `SELECT w.closed
+
      FROM tasks t
-     JOIN weeks w ON t.week_id = w.id
+
+     JOIN weeks w ON w.id = t.week_id
+
      WHERE t.id = $1`,
+
     [id],
   );
 
-  if (checkResult.rows.length === 0) throw new Error("Tarefa não encontrada");
+  if (!checkResult.rows.length) throw new Error("Task not found");
 
-  if (checkResult.rows[0].closed) {
-    throw new Error("Não é possível deletar tarefa de semana encerrada");
-  }
+  if (checkResult.rows[0].closed) throw new Error("Week closed");
 
-  await pool.query("DELETE FROM tasks WHERE id = $1", [id]);
+  await pool.query(
+    `DELETE FROM tasks WHERE id = $1`,
+
+    [id],
+  );
+
   return true;
 }
 
 // =============================
-// FECHAR SEMANA
+// CLOSE WEEK
 // =============================
+
 async function closeCurrentWeek() {
   const week = await ensureActiveWeek();
-  await pool.query("UPDATE weeks SET closed = true WHERE id = $1", [week.id]);
+
+  await pool.query(
+    `UPDATE weeks
+     SET closed = true
+     WHERE id = $1`,
+
+    [week.id],
+  );
+
   return true;
 }
+
+// =============================
 
 module.exports = {
   createTask,

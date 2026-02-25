@@ -2,6 +2,7 @@ import type { Task } from "../../types/task";
 import { useState } from "react";
 import { api } from "../../services/api";
 import styles from "./TaskCard.module.css";
+import { EditTaskModal } from "../EditTaskModal/EditTaskModal";
 
 type Props = {
   task: Task;
@@ -11,6 +12,7 @@ type Props = {
 
 export function TaskCard({ task, onUpdate, onDelete }: Props) {
   const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState<Task | null>(null);
 
   const isClosed = task.week_closed;
 
@@ -45,28 +47,6 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
   // ============================
   // EDITAR
   // ============================
-
-  const handleEdit = async () => {
-    if (isClosed) return;
-
-    const newTitle = prompt("Editar título:", task.title);
-
-    if (!newTitle) return;
-
-    setLoading(true);
-
-    try {
-      const res = await api.patch(`/tasks/${task.id}`, {
-        title: newTitle,
-      });
-
-      onUpdate?.(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // ============================
   // DELETAR
@@ -174,7 +154,7 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
           )}
 
           <button
-            onClick={handleEdit}
+            onClick={() => setEditing(task)}
             disabled={loading}
             className={styles.editButton}
           >
@@ -189,6 +169,14 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
             Deletar
           </button>
         </div>
+      )}
+
+      {editing && (
+        <EditTaskModal
+          task={editing}
+          onClose={() => setEditing(null)}
+          onSave={(task) => onUpdate?.(task)}
+        />
       )}
     </div>
   );

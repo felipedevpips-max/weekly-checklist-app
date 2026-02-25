@@ -4,21 +4,19 @@ import styles from "./Header.module.css";
 export function Header() {
   return (
     <header className={styles.header}>
+      <div className={styles.container}>
+        <h2 className={styles.title}>Weekify</h2>
 
-      <h2>Weekly Checklist</h2>
+        <nav className={styles.nav}>
+          <Link to="/">Início</Link>
 
-      <nav>
+          <Link to="/history">Histórico</Link>
 
-        <Link to="/">Início</Link>
+          <Link to="/about">Sobre</Link>
 
-        <Link to="/history">Histórico</Link>
-
-        <Link to="/about">Sobre</Link>
-
-        <button>Logout</button>
-
-      </nav>
-
+          <button>Logout</button>
+        </nav>
+      </div>
     </header>
   );
 }

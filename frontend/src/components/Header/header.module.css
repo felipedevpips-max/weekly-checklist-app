@@ -1,0 +1,22 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--background-page);
+}
+.logo {
+  color: white;
+}
+
+.logo path {
+  stroke: white;
+}
+
+.logo rect {
+  fill: blue;
+}
+
+.logo text {
+  fill: white;
+}

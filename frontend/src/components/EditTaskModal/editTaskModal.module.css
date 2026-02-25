@@ -1,0 +1,183 @@
+.overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.7);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  z-index: 999;
+
+  animation: fadeIn 0.2s ease;
+
+}
+
+.modal {
+
+  background: #131526;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  width: 100%;
+
+  max-width: 500px;
+
+  box-shadow:
+    0 0 10px #00ffff33,
+    0 0 30px #00ffff22;
+
+  animation: slideUp 0.25s ease;
+
+}
+
+.title {
+
+  font-size: 1.6rem;
+
+  color: #00ffff;
+
+  margin-bottom: 20px;
+
+  text-align: center;
+
+}
+
+.input,
+.textarea,
+.select {
+
+  width: 100%;
+
+  padding: 10px;
+
+  border-radius: 6px;
+
+  border: none;
+
+  background: #1f2038;
+
+  color: white;
+
+  margin-bottom: 12px;
+
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+
+  outline: none;
+
+  box-shadow: 0 0 5px #00ffff;
+
+}
+
+.checkbox {
+
+  display: flex;
+
+  gap: 8px;
+
+  margin-bottom: 15px;
+
+  color: #00ffff;
+
+}
+
+.actions {
+
+  display: flex;
+
+  gap: 10px;
+
+}
+
+.saveButton {
+
+  flex: 1;
+
+  background: linear-gradient(90deg, #00ffff, #00bfff);
+
+  border: none;
+
+  padding: 10px;
+
+  border-radius: 6px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  color: #111;
+
+}
+
+.saveButton:hover {
+
+  transform: scale(1.03);
+
+}
+
+.cancelButton {
+
+  flex: 1;
+
+  background: #900000;
+
+  border: none;
+
+  padding: 10px;
+
+  border-radius: 6px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  color: white;
+
+}
+
+.cancelButton:hover {
+
+  background: red;
+
+}
+
+/* animações */
+
+@keyframes fadeIn {
+
+  from { opacity: 0; }
+
+  to { opacity: 1; }
+
+}
+
+@keyframes slideUp {
+
+  from {
+
+    transform: translateY(40px);
+
+    opacity: 0;
+
+  }
+
+  to {
+
+    transform: translateY(0);
+
+    opacity: 1;
+
+  }
+
+}

@@ -1,0 +1,16 @@
+<svg width="220" height="60" viewBox="0 0 220 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background rounded -->
+  <rect x="0" y="0" width="60" height="60" rx="14" fill="currentColor"></rect>
+
+  <!-- Check Icon -->
+  <path d="M18 30 L26 38 L42 20" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+
+  <!-- Text -->
+  <text x="75" y="38" font-family="Inter, Segoe UI, sans-serif" font-size="28" font-weight="600" fill="currentColor">
+
+    Weekify
+
+  </text>
+
+</svg>

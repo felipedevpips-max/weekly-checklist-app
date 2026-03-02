@@ -1,0 +1,8 @@
+.container {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+  padding: clamp(1rem, 2vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 
+import styles from "./home.module.css";
 import type { Task } from "../../types/task";
 import { CreateTaskForm } from "../../components/CreateTaskForm/CreateTaskForm";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
 import { useTasks } from "../../hooks/useTasks";
+import { Container } from "../../components/Container/Container";
 
 export function Home() {
   const { tasks: initialTasks, loading, error } = useTasks();
@@ -34,18 +36,20 @@ export function Home() {
 
   return (
     <>
-      <h1>Weekly Checklist</h1>
+      <Container>
+        <h1 className={styles.title}>Checklist Semanal</h1>
 
-      <CreateTaskForm onCreate={handleCreate} />
+        <CreateTaskForm onCreate={handleCreate} />
 
-      {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-        />
-      ))}
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
+        ))}
+      </Container>
     </>
   );
 }

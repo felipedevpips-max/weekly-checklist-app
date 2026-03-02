@@ -4,6 +4,7 @@ import type { Task } from "../../types/task";
 import { CreateTaskForm } from "../../components/CreateTaskForm/CreateTaskForm";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
 import { useTasks } from "../../hooks/useTasks";
+import { Container } from "../../components/Container/Container";
 
 export function Home() {
   const { tasks: initialTasks, loading, error } = useTasks();
@@ -34,6 +35,7 @@ export function Home() {
 
   return (
     <>
+    <Container>
       <h1>Weekly Checklist</h1>
 
       <CreateTaskForm onCreate={handleCreate} />
@@ -46,6 +48,7 @@ export function Home() {
           onDelete={handleDelete}
         />
       ))}
+      </Container>
     </>
   );
 }

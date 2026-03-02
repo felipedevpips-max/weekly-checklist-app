@@ -1,3 +1,9 @@
+/* ================= HEADER ================= */
+
+.header {
+  width: 100%;
+}
+
 .headerContainer {
   display: flex;
   justify-content: space-between;
@@ -45,6 +51,7 @@
   align-items: center;
   gap: 2rem;
 }
+
 .nav {
   display: flex;
   align-items: center;
@@ -83,10 +90,7 @@
   transition: width 0.25s ease;
 }
 
-.nav a:hover::after {
-  width: 100%;
-}
-
+.nav a:hover::after,
 .nav a.active::after {
   width: 100%;
 }
@@ -96,17 +100,73 @@
   font-weight: 600;
 }
 
-.logoutIcon {
-  width: 22px;
-  height: 22px;
-  filter: brightness(0) invert();
+/* ================= BUTTONS ================= */
 
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.logoutIcon:hover {
-  opacity: 1;
+/* Botão de toggle */
+.buttonContainer button {
+  all: unset; /* seguro aqui */
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+  cursor: pointer;
+
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* Link de logout */
+.buttonContainer a {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+  cursor: pointer;
+
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover elegante */
+.buttonContainer button:hover,
+.buttonContainer a:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
+}
+
+.buttonContainer button:active {
+  transform: scale(0.95);
+}
+
+.buttonContainer button:focus-visible {
+  outline: 2px solid var(--check-color);
+}
+
+/* ================= ICONS ================= */
+
+.logoutIcon,
+.lightIcon,
+.darkIcon {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  filter: brightness(0) invert();
+}
+
+/* Pequena compensação visual pro logout */
+.logoutIcon {
   transform: scale(1.1);
 }

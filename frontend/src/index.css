@@ -8,43 +8,30 @@
 }
 
 :root {
-  --background-header: linear-gradient(180deg, #0b0f1a, #101a3a);
-  --border-card: rgba(99, 102, 241, 0.3);
   --text-secundary: #afb7c0;
   --text-hover: #e5e7eb;
-  --background-logo-hover: linear-gradient(90deg, #5c0dee, #064ed4);
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
-  --button-submit-start: rgba(255, 255, 255, 0.03);
-  --button-submit-finish: rgba(255, 255, 255, 0.03);
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
 }
 
 body.dark {
+  --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
   --background: #0f111a;
-  --card: #131526;
+  --background-card: linear-gradient(180deg, #0b0f1a, #101a3a);
   --text: #ffffff;
-  --input: #1f2038;
-  --background-page: #0f172a; /* fundo bem escuro */
-  --background-card: linear-gradient(180deg, #0b0f1a, #101a3a); /* card mais claro que o fundo */
-
   --card-border: #334155;
-
-  --text-color: #94a3b8;
-  --background-hover-text: #f1f5f9;
-
+  --text-color: #9d9ea0;
   --primary-color: #034ba3;
 }
 
 body.light {
-  --background-page: #f3f4f6; /* fundo geral */
-  --background-card: #ffffff; /* card branco */
-
-  --card-border: #e5e7eb;
-
-  --text-color: #6b7280;
-  --background-hover-text: #111827;
-
+  --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
+  --background: #dddddd;
+  --background-card: #ffffff;
+  --text: #000000;
+  --card-border: #b5b6b8cb;
+  --text-color: #5f6570;
   --primary-color: #034ba3;
 }
 

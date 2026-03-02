@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background: var(--background-header);
+  background: var(--background-card-header);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+import styles from "./home.module.css";
 import type { Task } from "../../types/task";
 import { CreateTaskForm } from "../../components/CreateTaskForm/CreateTaskForm";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
@@ -35,19 +36,19 @@ export function Home() {
 
   return (
     <>
-    <Container>
-      <h1>Weekly Checklist</h1>
+      <Container>
+        <h1 className={styles.title}>Checklist Semanal</h1>
 
-      <CreateTaskForm onCreate={handleCreate} />
+        <CreateTaskForm onCreate={handleCreate} />
 
-      {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-        />
-      ))}
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
+        ))}
       </Container>
     </>
   );

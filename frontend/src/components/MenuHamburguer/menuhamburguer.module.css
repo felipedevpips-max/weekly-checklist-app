@@ -1,0 +1,106 @@
+.hamburguer {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 26px;
+  height: 18px;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.hamburguer span {
+  height: 3px;
+  width: 100%;
+  background: var(--text-hover);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburguer span.active:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+
+.hamburguer span.active:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburguer span.active:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 260px;
+
+  background: var(--background-header);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.25);
+
+  padding: 2rem 1.5rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+
+  z-index: 1000;
+}
+
+.mobileMenu.open {
+  transform: translateX(0);
+}
+
+.mobileMenu nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mobileMenu nav a {
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-hover);
+}
+
+.logoutMobile,
+.homeMobile,
+.aboutMobile,
+.historyMobile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoutMobile svg,
+.homeMobile svg,
+.aboutMobile svg,
+.historyMobile svg {
+  width: 20px;
+  height: 20px;
+  transition: opacity 0.2s ease;
+  filter: brightness(0) invert();
+}
+
+.logoutMobile:hover svg {
+  opacity: 0.6;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 900;
+}
+
+/* Mostrar hamburguer só no mobile */
+@media (max-width: 768px) {
+  .hamburguer {
+    display: flex;
+  }
+}

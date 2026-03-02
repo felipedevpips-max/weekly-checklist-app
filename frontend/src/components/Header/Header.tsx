@@ -5,6 +5,7 @@ import Logout from "../../assets/logout.svg?react";
 import { useTheme } from "../../context/useTheme";
 import Dark from "../../assets/dark.png";
 import Light from "../../assets/light.png";
+import { MenuHamburguer } from "../MenuHamburguer/Menuhamburguer";
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -54,9 +55,10 @@ export function Header() {
               <img src={Dark} alt="Dark mode" className={styles.darkIcon} />
             )}
           </button>
-          <NavLink to="/logout">
+          <NavLink to="/logout" className={styles.logoutButton}>
             <Logout className={styles.logoutIcon} />
           </NavLink>
+          <MenuHamburguer />
         </div>
       </div>
     </header>

@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background: var(--background-page);
+  background: var(--background-header);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -60,7 +60,6 @@
 
 .nav a {
   position: relative;
-
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: 0.2px;
@@ -110,7 +109,7 @@
 
 /* Botão de toggle */
 .buttonContainer button {
-  all: unset; /* seguro aqui */
+  all: unset;
   width: 36px;
   height: 36px;
 
@@ -121,11 +120,13 @@
   border-radius: 8px;
   cursor: pointer;
 
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
-/* Link de logout */
-.buttonContainer a {
+/* 🔥 Logout isolado corretamente */
+.logoutButton {
   width: 36px;
   height: 36px;
 
@@ -137,12 +138,15 @@
   cursor: pointer;
 
   text-decoration: none;
-  transition: background 0.2s ease, transform 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 /* Hover elegante */
 .buttonContainer button:hover,
-.buttonContainer a:hover {
+.logoutButton:hover {
   background: rgba(0, 0, 0, 0.05);
   transform: scale(1.05);
 }
@@ -162,11 +166,35 @@
 .darkIcon {
   width: 22px;
   height: 22px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
   filter: brightness(0) invert();
 }
 
 /* Pequena compensação visual pro logout */
 .logoutIcon {
   transform: scale(1.1);
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .nav {
+    display: none;
+  }
+
+  /* 🔥 Aqui realmente remove do layout */
+  .logoutButton {
+    display: none;
+  }
+
+  .headerContainer {
+    padding: 0.75rem 1rem;
+  }
+
+  .buttonContainer {
+    gap: 1rem;
+  }
 }

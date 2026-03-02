@@ -2,8 +2,12 @@ import { NavLink } from "react-router-dom";
 import styles from "./Header.module.css";
 import Logo from "../../assets/logo.svg?react";
 import Logout from "../../assets/logout.svg?react";
+import { useTheme } from "../../context/useTheme";
+import Dark from "../../assets/dark.png";
+import Light from "../../assets/light.png";
 
 export function Header() {
+  const { theme, toggleTheme } = useTheme();
   return (
     <header className={styles.header}>
       <div className={styles.headerContainer}>
@@ -42,7 +46,14 @@ export function Header() {
             </NavLink>
           </nav>
         </div>
-        <div className={styles.logoutContainer}>
+        <div className={styles.buttonContainer}>
+          <button onClick={toggleTheme}>
+            {theme === "dark" ? (
+              <img src={Light} alt="Light mode" className={styles.lightIcon} />
+            ) : (
+              <img src={Dark} alt="Dark mode" className={styles.darkIcon} />
+            )}
+          </button>
           <NavLink to="/logout">
             <Logout className={styles.logoutIcon} />
           </NavLink>

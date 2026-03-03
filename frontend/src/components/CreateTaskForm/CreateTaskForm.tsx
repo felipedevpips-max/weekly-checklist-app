@@ -110,7 +110,7 @@ export function CreateTaskForm({ onCreate }: Props) {
         <span>Receber notificações</span>
       </div>
 
-      <button type="submit" disabled={loading}>
+      <button className={styles.submitButton} type="submit" disabled={loading}>
         {loading ? "Criando..." : "Criar Tarefa"}
       </button>
     </form>

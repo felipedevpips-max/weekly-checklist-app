@@ -155,9 +155,15 @@ button {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  
+  background: var(--hover-submit);
+}
 
 button:hover:not(:disabled) {
   opacity: 0.9;
+  
 }
 
 button:disabled {

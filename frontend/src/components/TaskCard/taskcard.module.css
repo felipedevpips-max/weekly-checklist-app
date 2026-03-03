@@ -137,16 +137,31 @@
 
 .primaryButton:hover:not(:disabled) {
   opacity: 0.9;
+
+  transform: translateY(-2px);
+
+  background: var(--hover-submit);
 }
 
 .editButton {
-  background: #3b82f6;
+  background:var(--edit-submit);
   color: white;
+}
+.editButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  background: var(--edit-submit);
 }
 
 .deleteButton {
-  background: #dc2626;
+  background: var(--delete-submit);
   color: white;
+}
+
+.deleteButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  background: var(--delete-submit);
 }
 
 .actions button:disabled {

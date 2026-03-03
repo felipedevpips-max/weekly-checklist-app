@@ -13,12 +13,16 @@
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
+  
+  
 }
 
 body.dark {
   --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
   --background-card: linear-gradient(180deg, #0b0f1a, #101a3a);
   --hover-submit: linear-gradient(90deg, #5c0dee, #064ed4);
+  --delete-submit: linear-gradient(90deg, #4e1b1b, #b91c1c);
+  --edit-submit: linear-gradient(90deg, #126281, #09998d);
   --background: radial-gradient(circle at 20% 20%, #1e293b, #0f172a);
   --input-bg: #1e293b;
 
@@ -41,6 +45,8 @@ body.light {
   --background: #f4f6f9;
   --background-card: #ffffff;
   --hover-submit: linear-gradient(90deg, #5c0dee, #069ad4);
+  --delete-submit: linear-gradient(90deg, #4e1b1b, #b91c1c);
+  --edit-submit: linear-gradient(90deg, #126281, #09998d);
   --input-bg: #ececec;
 
   --text: #111827;

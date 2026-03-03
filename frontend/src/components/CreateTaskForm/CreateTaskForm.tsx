@@ -24,7 +24,8 @@ export function CreateTaskForm({ onCreate }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title) return;
+    if (!title || !priority) return;
+
     setLoading(true);
 
     try {
@@ -37,13 +38,13 @@ export function CreateTaskForm({ onCreate }: Props) {
         status: "pending",
         dueDate: getNextSaturday(),
       };
+
       const res = await api.post<Task>("/tasks", newTask);
       onCreate(res.data);
 
-      // reset
       setTitle("");
       setDescription("");
-      setPriority("low");
+      setPriority("");
       setNotify(false);
     } catch (err) {
       console.error(err);
@@ -53,40 +54,62 @@ export function CreateTaskForm({ onCreate }: Props) {
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Título da tarefa"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-      <select
-        value={priority}
-        onChange={(e) =>
-          setPriority(e.target.value as "low" | "medium" | "high")
-        }
-      >
-        <option value="" disabled>
-          Selecione a prioridade
-        </option>
-        <option value="low">Baixa</option>
-        <option value="medium">Média</option>
-        <option value="high">Alta</option>
-      </select>
-      <textarea
-        placeholder="Descrição"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <label>
+    <form className={styles.card} onSubmit={handleSubmit}>
+      <div className={styles.header}>
+        <h2>Criar nova tarefa</h2>
+      </div>
+
+      <div className={styles.divider} />
+
+      <div className={styles.field}>
+        <label>Título</label>
+        <input
+          type="text"
+          placeholder="Ex: Estudar React"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+
+      <div className={styles.field}>
+        <label>Prioridade</label>
+        <div className={styles.selectWrapper}>
+          <select
+            value={priority}
+            onChange={(e) =>
+              setPriority(e.target.value as "low" | "medium" | "high")
+            }
+            className={styles.select}
+          >
+            <option value="" disabled>
+              Selecione
+            </option>
+            <option value="low">Baixa</option>
+            <option value="medium">Média</option>
+            <option value="high">Alta</option>
+          </select>
+          <span className={styles.selectArrow}>⌄</span>
+        </div>
+      </div>
+
+      <div className={styles.field}>
+        <label>Descrição</label>
+        <textarea
+          placeholder="Detalhes da tarefa..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+
+      <div className={styles.checkboxRow}>
         <input
           type="checkbox"
           checked={notify}
           onChange={(e) => setNotify(e.target.checked)}
         />
-        Receber notificações
-      </label>
+        <span>Receber notificações</span>
+      </div>
+
       <button type="submit" disabled={loading}>
         {loading ? "Criando..." : "Criar Tarefa"}
       </button>

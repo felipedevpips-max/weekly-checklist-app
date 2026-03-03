@@ -9,7 +9,7 @@ type Props = {
 
 export function CreateTaskForm({ onCreate }: Props) {
   const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
+  const [priority, setPriority] = useState<"" | "low" | "medium" | "high">("");
   const [description, setDescription] = useState("");
   const [notify, setNotify] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,15 @@ export function CreateTaskForm({ onCreate }: Props) {
     setLoading(true);
 
     try {
-      const newTask = { title, priority, description, notify, progress: 0, status: "pending", dueDate: getNextSaturday() };
+      const newTask = {
+        title,
+        priority,
+        description,
+        notify,
+        progress: 0,
+        status: "pending",
+        dueDate: getNextSaturday(),
+      };
       const res = await api.post<Task>("/tasks", newTask);
       onCreate(res.data);
 
@@ -46,15 +54,37 @@ export function CreateTaskForm({ onCreate }: Props) {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <input type="text" placeholder="Título da tarefa" value={title} onChange={(e) => setTitle(e.target.value)} required />
-      <select value={priority} onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}>
+      <input
+        type="text"
+        placeholder="Título da tarefa"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+      />
+      <select
+        value={priority}
+        onChange={(e) =>
+          setPriority(e.target.value as "low" | "medium" | "high")
+        }
+      >
+        <option value="" disabled>
+          Selecione a prioridade
+        </option>
         <option value="low">Baixa</option>
         <option value="medium">Média</option>
         <option value="high">Alta</option>
       </select>
-      <textarea placeholder="Descrição" value={description} onChange={(e) => setDescription(e.target.value)} />
+      <textarea
+        placeholder="Descrição"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
       <label>
-        <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
+        <input
+          type="checkbox"
+          checked={notify}
+          onChange={(e) => setNotify(e.target.checked)}
+        />
         Receber notificações
       </label>
       <button type="submit" disabled={loading}>

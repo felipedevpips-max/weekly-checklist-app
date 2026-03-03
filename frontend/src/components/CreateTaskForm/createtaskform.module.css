@@ -67,7 +67,7 @@
 }
 
 .form input[type="checkbox"] {
-  accent-color: var(--primary-color);
+  accent-color: var(--accent-color);
   width: 16px;
   height: 16px;
 }
@@ -83,7 +83,7 @@
   font-weight: 600;
   font-size: 1rem;
 
-  color: white;
+  color: var(--text-hover);
   background: var(--primary-color);
 
   cursor: pointer;
@@ -92,7 +92,7 @@
 
 .form button:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: #4f46e5;
+  background: var(--hover-submit);
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
 }
 

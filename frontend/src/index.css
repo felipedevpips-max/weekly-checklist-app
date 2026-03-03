@@ -9,7 +9,7 @@
 
 :root {
   --text-secundary: #afb7c0;
-  --text-hover: #e5e7eb;
+  --text-hover: #ffffff;
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
@@ -22,7 +22,9 @@ body.dark {
   --text: #ffffff;
   --card-border: #334155;
   --text-color: #9d9ea0;
-  --primary-color: #034ba3;
+  --primary-color: linear-gradient(90deg, #0d54ee, #06b6d4);
+  --hover-submit: linear-gradient(90deg, #5c0dee, #064ed4);
+  --accent-color: #034ba3;
 }
 
 body.light {
@@ -32,7 +34,9 @@ body.light {
   --text: #000000;
   --card-border: #b5b6b8cb;
   --text-color: #5f6570;
-  --primary-color: #034ba3;
+  --primary-color: linear-gradient(90deg, #0d54ee, #06b6d4);
+  --hover-submit: linear-gradient(90deg, #5c0dee, #069ad4);
+  --accent-color: #034ba3;
 }
 
 body {

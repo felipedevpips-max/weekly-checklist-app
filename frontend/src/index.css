@@ -8,37 +8,41 @@
 }
 
 :root {
-  --background-page: linear-gradient(180deg, #0b0f1a, #0e1324);
-  --border-card: rgba(99, 102, 241, 0.3);
   --text-secundary: #afb7c0;
-  --text: #e5e7eb;
-  --background-logo-hover: linear-gradient(90deg, #5c0dee, #064ed4);
+  --text-hover: #ffffff;
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
-  --button-submit-start: rgba(255, 255, 255, 0.03);
-  --button-submit-finish: rgba(255, 255, 255, 0.03);
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
 }
 
-
-
 body.dark {
+  --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
   --background: #0f111a;
-  --card: #131526;
+  --background-card: linear-gradient(180deg, #0b0f1a, #101a3a);
   --text: #ffffff;
-  --input: #1f2038;
-  
+  --card-border: #334155;
+  --text-color: #9d9ea0;
+  --primary-color: linear-gradient(90deg, #0d54ee, #06b6d4);
+  --hover-submit: linear-gradient(90deg, #5c0dee, #064ed4);
+  --accent-color: #034ba3;
 }
 
 body.light {
-  --background: #f5f5f5;
-  --card: #ffffff;
-  --text: #111111;
-  --input: #eeeeee;
+  --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
+  --background: #dddddd;
+  --background-card: #ffffff;
+  --text: #000000;
+  --card-border: #b5b6b8cb;
+  --text-color: #5f6570;
+  --primary-color: linear-gradient(90deg, #0d54ee, #06b6d4);
+  --hover-submit: linear-gradient(90deg, #5c0dee, #069ad4);
+  --accent-color: #034ba3;
 }
 
 body {
   background: var(--background);
   color: var(--text);
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }

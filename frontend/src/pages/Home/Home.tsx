@@ -4,10 +4,10 @@ import styles from "./home.module.css";
 import type { Task } from "../../types/task";
 import { CreateTaskForm } from "../../components/CreateTaskForm/CreateTaskForm";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
-import { EditTaskModal } from "../../components/EditTaskModal/EditTaskModal";
-import ConfirmDeleteModal from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import { Container } from "../../components/Container/Container";
 import { useTasks } from "../../hooks/useTasks";
+import { ConfirmDeleteModal } from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
+import { EditTaskModal } from "../../components/EditTaskModal/EditTaskModal";
 
 export function Home() {
   const { tasks: initialTasks, loading, error } = useTasks();
@@ -22,7 +22,7 @@ export function Home() {
 
   const handleUpdate = (updatedTask: Task) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
     );
   };
 
@@ -56,6 +56,7 @@ export function Home() {
       {/* Modal de edição centralizado */}
       {editingTask && (
         <EditTaskModal
+          isOpen={!!editingTask}
           task={editingTask}
           onClose={() => setEditingTask(null)}
           onSave={(updatedTask) => {

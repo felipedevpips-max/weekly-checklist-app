@@ -9,7 +9,7 @@ type Props = {
   onUpdate?: (task: Task) => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  onRetry?: () => void; // retry para pendentes
+  onRetry?: () => void;
 };
 
 export function TaskCard({
@@ -119,43 +119,70 @@ export function TaskCard({
       )}
 
       <div className={styles.actions}>
-        {/* Botão retry apenas para pendentes em histórico */}
-        {onRetry && task.status === "pending" && (
-          <button
-            onClick={onRetry}
-            disabled={loading || isWeekClosed}
-            className={styles.primaryButton}
-          >
-            Tentar novamente
-          </button>
+        {/* Lógica histórica */}
+        {isWeekClosed ? (
+          <>
+            {task.status === "pending" && (
+              <>
+                <button
+                  onClick={onRetry}
+                  disabled={loading}
+                  className={styles.primaryButton}
+                >
+                  Tentar novamente
+                </button>
+                <button
+                  onClick={onDelete}
+                  disabled={loading}
+                  className={styles.deleteButton}
+                >
+                  Deletar
+                </button>
+              </>
+            )}
+            {task.status === "done" && (
+              <button
+                onClick={onDelete}
+                disabled={loading}
+                className={styles.deleteButton}
+              >
+                Deletar
+              </button>
+            )}
+            {/* em_progress não mostra botões */}
+          </>
+        ) : (
+          <>
+            {/* Semana aberta */}
+            {task.status !== "done" && (
+              <button
+                onClick={handleNextStatus}
+                disabled={loading}
+                className={styles.primaryButton}
+              >
+                {statusButtonText}
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                disabled={loading}
+                className={styles.editButton}
+              >
+                Editar
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                disabled={loading}
+                className={styles.deleteButton}
+              >
+                Deletar
+              </button>
+            )}
+          </>
         )}
-
-        {/* Botão atualizar status apenas se não for histórico */}
-        {!isWeekClosed && task.status !== "done" && (
-          <button
-            onClick={handleNextStatus}
-            disabled={loading || isWeekClosed}
-            className={styles.primaryButton}
-          >
-            {statusButtonText}
-          </button>
-        )}
-
-        <button
-          onClick={onEdit}
-          disabled={loading || isWeekClosed}
-          className={styles.editButton}
-        >
-          Editar
-        </button>
-
-        <button
-          onClick={onDelete}
-          disabled={loading || isWeekClosed}
-          className={styles.deleteButton}
-        >
-          Deletar
-        </button>
       </div>
     </div>
   );

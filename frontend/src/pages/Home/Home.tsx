@@ -16,6 +16,12 @@ export function Home() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
+  /* barra de progresso */
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter((t) => t.status === "done").length;
+  const progressPercentage =
+    totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
@@ -51,6 +57,29 @@ export function Home() {
       <h1 className={styles.title}>Checklist Semanal</h1>
 
       <CreateTaskForm onCreate={handleCreate} />
+
+      <div className={styles.progressWrapper}>
+        <div className={styles.progressHeader}>
+          <span className={styles.progressTitle}>Progresso da semana</span>
+
+          <span className={styles.progressPercentage}>
+            {progressPercentage}%
+          </span>
+        </div>
+
+        <div className={styles.progressBar}>
+          <div
+            className={`${styles.progressFill} ${
+              progressPercentage === 100 ? styles.progressComplete : ""
+            }`}
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+
+        <div className={styles.progressInfo}>
+          {doneTasks} de {totalTasks} tarefas concluídas
+        </div>
+      </div>
 
       {tasks.map((task) => (
         <TaskCard

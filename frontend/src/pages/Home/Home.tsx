@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import axios from "axios";
 import styles from "./home.module.css";
 import type { Task } from "../../types/task";
 
@@ -24,8 +25,6 @@ export function Home() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [filter, setFilter] = useState<FilterType>("all");
-
-  // Modal de fechar semana
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
 
   const filteredTasks = useMemo(() => {
@@ -38,12 +37,19 @@ export function Home() {
   async function handleCloseWeek() {
     if (!week) return;
 
+    console.log("Semana enviada:", week.id);
+
     try {
-      await api.post(`/tasks/close-week`);
-      window.location.reload(); // recarrega para buscar nova semana
-    } catch (error) {
-      console.error("Erro ao encerrar semana", error);
-      alert("Erro ao encerrar semana. Tente novamente.");
+      const response = await api.post(`/weeks/${week.id}/close`);
+      console.log("Resposta backend:", response.data);
+
+      window.location.reload();
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Erro backend:", error.response?.data);
+      } else {
+        console.error("Erro inesperado:", error);
+      }
     }
   }
 
@@ -81,7 +87,7 @@ export function Home() {
       {/* Lista de Tasks */}
       <TaskList
         tasks={filteredTasks}
-        isWeekClosed={week?.closed} // bloqueio visual se semana fechada
+        isWeekClosed={week?.closed}
         onUpdate={updateTask}
         onEdit={setEditingTask}
         onDelete={setTaskToDelete}
@@ -113,13 +119,13 @@ export function Home() {
         />
       )}
 
-      {/* Modal de Encerrar Semana */}
+      {/* Modal Encerrar Semana */}
       {isCloseModalOpen && (
         <ConfirmCloseWeekModal
           isOpen
           onClose={() => setIsCloseModalOpen(false)}
-          onConfirm={() => {
-            handleCloseWeek();
+          onConfirm={async () => {
+            await handleCloseWeek();
             setIsCloseModalOpen(false);
           }}
         />

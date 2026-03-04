@@ -17,43 +17,7 @@ function getWeekDates(baseDate = new Date()) {
 }
 
 // =============================
-// 🧠 GARANTIR SEMANA ATIVA
-// =============================
-async function ensureActiveWeek() {
-  const result = await pool.query(`
-    SELECT *
-    FROM weeks
-    WHERE closed = false
-    ORDER BY start_date DESC
-    LIMIT 1
-  `);
-
-  if (result.rows.length === 0) {
-    const { start, end } = getWeekDates();
-    const newWeek = await pool.query(
-      `INSERT INTO weeks (start_date, end_date, closed) VALUES ($1,$2,false) RETURNING *`,
-      [start, end],
-    );
-    return newWeek.rows[0];
-  }
-
-  const currentWeek = result.rows[0];
-  const now = new Date();
-  const endDate = new Date(currentWeek.end_date);
-
-  if (now > endDate) {
-    const closeResult = await closeWeek(currentWeek.id);
-    const newWeek = await pool.query(`SELECT * FROM weeks WHERE id = $1`, [
-      closeResult.newWeekId,
-    ]);
-    return newWeek.rows[0];
-  }
-
-  return currentWeek;
-}
-
-// =============================
-// 🔒 FECHAR SEMANA
+// 🔒 FECHAR SEMANA (CORRIGIDO)
 // =============================
 async function closeWeek(weekId) {
   const client = await pool.connect();
@@ -71,35 +35,97 @@ async function closeWeek(weekId) {
 
     const currentWeek = weekResult.rows[0];
 
+    // 1️⃣ FECHAR PRIMEIRO
+    await client.query(`UPDATE weeks SET closed=true WHERE id=$1`, [weekId]);
+
+    // 2️⃣ Criar base da próxima semana
     const nextWeekBase = new Date(currentWeek.end_date);
     nextWeekBase.setDate(nextWeekBase.getDate() + 1);
 
     const { start, end } = getWeekDates(nextWeekBase);
 
+    // 3️⃣ Criar nova semana
     const newWeekResult = await client.query(
-      `INSERT INTO weeks (start_date,end_date,closed) VALUES ($1,$2,false) RETURNING *`,
+      `INSERT INTO weeks (start_date,end_date,closed)
+       VALUES ($1,$2,false)
+       RETURNING *`,
       [start, end],
     );
 
     const newWeekId = newWeekResult.rows[0].id;
 
-    // 🔹 Só atualizar tasks não deletadas
-    await client.query(
-      `UPDATE tasks SET week_id=$1 WHERE week_id=$2 AND status != 'done' AND deleted_at IS NULL`,
+    // 4️⃣ Mover tasks in_progress
+    const moveResult = await client.query(
+      `UPDATE tasks
+       SET week_id=$1,
+           status='pending'
+       WHERE week_id=$2
+       AND status='in_progress'
+       AND deleted_at IS NULL
+       RETURNING id`,
       [newWeekId, weekId],
     );
 
-    await client.query(`UPDATE weeks SET closed=true WHERE id=$1`, [weekId]);
+    const movedCount = moveResult.rowCount;
 
     await client.query("COMMIT");
 
-    return { message: "Semana fechada com sucesso", newWeekId };
+    return {
+      message: "Semana fechada com sucesso",
+      newWeekId,
+      movedCount,
+    };
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
   } finally {
     client.release();
   }
+}
+
+// =============================
+// 🧠 GARANTIR SEMANA ATIVA
+// =============================
+async function ensureActiveWeek() {
+  const result = await pool.query(`
+    SELECT *
+    FROM weeks
+    WHERE closed = false
+    ORDER BY start_date DESC
+    LIMIT 1
+  `);
+
+  if (result.rows.length === 0) {
+    const { start, end } = getWeekDates();
+    const newWeek = await pool.query(
+      `INSERT INTO weeks (start_date, end_date, closed)
+       VALUES ($1,$2,false)
+       RETURNING *`,
+      [start, end],
+    );
+    return newWeek.rows[0];
+  }
+
+  const currentWeek = result.rows[0];
+  const now = new Date();
+  const endDate = new Date(currentWeek.end_date);
+
+  // Se passou da data final, fecha automaticamente
+  if (now > endDate) {
+    const closeResult = await closeWeek(currentWeek.id);
+
+    if (closeResult.alreadyClosed) {
+      return currentWeek;
+    }
+
+    const newWeek = await pool.query(`SELECT * FROM weeks WHERE id = $1`, [
+      closeResult.newWeekId,
+    ]);
+
+    return newWeek.rows[0];
+  }
+
+  return currentWeek;
 }
 
 // =============================
@@ -112,7 +138,8 @@ async function getCurrentWeekWithTasks() {
     `SELECT t.*, w.closed as week_closed, w.start_date, w.end_date
      FROM tasks t
      JOIN weeks w ON w.id = t.week_id
-     WHERE t.week_id=$1 AND t.deleted_at IS NULL
+     WHERE t.week_id=$1
+     AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
     [week.id],
   );
@@ -145,7 +172,8 @@ async function getWeekTasks(weekId) {
     `SELECT t.*, w.closed as week_closed, w.start_date, w.end_date
      FROM tasks t
      JOIN weeks w ON w.id = t.week_id
-     WHERE t.week_id=$1 AND t.deleted_at IS NULL
+     WHERE t.week_id=$1
+     AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
     [weekId],
   );

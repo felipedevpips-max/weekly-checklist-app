@@ -8,9 +8,6 @@ import styles from "./history.module.css";
 import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
 import { MoveHistoryModal } from "../../components/MoveHistoryModal/MoveHistoryModal";
 
-// Modal de mover tasks (histórico)
-
-
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
@@ -25,6 +22,14 @@ export function History() {
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
+
+
+
+  
+
+  // =============================
+  // 📥 Buscar tasks da semana
+  // =============================
   const fetchTasks = useCallback(async (weekId: number) => {
     try {
       const res = await api.get(`/weeks/${weekId}/tasks`);
@@ -34,11 +39,15 @@ export function History() {
     }
   }, []);
 
+  // =============================
+  // 📥 Buscar semanas fechadas
+  // =============================
   const fetchWeeks = useCallback(async () => {
     try {
       const res = await api.get("/weeks");
       const closedWeeks = res.data.filter((w: Week) => w.closed);
       setWeeks(closedWeeks);
+
       if (closedWeeks.length > 0) {
         setSelectedWeek(closedWeeks[0]);
         fetchTasks(closedWeeks[0].id);
@@ -54,10 +63,16 @@ export function History() {
     fetchWeeks();
   }, [fetchWeeks]);
 
+  // =============================
+  // 🔁 Mover task manualmente (apenas pending)
+  // =============================
   const handleRetry = async (task: Task) => {
     try {
       await api.post(`/weeks/open/tasks`, { taskId: task.id });
+
+      // Remove visualmente da lista do histórico
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
+
       setModalMoveTasks([task]);
       setModalMoveVisible(true);
     } catch (error) {
@@ -65,6 +80,9 @@ export function History() {
     }
   };
 
+  // =============================
+  // 🗑 Deletar task
+  // =============================
   const handleDeleteClick = (task: Task) => {
     setTaskToDelete(task);
     setModalDeleteVisible(true);
@@ -88,6 +106,12 @@ export function History() {
     setTaskToDelete(null);
     setModalDeleteVisible(false);
   };
+
+  // =============================
+  // 🛡 FILTRO DEFENSIVO
+  // Nunca renderiza in_progress no histórico
+  // =============================
+  const visibleTasks = tasks.filter((task) => task.status !== "in_progress");
 
   if (loading) return <p>Carregando histórico...</p>;
   if (weeks.length === 0) return <p>Nenhuma semana fechada encontrada.</p>;
@@ -117,9 +141,11 @@ export function History() {
       </div>
 
       <div className={styles.tasksSection}>
-        {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
+        {visibleTasks.length === 0 && (
+          <p>Nenhuma task encontrada nesta semana.</p>
+        )}
 
-        {tasks.map((task) => (
+        {visibleTasks.map((task) => (
           <TaskCard
             key={task.id}
             task={task}

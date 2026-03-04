@@ -62,7 +62,13 @@ export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
     <div className={`${styles.card} ${styles[task.priority]}`}>
       <div className={styles.header}>
         <div>
-          <h3 className={styles.title}>{task.title}</h3>
+          <h3
+            className={`${styles.title} ${
+              task.status === "done" ? styles.doneTitle : ""
+            }`}
+          >
+            {task.title}
+          </h3>
 
           {task.description && (
             <p className={styles.description}>{task.description}</p>

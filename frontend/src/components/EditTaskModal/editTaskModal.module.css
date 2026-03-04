@@ -1,183 +1,152 @@
 .overlay {
-
   position: fixed;
-
   inset: 0;
 
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   z-index: 999;
-
   animation: fadeIn 0.2s ease;
-
 }
 
 .modal {
-
-  background: #131526;
-
-  padding: 25px;
-
-  border-radius: 12px;
+  background: var(--background-card);
+  padding: 28px;
+  border-radius: 16px;
 
   width: 100%;
+  max-width: 520px;
 
-  max-width: 500px;
-
-  box-shadow:
-    0 0 10px #00ffff33,
-    0 0 30px #00ffff22;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--box-shadow-card);
 
   animation: slideUp 0.25s ease;
-
 }
 
 .title {
-
-  font-size: 1.6rem;
-
-  color: #00ffff;
-
+  font-size: 1.5rem;
+  font-weight: 600;
   margin-bottom: 20px;
-
   text-align: center;
 
+  background: var(--primary-color);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .input,
 .textarea,
 .select {
-
   width: 100%;
+  padding: 12px;
 
-  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
 
-  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--text);
 
-  border: none;
-
-  background: #1f2038;
-
-  color: white;
-
-  margin-bottom: 12px;
-
+  margin-bottom: 14px;
+  transition: all 0.2s ease;
 }
 
 .input:focus,
 .textarea:focus,
 .select:focus {
-
   outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
 
-  box-shadow: 0 0 5px #00ffff;
-
+.textarea {
+  resize: vertical;
+  min-height: 90px;
 }
 
 .checkbox {
-
   display: flex;
-
+  align-items: center;
   gap: 8px;
+  margin-bottom: 18px;
 
-  margin-bottom: 15px;
-
-  color: #00ffff;
-
+  color: var(--text-color);
+  font-size: 0.9rem;
 }
 
 .actions {
-
   display: flex;
-
-  gap: 10px;
-
+  gap: 12px;
 }
 
 .saveButton {
-
   flex: 1;
 
-  background: linear-gradient(90deg, #00ffff, #00bfff);
-
+  background: var(--primary-color);
   border: none;
+  padding: 12px;
 
-  padding: 10px;
-
-  border-radius: 6px;
-
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 600;
 
   cursor: pointer;
+  color: white;
 
-  color: #111;
-
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .saveButton:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
 
-  transform: scale(1.03);
-
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .cancelButton {
-
   flex: 1;
 
-  background: #900000;
+  background: transparent;
+  border: 1px solid var(--card-border);
 
-  border: none;
+  padding: 12px;
+  border-radius: 10px;
 
-  padding: 10px;
-
-  border-radius: 6px;
-
-  font-weight: bold;
-
+  font-weight: 600;
   cursor: pointer;
 
-  color: white;
-
+  color: var(--text);
+  transition: all 0.2s ease;
 }
 
 .cancelButton:hover {
+  background: var(--input-bg);
+}
 
-  background: red;
 
+.modal {
+  backdrop-filter: blur(12px);
 }
 
 /* animações */
 
 @keyframes fadeIn {
-
   from { opacity: 0; }
-
   to { opacity: 1; }
-
 }
 
 @keyframes slideUp {
-
   from {
-
     transform: translateY(40px);
-
     opacity: 0;
-
   }
-
   to {
-
     transform: translateY(0);
-
     opacity: 1;
-
   }
-
 }

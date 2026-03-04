@@ -13,30 +13,53 @@
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
+  
+  
 }
 
 body.dark {
   --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
-  --background: #0f111a;
   --background-card: linear-gradient(180deg, #0b0f1a, #101a3a);
-  --text: #ffffff;
-  --card-border: #334155;
-  --text-color: #9d9ea0;
-  --primary-color: linear-gradient(90deg, #0d54ee, #06b6d4);
   --hover-submit: linear-gradient(90deg, #5c0dee, #064ed4);
+  --delete-submit: linear-gradient(90deg, #4e1b1b, #b91c1c);
+  --edit-submit: linear-gradient(90deg, #126281, #09998d);
+  --background: radial-gradient(circle at 20% 20%, #1e293b, #0f172a);
+  --input-bg: #1e293b;
+
+  --text: #f8fafc;
+  --text-color: #94a3b8;
+
+  --card-border: rgba(255, 255, 255, 0.08);
+
+  --primary-color: linear-gradient(90deg, #3b82f6, #06b6d4);
   --accent-color: #034ba3;
+
+  --box-shadow-card:
+    0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+  color-scheme: dark;
 }
 
 body.light {
   --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);
-  --background: #dddddd;
+  --background: #f4f6f9;
   --background-card: #ffffff;
-  --text: #000000;
-  --card-border: #b5b6b8cb;
-  --text-color: #5f6570;
-  --primary-color: linear-gradient(90deg, #0d54ee, #06b6d4);
   --hover-submit: linear-gradient(90deg, #5c0dee, #069ad4);
-  --accent-color: #034ba3;
+  --delete-submit: linear-gradient(90deg, #4e1b1b, #b91c1c);
+  --edit-submit: linear-gradient(90deg, #126281, #09998d);
+  --input-bg: #ececec;
+
+  --text: #111827;
+  --text-color: #6b7280;
+
+  --card-border: #e5e7eb;
+
+  --primary-color: linear-gradient(90deg, #2563eb, #06b6d4);
+  --accent-color: #7d8996;
+
+  --box-shadow-card: 0 8px 20px rgba(0, 0, 0, 0.05);
+
+  color-scheme: light;
 }
 
 body {

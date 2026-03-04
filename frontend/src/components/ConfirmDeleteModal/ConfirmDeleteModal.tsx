@@ -1,43 +1,26 @@
+import { BaseModal } from "../BaseModal/BaseModal";
 import styles from "./confirmDeleteModal.module.css";
 
-interface ConfirmDeleteModalProps {
+interface Props {
   isOpen: boolean;
-
   onClose: () => void;
-
   onConfirm: () => void;
-
   taskTitle: string;
 }
 
-export default function ConfirmDeleteModal({
-  isOpen,
-  onClose,
-  onConfirm,
-  taskTitle,
-}: ConfirmDeleteModalProps) {
-  if (!isOpen) return null;
-
+export function ConfirmDeleteModal({ isOpen, onClose, onConfirm, taskTitle }: Props) {
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
-        <h2 className={styles.title}>Excluir tarefa</h2>
+    <BaseModal isOpen={isOpen} onClose={onClose}>
+      <h2 className={styles.title}>Excluir tarefa</h2>
+      <p className={styles.message}>
+        Tem certeza que deseja excluir:
+        <span className={styles.taskTitle}>{taskTitle}</span>
+      </p>
 
-        <p className={styles.message}>
-          Tem certeza que deseja excluir:
-          <span className={styles.taskTitle}>{taskTitle}</span>
-        </p>
-
-        <div className={styles.buttons}>
-          <button className={styles.cancel} onClick={onClose}>
-            Cancelar
-          </button>
-
-          <button className={styles.delete} onClick={onConfirm}>
-            Excluir
-          </button>
-        </div>
+      <div className={styles.buttons}>
+        <button className={styles.cancel} onClick={onClose}>Cancelar</button>
+        <button className={styles.delete} onClick={onConfirm}>Excluir</button>
       </div>
-    </div>
+    </BaseModal>
   );
 }

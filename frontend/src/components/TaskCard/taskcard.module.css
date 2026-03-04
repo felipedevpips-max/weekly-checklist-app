@@ -1,101 +1,167 @@
 .card {
-  background-color: #131526;
-  border-radius: 12px;
-  padding: 15px;
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 1.6rem;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  gap: 1.2rem;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--box-shadow-card);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.high {
+  border-left: 4px solid #ef4444;
+}
+
+.medium {
+  border-left: 4px solid #f59e0b;
+}
+
+.low {
+  border-left: 4px solid #10b981;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .title {
   font-size: 1.3rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status {
-  text-transform: capitalize;
-  font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background-color: #1f2038;
-  color: #00ffff;
-}
-
-.high {
-  color: #00ffff;
-  font-weight: bold;
-}
-.medium {
-  color: #00bfff;
-  font-weight: bold;
-}
-.low {
-  color: #0099cc;
-  font-weight: bold;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .description {
-  font-size: 0.95rem;
-  color: #c7c7d9;
-}
-.dueDate {
-  font-size: 0.85rem;
-  color: #8888aa;
-  font-style: italic;
-}
-.notify {
   font-size: 0.9rem;
-  color: #00ffff;
+  color: var(--text-color);
+  margin-top: 4px;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #f59e0b;
+}
+
+.in_progress {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.done {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.priorityBadge {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  border-radius: 6px;
+  background: var(--accent-color);
+  color: white;
+}
+
+.notifyBadge {
+  font-size: 0.9rem;
+}
+
+.divider {
+  height: 1px;
+  background: var(--card-border);
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  gap: 4px;
+}
+
+.notifyText {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.closed {
+  padding: 6px 10px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .actions {
   display: flex;
   gap: 10px;
+  margin-top: 6px;
 }
 
 .actions button {
   flex: 1;
-  padding: 8px 12px;
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 600;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.startButton {
-  background-color: #1f2038;
-  color: #00ffff;
+.primaryButton {
+  background: var(--primary-color);
+  color: white;
 }
 
-.startButton:hover:not(:disabled) {
-  background-color: #00bfff;
-  color: #111;
+.primaryButton:hover:not(:disabled) {
+  opacity: 0.9;
+
+  transform: translateY(-2px);
+
+  background: var(--hover-submit);
 }
 
-.finishButton {
-  background-color: #00bfff;
-  color: #111;
+.editButton {
+  background:var(--edit-submit);
+  color: white;
 }
-
-.finishButton:hover:not(:disabled) {
-  background-color: #00ffff;
+.editButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  background: var(--edit-submit);
 }
 
 .deleteButton {
-  background-color: #900000;
-  color: #fff;
+  background: var(--delete-submit);
+  color: white;
 }
 
 .deleteButton:hover:not(:disabled) {
-  background-color: #ff0000;
+  opacity: 0.9;
+  transform: translateY(-2px);
+  background: var(--delete-submit);
 }
 
 .actions button:disabled {
@@ -103,75 +169,33 @@
   cursor: not-allowed;
 }
 
-/* Slider */
-.sliderWrapper {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-/* datas gerais */
-
-.dates {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.8rem;
-  color: #8a8ab5;
-  margin-top: 4px;
+.doneTitle {
+  text-decoration: line-through;
+  opacity: 0.7;
 }
 
-.createdAt {
-  color: #6a6a9a;
+.doneCard {
+  background-color: #f0fdf4;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  transition: all 0.3s ease;
 }
 
-.completedAt {
-  color: #00ffcc;
-  font-weight: bold;
+/* Animação Pulse */
+@keyframes donePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  }
 }
 
-.overdue {
-  color: #ff4d4f;
-  font-weight: bold;
-}
-
-/* badge done */
-
-.done {
-  background-color: #00ffcc;
-  color: #111;
-}
-
-/* animação hover mais forte */
-
-.card:hover {
-  transform: translateY(-3px);
-  transition: 0.2s;
-  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.15);
-}
-
-/* separador visual */
-
-.divider {
-  height: 1px;
-  background: #1f2038;
-  margin: 6px 0;
-}
-notifyBadge {
-  background: #fff3cd;
-
-  color: #856404;
-
-  padding: 4px 8px;
-
-  border-radius: 6px;
-
-  font-size: 12px;
-
-  font-weight: bold;
-}
-
-.editButton {
-  background: #3498db;
-
-  color: white;
+.pulse {
+  animation: donePulse 0.5s ease;
 }

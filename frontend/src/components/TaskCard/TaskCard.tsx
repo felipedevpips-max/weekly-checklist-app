@@ -1,29 +1,44 @@
+import { useState, useEffect } from "react";
 import type { Task } from "../../types/task";
-import { useState } from "react";
 import { api } from "../../services/api";
 import styles from "./TaskCard.module.css";
-
-import { EditTaskModal } from "../EditTaskModal/EditTaskModal";
-import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 
 type Props = {
   task: Task;
   onUpdate?: (task: Task) => void;
-  onDelete?: (id: number) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
 
-export function TaskCard({ task, onUpdate, onDelete }: Props) {
+export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
   const [loading, setLoading] = useState(false);
-
-  const [editing, setEditing] = useState<Task | null>(null);
-
-  const [openConfirm, setOpenConfirm] = useState(false);
-
   const isClosed = task.week_closed;
+  const [animateDone, setAnimateDone] = useState(false);
 
-  // =====================
-  // ALTERAR STATUS
-  // =====================
+  useEffect(() => {
+    if (task.status === "done") {
+      setAnimateDone(true);
+
+      const timer = setTimeout(() => {
+        setAnimateDone(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [task.status]);
+
+  // ✅ Traduções tipadas corretamente
+  const statusLabels: Record<Task["status"], string> = {
+    pending: "Pendente",
+    in_progress: "Em andamento",
+    done: "Concluída",
+  };
+
+  const priorityLabels: Record<Task["priority"], string> = {
+    low: "Baixa",
+    medium: "Média",
+    high: "Alta",
+  };
 
   const handleNextStatus = async () => {
     if (isClosed) return;
@@ -43,100 +58,67 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
 
       onUpdate?.(res.data);
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao atualizar status:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  // =====================
-  // DELETAR
-  // =====================
-
-  const handleDelete = async (id: number) => {
-    if (isClosed) return;
-
-    setLoading(true);
-
-    try {
-      await api.delete(`/tasks/${id}`);
-
-      onDelete?.(id);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // =====================
-  // FORMAT DATE
-  // =====================
 
   function formatDate(date?: string) {
     if (!date) return "-";
-
     return new Date(date).toLocaleDateString("pt-BR");
   }
 
   const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
 
-  const statusButtonClass =
-    task.status === "pending" ? styles.startButton : styles.finishButton;
-
   return (
-    <div className={styles.card}>
-      {/* HEADER */}
-
+    <div
+      className={`${styles.card} ${styles[task.priority]} ${
+        task.status === "done" ? styles.doneCard : ""
+      } ${animateDone ? styles.pulse : ""}`}
+    >
       <div className={styles.header}>
-        <h3 className={styles.title}>{task.title}</h3>
+        <div>
+          <h3
+            className={`${styles.title} ${
+              task.status === "done" ? styles.doneTitle : ""
+            }`}
+          >
+            {task.title}
+          </h3>
 
-        {task.notify && <span className={styles.notifyBadge}>🔔</span>}
+          {task.description && (
+            <p className={styles.description}>{task.description}</p>
+          )}
+        </div>
+
+        <div className={styles.badges}>
+          {task.notify && <span className={styles.notifyBadge}>🔔</span>}
+
+          {/* ✅ Status traduzido */}
+          <span className={`${styles.status} ${styles[task.status]}`}>
+            {statusLabels[task.status]}
+          </span>
+
+          {/* ✅ Prioridade traduzida */}
+          <span className={styles.priorityBadge}>
+            {priorityLabels[task.priority]}
+          </span>
+        </div>
       </div>
 
-      {/* DESCRIPTION */}
-
-      {task.description && (
-        <p className={styles.description}>{task.description}</p>
-      )}
-
-      {/* META */}
-
-      <div className={styles.meta}>
-        <span className={styles.status}>{task.status}</span>
-
-        <span
-          className={
-            task.priority === "high"
-              ? styles.high
-              : task.priority === "medium"
-                ? styles.medium
-                : styles.low
-          }
-        >
-          {task.priority}
-        </span>
-      </div>
-
-      {/* DATES */}
+      <div className={styles.divider} />
 
       <div className={styles.dates}>
         <span>📅 Criado: {formatDate(task.created_at)}</span>
-
         <span>⏰ Encerra: {formatDate(task.due_date)}</span>
       </div>
-
-      {/* NOTIFY TEXT */}
 
       {task.notify && (
         <div className={styles.notifyText}>Notificação ativa</div>
       )}
 
-      {/* CLOSED */}
-
       {isClosed && <div className={styles.closed}>🔒 Semana encerrada</div>}
-
-      {/* ACTIONS */}
 
       {!isClosed && (
         <div className={styles.actions}>
@@ -144,14 +126,14 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
             <button
               onClick={handleNextStatus}
               disabled={loading}
-              className={statusButtonClass}
+              className={styles.primaryButton}
             >
               {statusButtonText}
             </button>
           )}
 
           <button
-            onClick={() => setEditing(task)}
+            onClick={onEdit}
             disabled={loading}
             className={styles.editButton}
           >
@@ -159,7 +141,7 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
           </button>
 
           <button
-            onClick={() => setOpenConfirm(true)}
+            onClick={onDelete}
             disabled={loading}
             className={styles.deleteButton}
           >
@@ -167,33 +149,6 @@ export function TaskCard({ task, onUpdate, onDelete }: Props) {
           </button>
         </div>
       )}
-
-      {/* EDIT MODAL */}
-
-      {editing && (
-        <EditTaskModal
-          task={editing}
-          onClose={() => setEditing(null)}
-          onSave={(updatedTask) => {
-            onUpdate?.(updatedTask);
-
-            setEditing(null);
-          }}
-        />
-      )}
-
-      {/* DELETE MODAL */}
-
-      <ConfirmDeleteModal
-        isOpen={openConfirm}
-        taskTitle={task.title}
-        onClose={() => setOpenConfirm(false)}
-        onConfirm={() => {
-          handleDelete(task.id);
-
-          setOpenConfirm(false);
-        }}
-      />
     </div>
   );
 }

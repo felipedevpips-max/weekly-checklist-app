@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { Week } from "../../types/week";
 import type { Task } from "../../types/task";
 import { api } from "../../services/api";
@@ -6,30 +6,22 @@ import { Container } from "../../components/Container/Container";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
 import styles from "./history.module.css";
 
-// ----------------------------
-// Modal de notificações
-// ----------------------------
-function NotificationModal({
-  tasks,
-  onClose,
-}: {
-  tasks: Task[];
-  onClose: () => void;
-}) {
-  if (!tasks.length) return null;
+// Modal simples
+function Modal({ visible, tasks, onClose }: { visible: boolean; tasks: Task[]; onClose: () => void }) {
+  if (!visible) return null;
 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>Tarefas movidas para a semana aberta</h3>
+        <h2>Tasks movidas para a semana aberta</h2>
         <ul>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              {task.title} {task.notify && "(Notificação ativa)"}
+          {tasks.map((t) => (
+            <li key={t.id}>
+              <strong>{t.title}</strong> - {t.status === "in_progress" ? "Em andamento" : "Pendente"}
             </li>
           ))}
         </ul>
-        <button onClick={onClose} className={styles.modalButton}>
+        <button onClick={onClose} className={styles.okButton}>
           OK
         </button>
       </div>
@@ -37,76 +29,79 @@ function NotificationModal({
   );
 }
 
-// ----------------------------
-// Componente History
-// ----------------------------
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [movedTasks, setMovedTasks] = useState<Task[]>([]);
 
-  const [modalTasks, setModalTasks] = useState<Task[]>([]); // tasks a mostrar na modal
-
-  // ----------------------------
-  // FETCH TASKS
-  // ----------------------------
-  const fetchTasks = useCallback(async (weekId: number) => {
-    try {
-      const res = await api.get(`/weeks/${weekId}/tasks`);
-      setTasks(res.data);
-    } catch (error) {
-      console.error("Erro ao buscar tasks da semana:", error);
-    }
-  }, []);
-
-  // ----------------------------
-  // FETCH SEMANAS
-  // ----------------------------
-  const fetchWeeks = useCallback(async () => {
-    try {
-      const res = await api.get("/weeks");
-      const closedWeeks = res.data.filter((w: Week) => w.closed);
-      setWeeks(closedWeeks);
-
-      if (closedWeeks.length > 0) {
-        setSelectedWeek(closedWeeks[0]);
-        await fetchTasks(closedWeeks[0].id);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar semanas:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTasks]); // ✅ incluir fetchTasks como dependência
-
+  // Busca semanas e tasks
   useEffect(() => {
-    fetchWeeks();
-  }, [fetchWeeks]);
+    async function fetchData() {
+      try {
+        const resWeeks = await api.get("/weeks");
+        const closedWeeks = resWeeks.data.filter((w: Week) => w.closed);
+        setWeeks(closedWeeks);
 
-  // ----------------------------
-  // MOVER TASK PARA SEMANA ABERTA
-  // ----------------------------
-  const moveTaskToOpenWeek = async (task: Task) => {
-    try {
-      await api.post(`/weeks/open/tasks`, { taskId: task.id });
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
-      setModalTasks((prev) => [...prev, task]);
-
-      if (task.notify) {
-        await api.post("/notifications/send", {
-          taskId: task.id,
-          message: `A task "${task.title}" foi movida para a semana aberta!`,
-        });
+        if (closedWeeks.length > 0) {
+          const week = closedWeeks[0];
+          setSelectedWeek(week);
+          const resTasks = await api.get(`/weeks/${week.id}/tasks`);
+          setTasks(resTasks.data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar semanas e tasks:", error);
+      } finally {
+        setLoading(false);
       }
+    }
+
+    fetchData();
+  }, []); // ✅ Sem dependências externas, nenhum warning
+
+  // Mover automaticamente tasks em andamento para semana aberta
+  useEffect(() => {
+    const tasksToMove = tasks.filter((t) => t.status === "in_progress");
+    if (tasksToMove.length === 0) return;
+
+    async function moveTasks() {
+      const moved: Task[] = [];
+
+      for (const t of tasksToMove) {
+        try {
+          await api.post("/weeks/open/tasks", { taskId: t.id });
+          moved.push(t);
+
+          // Notificação backend
+          await api.post("/notifications/send", { taskId: t.id });
+        } catch (error) {
+          console.error("Erro ao mover task em andamento:", error);
+        }
+      }
+
+      if (moved.length > 0) {
+        setMovedTasks(moved);
+        setModalVisible(true);
+        setTasks((prev) => prev.filter((task) => !moved.find((m) => m.id === task.id)));
+      }
+    }
+
+    moveTasks();
+  }, [tasks]);
+
+  const handleRetry = async (task: Task) => {
+    try {
+      await api.post("/weeks/open/tasks", { taskId: task.id });
+      await api.post("/notifications/send", { taskId: task.id });
+      alert(`Task "${task.title}" movida para a semana aberta.`);
+      setTasks((prev) => prev.filter((t) => t.id !== task.id));
     } catch (error) {
-      console.error("Erro ao mover task:", error);
+      console.error("Erro ao tentar novamente:", error);
     }
   };
 
-  // ----------------------------
-  // DELETE
-  // ----------------------------
   const handleDelete = async (task: Task) => {
     try {
       await api.delete(`/tasks/${task.id}`);
@@ -116,29 +111,8 @@ export function History() {
     }
   };
 
-  // ----------------------------
-  // RETRY MANUAL (quando pendente)
-  // ----------------------------
-  const handleRetry = async (task: Task) => {
-    await moveTaskToOpenWeek(task);
-  };
-
-  // ----------------------------
-  // MOVENDO AUTOMATICAMENTE TASKS IN_PROGRESS
-  // ----------------------------
-  useEffect(() => {
-    if (!tasks.length) return;
-
-    tasks
-      .filter((t) => t.status === "in_progress")
-      .forEach(async (t) => {
-        await moveTaskToOpenWeek(t);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tasks]); // não precisa dependência de fetchTasks aqui
-
   if (loading) return <p>Carregando histórico...</p>;
-  if (!weeks.length) return <p>Nenhuma semana fechada encontrada.</p>;
+  if (weeks.length === 0) return <p>Nenhuma semana fechada encontrada.</p>;
 
   return (
     <Container>
@@ -150,18 +124,18 @@ export function History() {
           <button
             key={week.id}
             className={selectedWeek?.id === week.id ? styles.activeWeek : styles.weekButton}
-            onClick={() => {
+            onClick={async () => {
               setSelectedWeek(week);
-              fetchTasks(week.id);
+              const resTasks = await api.get(`/weeks/${week.id}/tasks`);
+              setTasks(resTasks.data);
             }}
           >
-            {new Date(week.start_date).toLocaleDateString()} -{" "}
-            {new Date(week.end_date).toLocaleDateString()}
+            {new Date(week.start_date).toLocaleDateString()} - {new Date(week.end_date).toLocaleDateString()}
           </button>
         ))}
       </div>
 
-      {/* Tasks */}
+      {/* Tasks da semana */}
       <div className={styles.tasksSection}>
         {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
 
@@ -177,7 +151,7 @@ export function History() {
       </div>
 
       {/* Modal */}
-      <NotificationModal tasks={modalTasks} onClose={() => setModalTasks([])} />
+      <Modal visible={modalVisible} tasks={movedTasks} onClose={() => setModalVisible(false)} />
     </Container>
   );
 }

@@ -5,9 +5,10 @@ const taskService = require("../services/taskService");
 async function getCurrentWeek(req, res) {
   try {
     const data = await weekService.getCurrentWeekWithTasks();
+    if (!data) return res.status(404).json({ message: "Nenhuma semana ativa encontrada" });
     res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
 
@@ -17,18 +18,18 @@ async function closeWeek(req, res) {
     const { id } = req.params;
     const result = await weekService.closeWeek(Number(id));
     res.json(result);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 }
 
-// Histórico de semanas fechadas
+// Histórico de todas semanas fechadas
 async function getAllWeeks(req, res) {
   try {
     const weeks = await weekService.getClosedWeeks();
     res.json(weeks);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
 
@@ -36,10 +37,10 @@ async function getAllWeeks(req, res) {
 async function getWeekTasks(req, res) {
   try {
     const { id } = req.params;
-    const tasks = await taskService.getTasksByWeek(Number(id));
+    const tasks = await weekService.getWeekTasks(Number(id));
     res.json(tasks);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
 
@@ -49,8 +50,8 @@ async function moveTaskToOpenWeek(req, res) {
     const { taskId } = req.body;
     const task = await taskService.moveTaskToOpenWeek(taskId);
     res.json(task);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 }
 

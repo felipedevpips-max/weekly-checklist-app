@@ -60,12 +60,10 @@ export function TaskCard({
     }
   };
 
-  function formatDate(date?: string) {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
-  }
-
   const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
+
+  const formatDate = (date?: string) =>
+    date ? new Date(date).toLocaleDateString("pt-BR") : "-";
 
   return (
     <div
@@ -76,16 +74,10 @@ export function TaskCard({
       {/* Header */}
       <div className={styles.header}>
         <div>
-          <h3
-            className={`${styles.title} ${
-              task.status === "done" ? styles.doneTitle : ""
-            }`}
-          >
+          <h3 className={`${styles.title} ${task.status === "done" ? styles.doneTitle : ""}`}>
             {task.title}
           </h3>
-          {task.description && (
-            <p className={styles.description}>{task.description}</p>
-          )}
+          {task.description && <p className={styles.description}>{task.description}</p>}
         </div>
 
         <div className={styles.badges}>
@@ -93,9 +85,7 @@ export function TaskCard({
           <span className={`${styles.status} ${styles[task.status]}`}>
             {statusLabels[task.status]}
           </span>
-          <span className={styles.priorityBadge}>
-            {priorityLabels[task.priority]}
-          </span>
+          <span className={styles.priorityBadge}>{priorityLabels[task.priority]}</span>
         </div>
       </div>
 
@@ -107,15 +97,13 @@ export function TaskCard({
         <span>⏰ Encerra: {formatDate(task.due_date)}</span>
       </div>
 
-      {task.notify && (
-        <div className={styles.notifyText}>Notificação ativa</div>
-      )}
+      {task.notify && <div className={styles.notifyText}>Notificação ativa</div>}
 
-      {/* Semana fechada */}
+      {/* Semana encerrada */}
       {isWeekClosed && (
         <div className={styles.closedBadge}>
           <span className={styles.lockIcon}>🔒</span>
-          Semana encerrada
+          <span>Semana encerrada</span>
         </div>
       )}
 
@@ -126,9 +114,7 @@ export function TaskCard({
             <button
               onClick={handleNextStatus}
               disabled={loading || isWeekClosed}
-              className={`${styles.primaryButton} ${
-                isWeekClosed ? styles.disabled : ""
-              }`}
+              className={styles.primaryButton}
             >
               {statusButtonText}
             </button>
@@ -137,7 +123,7 @@ export function TaskCard({
           <button
             onClick={onEdit}
             disabled={loading || isWeekClosed}
-            className={`${styles.editButton} ${isWeekClosed ? styles.disabled : ""}`}
+            className={styles.editButton}
           >
             Editar
           </button>
@@ -145,7 +131,7 @@ export function TaskCard({
           <button
             onClick={onDelete}
             disabled={loading || isWeekClosed}
-            className={`${styles.deleteButton} ${isWeekClosed ? styles.disabled : ""}`}
+            className={styles.deleteButton}
           >
             Deletar
           </button>

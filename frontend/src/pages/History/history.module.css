@@ -1,10 +1,18 @@
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--text);
+}
+
 /* Container das semanas */
 .weeksWrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 30px;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 /* Botão das semanas */
@@ -47,18 +55,10 @@
 
 /* Seção de tasks */
 .tasksSection {
-  margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-/* Título da seção */
-.tasksSection h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: var(--text-color);
+  margin-top: 20px;
 }
 
 /* Mensagens de loading ou sem tarefas */
@@ -67,62 +67,4 @@
   color: var(--text-muted);
   text-align: center;
   margin-top: 20px;
-}
-
-/* Ações dos cards de tarefa */
-.taskActions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 8px;
-}
-
-.retryButton,
-.deleteButton {
-  padding: 6px 12px;
-  border-radius: 10px;
-  border: none;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.retryButton {
-  background: var(--primary-color);
-  color: white;
-}
-
-.retryButton:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.deleteButton {
-  background: var(--accent-color);
-  color: white;
-}
-
-.deleteButton:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-/* Responsividade */
-@media (max-width: 480px) {
-  .weekButton,
-  .activeWeek {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .taskActions {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .retryButton,
-  .deleteButton {
-    width: 100%;
-  }
 }

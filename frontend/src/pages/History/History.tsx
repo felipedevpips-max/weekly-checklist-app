@@ -1,135 +1,133 @@
-import { useState, useEffect } from "react";
-import type { Task } from "../../types/task";
+import { useState, useEffect, useCallback } from "react";
 import type { Week } from "../../types/week";
+import type { Task } from "../../types/task";
 import { api } from "../../services/api";
 import { Container } from "../../components/Container/Container";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
-import { ConfirmDeleteModal } from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import styles from "./history.module.css";
 
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loadingTasks, setLoadingTasks] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // 🔹 Buscar semanas fechadas
-  useEffect(() => {
-    async function fetchWeeks() {
-      try {
-        const res = await api.get("/weeks"); // rota: getAllWeeks
-        const closedWeeks = res.data.filter((w: Week) => w.closed);
-        setWeeks(closedWeeks);
-      } catch (error) {
-        console.error("Erro ao buscar semanas:", error);
-      }
-    }
-    fetchWeeks();
-  }, []);
-
-  // 🔹 Buscar tarefas de uma semana
-  async function loadTasks(week: Week) {
-    setLoadingTasks(true);
-    setSelectedWeek(week);
-
+  // 🔹 Fetch tasks de uma semana específica
+  const fetchTasks = useCallback(async (weekId: number) => {
     try {
-      const res = await api.get(`/weeks/${week.id}/tasks`);
+      const res = await api.get(`/weeks/${weekId}/tasks`);
       setTasks(res.data);
     } catch (error) {
-      console.error("Erro ao buscar tarefas:", error);
-      setTasks([]);
+      console.error("Erro ao buscar tasks da semana:", error);
+    }
+  }, []);
+
+  // 🔹 Fetch semanas fechadas
+  const fetchWeeks = useCallback(async () => {
+    try {
+      const res = await api.get("/weeks");
+      const closedWeeks = res.data.filter((w: Week) => w.closed);
+      setWeeks(closedWeeks);
+
+      if (closedWeeks.length > 0) {
+        setSelectedWeek(closedWeeks[0]);
+        fetchTasks(closedWeeks[0].id);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar semanas:", error);
     } finally {
-      setLoadingTasks(false);
+      setLoading(false);
     }
-  }
+  }, [fetchTasks]);
 
-  // 🔹 Deletar tarefa
-  async function handleDeleteTask(taskId: number) {
-    if (!window.confirm("Tem certeza que deseja deletar esta tarefa?")) return;
-
+  // 🔹 Retry task pendente
+  const handleRetry = async (task: Task) => {
     try {
-      await api.delete(`/tasks/${taskId}`);
-      setTasks((prev) => prev.filter((t) => t.id !== taskId));
-      setTaskToDelete(null);
+      await api.post(`/weeks/open/tasks`, { taskId: task.id });
+      alert(`Task "${task.title}" movida para a semana aberta.`);
+      setTasks((prev) => prev.filter((t) => t.id !== task.id));
     } catch (error) {
-      console.error("Erro ao deletar tarefa:", error);
-      alert("Erro ao deletar tarefa");
+      console.error("Erro ao tentar novamente:", error);
     }
-  }
+  };
 
-  // 🔹 Tentar novamente → mover para semana atual aberta
-  async function handleRetryTask(taskId: number) {
+  // 🔹 Delete task
+  const handleDelete = async (task: Task) => {
     try {
-      await api.post(`/tasks/${taskId}/retry`); // backend deve mover para semana atual
-      alert("Tarefa movida para a semana atual!");
-      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+      await api.delete(`/tasks/${task.id}`);
+      setTasks((prev) => prev.filter((t) => t.id !== task.id));
     } catch (error) {
-      console.error("Erro ao mover tarefa:", error);
-      alert("Erro ao tentar novamente");
+      console.error("Erro ao deletar task:", error);
     }
-  }
+  };
+
+  // 🔹 Move automaticamente tasks in_progress para semana aberta
+  useEffect(() => {
+    tasks
+      .filter((t) => t.status === "in_progress")
+      .forEach(async (t) => {
+        try {
+          await api.post(`/weeks/open/tasks`, { taskId: t.id });
+          if (t.notify)
+            alert(
+              `Task "${t.title}" em andamento foi movida para a semana aberta!`,
+            );
+          setTasks((prev) => prev.filter((task) => task.id !== t.id));
+        } catch (error) {
+          console.error("Erro ao mover task em andamento:", error);
+        }
+      });
+  }, [tasks]);
+
+  // 🔹 Carrega semanas ao montar
+  useEffect(() => {
+    fetchWeeks();
+  }, [fetchWeeks]);
+
+  if (loading) return <p>Carregando histórico...</p>;
+  if (weeks.length === 0) return <p>Nenhuma semana fechada encontrada.</p>;
 
   return (
     <Container>
-      <h1>Histórico de Semanas</h1>
+      <h1 className={styles.title}>Histórico de Semanas</h1>
 
-      {/* 🔹 Lista de semanas */}
+      {/* Seleção de semanas */}
       <div className={styles.weeksWrapper}>
-        {weeks.map((w) => (
+        {weeks.map((week) => (
           <button
-            key={w.id}
-            onClick={() => loadTasks(w)}
-            className={selectedWeek?.id === w.id ? styles.activeWeek : styles.weekButton}
+            key={week.id}
+            className={
+              selectedWeek?.id === week.id
+                ? styles.activeWeek
+                : styles.weekButton
+            }
+            onClick={() => {
+              setSelectedWeek(week);
+              fetchTasks(week.id);
+            }}
           >
-            {new Date(w.start_date).toLocaleDateString()} -{" "}
-            {new Date(w.end_date).toLocaleDateString()}
+            {new Date(week.start_date).toLocaleDateString()} -{" "}
+            {new Date(week.end_date).toLocaleDateString()}
           </button>
         ))}
       </div>
 
-      {/* 🔹 Tarefas da semana selecionada */}
-      {selectedWeek && (
-        <div className={styles.tasksSection}>
-          <h2>
-            Semana de {new Date(selectedWeek.start_date).toLocaleDateString()}
-          </h2>
+      {/* Tasks da semana */}
+      <div className={styles.tasksSection}>
+        {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
 
-          {loadingTasks ? (
-            <p>Carregando tarefas...</p>
-          ) : tasks.length === 0 ? (
-            <p>Nenhuma tarefa nesta semana.</p>
-          ) : (
-            tasks.map((task) => {
-              // Somente exibe cards de tarefas que devem aparecer no histórico
-              if (task.status === "in_progress") {
-                // 💡 Lógica: tarefas em andamento já foram movidas → não exibe aqui
-                return null;
-              }
-
-              return (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  isWeekClosed
-                  onDelete={() => handleDeleteTask(task.id)}
-                  onEdit={task.status === "pending" ? () => handleRetryTask(task.id) : undefined}
-                />
-              );
-            })
-          )}
-        </div>
-      )}
-
-      {/* 🔹 Modal de confirmação de exclusão */}
-      {taskToDelete && (
-        <ConfirmDeleteModal
-          isOpen
-          taskTitle={taskToDelete.title}
-          onClose={() => setTaskToDelete(null)}
-          onConfirm={() => handleDeleteTask(taskToDelete.id)}
-        />
-      )}
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            isWeekClosed={true} // histórico = semana fechada
+            onDelete={() => handleDelete(task)}
+            onEdit={
+              task.status === "pending" ? () => handleRetry(task) : undefined
+            }
+          />
+        ))}
+      </div>
     </Container>
   );
 }

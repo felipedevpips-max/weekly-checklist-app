@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Task } from "../../types/task";
 import { api } from "../../services/api";
 import styles from "./TaskCard.module.css";
@@ -13,6 +13,19 @@ type Props = {
 export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
   const [loading, setLoading] = useState(false);
   const isClosed = task.week_closed;
+  const [animateDone, setAnimateDone] = useState(false);
+
+  useEffect(() => {
+    if (task.status === "done") {
+      setAnimateDone(true);
+
+      const timer = setTimeout(() => {
+        setAnimateDone(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [task.status]);
 
   // ✅ Traduções tipadas corretamente
   const statusLabels: Record<Task["status"], string> = {
@@ -59,7 +72,11 @@ export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
   const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
 
   return (
-    <div className={`${styles.card} ${styles[task.priority]}`}>
+    <div
+      className={`${styles.card} ${styles[task.priority]} ${
+        task.status === "done" ? styles.doneCard : ""
+      } ${animateDone ? styles.pulse : ""}`}
+    >
       <div className={styles.header}>
         <div>
           <h3

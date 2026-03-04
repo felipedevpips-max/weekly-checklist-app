@@ -1,0 +1,82 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  background: var(--background-card);
+  padding: 28px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--box-shadow-card);
+  animation: slideUp 0.25s ease;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+  background: var(--primary-color);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.taskList {
+  margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.taskTitle {
+  font-weight: 600;
+  color: var(--accent-color);
+  margin-top: 6px;
+}
+
+.okButton {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.okButton:hover {
+  opacity: 0.9;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

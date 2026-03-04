@@ -6,25 +6,10 @@ import { Container } from "../../components/Container/Container";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
 import styles from "./history.module.css";
 import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
+import { MoveHistoryModal } from "../../components/MoveHistoryModal/MoveHistoryModal";
 
 // Modal de mover tasks (histórico)
-function ModalMove({ visible, onClose, tasks }: { visible: boolean; onClose: () => void; tasks: Task[] }) {
-  if (!visible) return null;
 
-  return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <h2>Tarefas movidas para a semana aberta</h2>
-        <ul>
-          {tasks.map((t) => (
-            <li key={t.id}>{t.title}</li>
-          ))}
-        </ul>
-        <button onClick={onClose} className={styles.modalButton}>OK</button>
-      </div>
-    </div>
-  );
-}
 
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
@@ -115,13 +100,18 @@ export function History() {
         {weeks.map((week) => (
           <button
             key={week.id}
-            className={selectedWeek?.id === week.id ? styles.activeWeek : styles.weekButton}
+            className={
+              selectedWeek?.id === week.id
+                ? styles.activeWeek
+                : styles.weekButton
+            }
             onClick={() => {
               setSelectedWeek(week);
               fetchTasks(week.id);
             }}
           >
-            {new Date(week.start_date).toLocaleDateString()} - {new Date(week.end_date).toLocaleDateString()}
+            {new Date(week.start_date).toLocaleDateString()} -{" "}
+            {new Date(week.end_date).toLocaleDateString()}
           </button>
         ))}
       </div>
@@ -134,14 +124,16 @@ export function History() {
             key={task.id}
             task={task}
             isWeekClosed={true}
-            onRetry={task.status === "pending" ? () => handleRetry(task) : undefined}
+            onRetry={
+              task.status === "pending" ? () => handleRetry(task) : undefined
+            }
             onDelete={() => handleDeleteClick(task)}
           />
         ))}
       </div>
 
       {/* Modal mover tasks */}
-      <ModalMove
+      <MoveHistoryModal
         visible={modalMoveVisible}
         tasks={modalMoveTasks}
         onClose={() => setModalMoveVisible(false)}

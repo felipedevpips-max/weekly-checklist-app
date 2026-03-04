@@ -5,29 +5,32 @@ import styles from "./TaskCard.module.css";
 
 type Props = {
   task: Task;
+  isWeekClosed?: boolean;
   onUpdate?: (task: Task) => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onRetry?: () => void;
 };
 
-export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
+export function TaskCard({
+  task,
+  isWeekClosed = false,
+  onUpdate,
+  onEdit,
+  onDelete,
+  onRetry,
+}: Props) {
   const [loading, setLoading] = useState(false);
-  const isClosed = task.week_closed;
   const [animateDone, setAnimateDone] = useState(false);
 
   useEffect(() => {
     if (task.status === "done") {
       setAnimateDone(true);
-
-      const timer = setTimeout(() => {
-        setAnimateDone(false);
-      }, 500);
-
+      const timer = setTimeout(() => setAnimateDone(false), 500);
       return () => clearTimeout(timer);
     }
   }, [task.status]);
 
-  // ✅ Traduções tipadas corretamente
   const statusLabels: Record<Task["status"], string> = {
     pending: "Pendente",
     in_progress: "Em andamento",
@@ -41,21 +44,16 @@ export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
   };
 
   const handleNextStatus = async () => {
-    if (isClosed) return;
+    if (isWeekClosed) return;
 
     let newStatus: Task["status"];
-
     if (task.status === "pending") newStatus = "in_progress";
     else if (task.status === "in_progress") newStatus = "done";
     else return;
 
     setLoading(true);
-
     try {
-      const res = await api.patch(`/tasks/${task.id}`, {
-        status: newStatus,
-      });
-
+      const res = await api.patch(`/tasks/${task.id}`, { status: newStatus });
       onUpdate?.(res.data);
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
@@ -86,7 +84,6 @@ export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
           >
             {task.title}
           </h3>
-
           {task.description && (
             <p className={styles.description}>{task.description}</p>
           )}
@@ -94,13 +91,9 @@ export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
 
         <div className={styles.badges}>
           {task.notify && <span className={styles.notifyBadge}>🔔</span>}
-
-          {/* ✅ Status traduzido */}
           <span className={`${styles.status} ${styles[task.status]}`}>
             {statusLabels[task.status]}
           </span>
-
-          {/* ✅ Prioridade traduzida */}
           <span className={styles.priorityBadge}>
             {priorityLabels[task.priority]}
           </span>
@@ -118,37 +111,79 @@ export function TaskCard({ task, onUpdate, onEdit, onDelete }: Props) {
         <div className={styles.notifyText}>Notificação ativa</div>
       )}
 
-      {isClosed && <div className={styles.closed}>🔒 Semana encerrada</div>}
-
-      {!isClosed && (
-        <div className={styles.actions}>
-          {task.status !== "done" && (
-            <button
-              onClick={handleNextStatus}
-              disabled={loading}
-              className={styles.primaryButton}
-            >
-              {statusButtonText}
-            </button>
-          )}
-
-          <button
-            onClick={onEdit}
-            disabled={loading}
-            className={styles.editButton}
-          >
-            Editar
-          </button>
-
-          <button
-            onClick={onDelete}
-            disabled={loading}
-            className={styles.deleteButton}
-          >
-            Deletar
-          </button>
+      {isWeekClosed && (
+        <div className={styles.closedBadge}>
+          <span className={styles.lockIcon}>🔒</span>
+          Semana encerrada
         </div>
       )}
+
+      <div className={styles.actions}>
+        {/* Lógica histórica */}
+        {isWeekClosed ? (
+          <>
+            {task.status === "pending" && (
+              <>
+                <button
+                  onClick={onRetry}
+                  disabled={loading}
+                  className={styles.primaryButton}
+                >
+                  Tentar novamente
+                </button>
+                <button
+                  onClick={onDelete}
+                  disabled={loading}
+                  className={styles.deleteButton}
+                >
+                  Deletar
+                </button>
+              </>
+            )}
+            {task.status === "done" && (
+              <button
+                onClick={onDelete}
+                disabled={loading}
+                className={styles.deleteButton}
+              >
+                Deletar
+              </button>
+            )}
+            {/* em_progress não mostra botões */}
+          </>
+        ) : (
+          <>
+            {/* Semana aberta */}
+            {task.status !== "done" && (
+              <button
+                onClick={handleNextStatus}
+                disabled={loading}
+                className={styles.primaryButton}
+              >
+                {statusButtonText}
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                disabled={loading}
+                className={styles.editButton}
+              >
+                Editar
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                disabled={loading}
+                className={styles.deleteButton}
+              >
+                Deletar
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -65,7 +65,7 @@ export function History() {
   const handleRetry = async (task: Task) => {
     try {
       await api.post(`/weeks/open/tasks`, { taskId: task.id });
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
+      setTasks(prev => prev.filter(t => t.id !== task.id));
       setModalTasks([task]);
       setModalVisible(true);
     } catch (error) {
@@ -76,7 +76,8 @@ export function History() {
   const handleDelete = async (task: Task) => {
     try {
       await api.delete(`/tasks/${task.id}`);
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
+      // Remove do front imediatamente
+      setTasks(prev => prev.filter(t => t.id !== task.id));
     } catch (error) {
       console.error("Erro ao deletar task:", error);
     }
@@ -90,14 +91,11 @@ export function History() {
       <h1 className={styles.title}>Histórico de Semanas</h1>
 
       <div className={styles.weeksWrapper}>
-        {weeks.map((week) => (
+        {weeks.map(week => (
           <button
             key={week.id}
             className={selectedWeek?.id === week.id ? styles.activeWeek : styles.weekButton}
-            onClick={() => {
-              setSelectedWeek(week);
-              fetchTasks(week.id);
-            }}
+            onClick={() => { setSelectedWeek(week); fetchTasks(week.id); }}
           >
             {new Date(week.start_date).toLocaleDateString()} - {new Date(week.end_date).toLocaleDateString()}
           </button>
@@ -107,7 +105,7 @@ export function History() {
       <div className={styles.tasksSection}>
         {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
 
-        {tasks.map((task) => (
+        {tasks.map(task => (
           <TaskCard
             key={task.id}
             task={task}

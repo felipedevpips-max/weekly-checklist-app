@@ -82,8 +82,9 @@ async function closeWeek(weekId) {
 
     const newWeekId = newWeekResult.rows[0].id;
 
+    // 🔹 Só atualizar tasks não deletadas
     await client.query(
-      `UPDATE tasks SET week_id=$1 WHERE week_id=$2 AND status != 'done'`,
+      `UPDATE tasks SET week_id=$1 WHERE week_id=$2 AND status != 'done' AND deleted_at IS NULL`,
       [newWeekId, weekId]
     );
 
@@ -110,7 +111,7 @@ async function getCurrentWeekWithTasks() {
     `SELECT t.*, w.closed as week_closed, w.start_date, w.end_date
      FROM tasks t
      JOIN weeks w ON w.id = t.week_id
-     WHERE t.week_id=$1
+     WHERE t.week_id=$1 AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
     [week.id]
   );
@@ -139,7 +140,7 @@ async function getWeekTasks(weekId) {
     `SELECT t.*, w.closed as week_closed, w.start_date, w.end_date
      FROM tasks t
      JOIN weeks w ON w.id = t.week_id
-     WHERE t.week_id=$1
+     WHERE t.week_id=$1 AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
     [weekId]
   );

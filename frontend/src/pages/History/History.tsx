@@ -22,6 +22,11 @@ export function History() {
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
+
+
+
+  
+
   // =============================
   // 📥 Buscar tasks da semana
   // =============================

@@ -1,0 +1,28 @@
+.filterWrapper {
+  display: flex;
+  gap: 10px;
+  margin: 30px 0 20px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--background-card);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+.filterButton:hover {
+  border-color: var(--accent-color);
+  color: var(--text);
+}
+
+.active {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+}

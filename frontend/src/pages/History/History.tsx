@@ -5,9 +5,10 @@ import { api } from "../../services/api";
 import { Container } from "../../components/Container/Container";
 import { TaskCard } from "../../components/TaskCard/TaskCard";
 import styles from "./history.module.css";
+import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
 
-// Modal simples de confirmação
-function Modal({ visible, onClose, tasks }: { visible: boolean; onClose: () => void; tasks: Task[] }) {
+// Modal de mover tasks (histórico)
+function ModalMove({ visible, onClose, tasks }: { visible: boolean; onClose: () => void; tasks: Task[] }) {
   if (!visible) return null;
 
   return (
@@ -30,8 +31,14 @@ export function History() {
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTasks, setModalTasks] = useState<Task[]>([]);
+
+  // Modal mover tasks
+  const [modalMoveVisible, setModalMoveVisible] = useState(false);
+  const [modalMoveTasks, setModalMoveTasks] = useState<Task[]>([]);
+
+  // Modal deletar task
+  const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const fetchTasks = useCallback(async (weekId: number) => {
     try {
@@ -65,22 +72,36 @@ export function History() {
   const handleRetry = async (task: Task) => {
     try {
       await api.post(`/weeks/open/tasks`, { taskId: task.id });
-      setTasks(prev => prev.filter(t => t.id !== task.id));
-      setModalTasks([task]);
-      setModalVisible(true);
+      setTasks((prev) => prev.filter((t) => t.id !== task.id));
+      setModalMoveTasks([task]);
+      setModalMoveVisible(true);
     } catch (error) {
       console.error("Erro ao mover task para semana aberta:", error);
     }
   };
 
-  const handleDelete = async (task: Task) => {
+  const handleDeleteClick = (task: Task) => {
+    setTaskToDelete(task);
+    setModalDeleteVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!taskToDelete) return;
+
     try {
-      await api.delete(`/tasks/${task.id}`);
-      // Remove do front imediatamente
-      setTasks(prev => prev.filter(t => t.id !== task.id));
+      await api.delete(`/tasks/${taskToDelete.id}`);
+      setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id));
     } catch (error) {
       console.error("Erro ao deletar task:", error);
+    } finally {
+      setTaskToDelete(null);
+      setModalDeleteVisible(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setTaskToDelete(null);
+    setModalDeleteVisible(false);
   };
 
   if (loading) return <p>Carregando histórico...</p>;
@@ -91,11 +112,14 @@ export function History() {
       <h1 className={styles.title}>Histórico de Semanas</h1>
 
       <div className={styles.weeksWrapper}>
-        {weeks.map(week => (
+        {weeks.map((week) => (
           <button
             key={week.id}
             className={selectedWeek?.id === week.id ? styles.activeWeek : styles.weekButton}
-            onClick={() => { setSelectedWeek(week); fetchTasks(week.id); }}
+            onClick={() => {
+              setSelectedWeek(week);
+              fetchTasks(week.id);
+            }}
           >
             {new Date(week.start_date).toLocaleDateString()} - {new Date(week.end_date).toLocaleDateString()}
           </button>
@@ -105,21 +129,30 @@ export function History() {
       <div className={styles.tasksSection}>
         {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
 
-        {tasks.map(task => (
+        {tasks.map((task) => (
           <TaskCard
             key={task.id}
             task={task}
             isWeekClosed={true}
-            onDelete={() => handleDelete(task)}
             onRetry={task.status === "pending" ? () => handleRetry(task) : undefined}
+            onDelete={() => handleDeleteClick(task)}
           />
         ))}
       </div>
 
-      <Modal
-        visible={modalVisible}
-        tasks={modalTasks}
-        onClose={() => setModalVisible(false)}
+      {/* Modal mover tasks */}
+      <ModalMove
+        visible={modalMoveVisible}
+        tasks={modalMoveTasks}
+        onClose={() => setModalMoveVisible(false)}
+      />
+
+      {/* Modal deletar task */}
+      <DeleteHistoryModal
+        visible={modalDeleteVisible}
+        task={taskToDelete ?? undefined}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
     </Container>
   );

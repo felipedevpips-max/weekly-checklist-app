@@ -1,0 +1,34 @@
+.weeksWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.weekButton {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--background-card);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+.weekButton:hover {
+  border-color: var(--primary-color);
+}
+
+.activeWeek {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.tasksSection {
+  margin-top: 20px;
+}

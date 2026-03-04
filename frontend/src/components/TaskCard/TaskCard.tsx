@@ -5,10 +5,11 @@ import styles from "./TaskCard.module.css";
 
 type Props = {
   task: Task;
-  isWeekClosed?: boolean; // Bloqueio de edição
+  isWeekClosed?: boolean;
   onUpdate?: (task: Task) => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onRetry?: () => void; // retry para pendentes
 };
 
 export function TaskCard({
@@ -17,6 +18,7 @@ export function TaskCard({
   onUpdate,
   onEdit,
   onDelete,
+  onRetry,
 }: Props) {
   const [loading, setLoading] = useState(false);
   const [animateDone, setAnimateDone] = useState(false);
@@ -60,10 +62,12 @@ export function TaskCard({
     }
   };
 
-  const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
+  function formatDate(date?: string) {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString("pt-BR");
+  }
 
-  const formatDate = (date?: string) =>
-    date ? new Date(date).toLocaleDateString("pt-BR") : "-";
+  const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
 
   return (
     <div
@@ -71,13 +75,18 @@ export function TaskCard({
         task.status === "done" ? styles.doneCard : ""
       } ${animateDone ? styles.pulse : ""}`}
     >
-      {/* Header */}
       <div className={styles.header}>
         <div>
-          <h3 className={`${styles.title} ${task.status === "done" ? styles.doneTitle : ""}`}>
+          <h3
+            className={`${styles.title} ${
+              task.status === "done" ? styles.doneTitle : ""
+            }`}
+          >
             {task.title}
           </h3>
-          {task.description && <p className={styles.description}>{task.description}</p>}
+          {task.description && (
+            <p className={styles.description}>{task.description}</p>
+          )}
         </div>
 
         <div className={styles.badges}>
@@ -85,58 +94,69 @@ export function TaskCard({
           <span className={`${styles.status} ${styles[task.status]}`}>
             {statusLabels[task.status]}
           </span>
-          <span className={styles.priorityBadge}>{priorityLabels[task.priority]}</span>
+          <span className={styles.priorityBadge}>
+            {priorityLabels[task.priority]}
+          </span>
         </div>
       </div>
 
       <div className={styles.divider} />
 
-      {/* Datas */}
       <div className={styles.dates}>
         <span>📅 Criado: {formatDate(task.created_at)}</span>
         <span>⏰ Encerra: {formatDate(task.due_date)}</span>
       </div>
 
-      {task.notify && <div className={styles.notifyText}>Notificação ativa</div>}
+      {task.notify && (
+        <div className={styles.notifyText}>Notificação ativa</div>
+      )}
 
-      {/* Semana encerrada */}
       {isWeekClosed && (
         <div className={styles.closedBadge}>
           <span className={styles.lockIcon}>🔒</span>
-          <span>Semana encerrada</span>
+          Semana encerrada
         </div>
       )}
 
-      {/* Ações */}
-      {!isWeekClosed && (
-        <div className={styles.actions}>
-          {task.status !== "done" && (
-            <button
-              onClick={handleNextStatus}
-              disabled={loading || isWeekClosed}
-              className={styles.primaryButton}
-            >
-              {statusButtonText}
-            </button>
-          )}
-
+      <div className={styles.actions}>
+        {/* Botão retry apenas para pendentes em histórico */}
+        {onRetry && task.status === "pending" && (
           <button
-            onClick={onEdit}
+            onClick={onRetry}
             disabled={loading || isWeekClosed}
-            className={styles.editButton}
+            className={styles.primaryButton}
           >
-            Editar
+            Tentar novamente
           </button>
+        )}
 
+        {/* Botão atualizar status apenas se não for histórico */}
+        {!isWeekClosed && task.status !== "done" && (
           <button
-            onClick={onDelete}
+            onClick={handleNextStatus}
             disabled={loading || isWeekClosed}
-            className={styles.deleteButton}
+            className={styles.primaryButton}
           >
-            Deletar
+            {statusButtonText}
           </button>
-        </div>
-      )}
+        )}
+
+        <button
+          onClick={onEdit}
+          disabled={loading || isWeekClosed}
+          className={styles.editButton}
+        >
+          Editar
+        </button>
+
+        <button
+          onClick={onDelete}
+          disabled={loading || isWeekClosed}
+          className={styles.deleteButton}
+        >
+          Deletar
+        </button>
+      </div>
     </div>
   );
 }

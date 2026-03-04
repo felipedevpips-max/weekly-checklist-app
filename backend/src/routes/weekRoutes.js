@@ -8,10 +8,13 @@ router.get("/current", weekController.getCurrentWeek);
 // Fechar semana
 router.post("/:id/close", weekController.closeWeek);
 
-// Histórico: todas as semanas
+// Histórico de semanas (fechadas)
 router.get("/", weekController.getAllWeeks);
 
-// Histórico: tasks de uma semana específica
+// Tasks de uma semana específica
 router.get("/:id/tasks", weekController.getWeekTasks);
+
+// Mover task para semana aberta
+router.post("/open/tasks", weekController.moveTaskToOpenWeek);
 
 module.exports = router;

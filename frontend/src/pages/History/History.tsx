@@ -12,23 +12,11 @@ export function History() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Fetch tasks de uma semana específica
-  const fetchTasks = useCallback(async (weekId: number) => {
-    try {
-      const res = await api.get(`/weeks/${weekId}/tasks`);
-      setTasks(res.data);
-    } catch (error) {
-      console.error("Erro ao buscar tasks da semana:", error);
-    }
-  }, []);
-
-  // 🔹 Fetch semanas fechadas
   const fetchWeeks = useCallback(async () => {
     try {
       const res = await api.get("/weeks");
       const closedWeeks = res.data.filter((w: Week) => w.closed);
       setWeeks(closedWeeks);
-
       if (closedWeeks.length > 0) {
         setSelectedWeek(closedWeeks[0]);
         fetchTasks(closedWeeks[0].id);
@@ -38,12 +26,21 @@ export function History() {
     } finally {
       setLoading(false);
     }
-  }, [fetchTasks]);
+  }, []);
 
-  // 🔹 Retry task pendente
+  const fetchTasks = useCallback(async (weekId: number) => {
+    try {
+      const res = await api.get(`/weeks/${weekId}/tasks`);
+      setTasks(res.data);
+    } catch (error) {
+      console.error("Erro ao buscar tasks da semana:", error);
+    }
+  }, []);
+
+  // Retry task pendente → envia para semana aberta
   const handleRetry = async (task: Task) => {
     try {
-      await api.post(`/weeks/open/tasks`, { taskId: task.id });
+      await api.post(`/tasks/${task.id}/move-to-open`);
       alert(`Task "${task.title}" movida para a semana aberta.`);
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
     } catch (error) {
@@ -51,7 +48,7 @@ export function History() {
     }
   };
 
-  // 🔹 Delete task
+  // Delete task
   const handleDelete = async (task: Task) => {
     try {
       await api.delete(`/tasks/${task.id}`);
@@ -61,16 +58,16 @@ export function History() {
     }
   };
 
-  // 🔹 Move automaticamente tasks in_progress para semana aberta
+  // Move automaticamente tasks in_progress para semana aberta
   useEffect(() => {
     tasks
       .filter((t) => t.status === "in_progress")
       .forEach(async (t) => {
         try {
-          await api.post(`/weeks/open/tasks`, { taskId: t.id });
+          await api.post(`/tasks/${t.id}/move-to-open`);
           if (t.notify)
             alert(
-              `Task "${t.title}" em andamento foi movida para a semana aberta!`,
+              `Task "${t.title}" em andamento foi movida para a semana aberta!`
             );
           setTasks((prev) => prev.filter((task) => task.id !== t.id));
         } catch (error) {
@@ -79,7 +76,6 @@ export function History() {
       });
   }, [tasks]);
 
-  // 🔹 Carrega semanas ao montar
   useEffect(() => {
     fetchWeeks();
   }, [fetchWeeks]);
@@ -91,7 +87,6 @@ export function History() {
     <Container>
       <h1 className={styles.title}>Histórico de Semanas</h1>
 
-      {/* Seleção de semanas */}
       <div className={styles.weeksWrapper}>
         {weeks.map((week) => (
           <button
@@ -112,7 +107,6 @@ export function History() {
         ))}
       </div>
 
-      {/* Tasks da semana */}
       <div className={styles.tasksSection}>
         {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
 
@@ -120,11 +114,9 @@ export function History() {
           <TaskCard
             key={task.id}
             task={task}
-            isWeekClosed={true} // histórico = semana fechada
+            isWeekClosed={true}
             onDelete={() => handleDelete(task)}
-            onEdit={
-              task.status === "pending" ? () => handleRetry(task) : undefined
-            }
+            onRetry={() => handleRetry(task)}
           />
         ))}
       </div>

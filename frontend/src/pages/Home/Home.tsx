@@ -11,6 +11,7 @@ import { EditTaskModal } from "../../components/EditTaskModal/EditTaskModal";
 import { TaskList } from "../../components/Tasklist/TaskList";
 import { TaskFilter } from "../../components/TaskFilter/TaskFilter";
 import { ConfirmCloseWeekModal } from "../../components/ConfirmCloseWeekModal/ConfirmCloseWeekModal";
+import { WeekClosedModal } from "../../components/WeekClosedModal/WeekClosedModal";
 
 import { useCurrentWeek } from "../../hooks/useCurrentWeek";
 import { useTaskActions } from "../../hooks/useTaskActions";
@@ -19,13 +20,17 @@ import { api } from "../../services/api";
 type FilterType = "all" | "pending" | "in_progress" | "done";
 
 export function Home() {
-  const { week, tasks, setTasks, loading } = useCurrentWeek();
+  const { week, tasks, setTasks, loading, refetchWeek } = useCurrentWeek();
+
   const { createTask, updateTask, deleteTask } = useTaskActions({ setTasks });
 
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [filter, setFilter] = useState<FilterType>("all");
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+
+  const [showWeekModal, setShowWeekModal] = useState(false);
+  const [movedTasks, setMovedTasks] = useState<Task[]>([]);
 
   const filteredTasks = useMemo(() => {
     if (filter === "all") return tasks;
@@ -37,13 +42,19 @@ export function Home() {
   async function handleCloseWeek() {
     if (!week) return;
 
-    console.log("Semana enviada:", week.id);
-
     try {
-      const response = await api.post(`/weeks/${week.id}/close`);
-      console.log("Resposta backend:", response.data);
+      // 🔥 captura tasks em andamento antes de fechar semana
+      const moved = tasks.filter((task) => task.status === "in_progress");
 
-      window.location.reload();
+      await api.post(`/weeks/${week.id}/close`);
+
+      setMovedTasks(moved);
+
+      // 🔄 atualiza semana e tasks
+      await refetchWeek();
+
+      // 🔔 mostra modal
+      setShowWeekModal(true);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Erro backend:", error.response?.data);
@@ -67,7 +78,7 @@ export function Home() {
         </button>
       )}
 
-      {/* Informações da semana */}
+      {/* Datas da semana */}
       {week && (
         <p className={styles.weekInfo}>
           Semana atual: {new Date(week.start_date).toLocaleDateString()} -{" "}
@@ -75,7 +86,7 @@ export function Home() {
         </p>
       )}
 
-      {/* Criar Task */}
+      {/* Criar task */}
       <CreateTaskForm onCreate={createTask} />
 
       {/* Progresso */}
@@ -84,7 +95,7 @@ export function Home() {
       {/* Filtro */}
       <TaskFilter activeFilter={filter} onChange={setFilter} />
 
-      {/* Lista de Tasks */}
+      {/* Lista */}
       <TaskList
         tasks={filteredTasks}
         isWeekClosed={week?.closed}
@@ -93,7 +104,7 @@ export function Home() {
         onDelete={setTaskToDelete}
       />
 
-      {/* Modal Edit */}
+      {/* Modal editar */}
       {editingTask && (
         <EditTaskModal
           isOpen
@@ -106,7 +117,7 @@ export function Home() {
         />
       )}
 
-      {/* Modal Delete */}
+      {/* Modal deletar */}
       {taskToDelete && (
         <ConfirmDeleteModal
           isOpen
@@ -119,7 +130,7 @@ export function Home() {
         />
       )}
 
-      {/* Modal Encerrar Semana */}
+      {/* Modal confirmar encerrar semana */}
       {isCloseModalOpen && (
         <ConfirmCloseWeekModal
           isOpen
@@ -130,6 +141,13 @@ export function Home() {
           }}
         />
       )}
+
+      {/* Modal resultado encerramento */}
+      <WeekClosedModal
+        visible={showWeekModal}
+        movedTasks={movedTasks}
+        onClose={() => setShowWeekModal(false)}
+      />
     </Container>
   );
 }

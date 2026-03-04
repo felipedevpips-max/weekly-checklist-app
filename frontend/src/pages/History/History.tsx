@@ -12,11 +12,13 @@ export function History() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Buscar semanas fechadas
   const fetchWeeks = useCallback(async () => {
     try {
-      const res = await api.get("/weeks");
+      const res = await api.get("/weeks"); // todas as semanas
       const closedWeeks = res.data.filter((w: Week) => w.closed);
       setWeeks(closedWeeks);
+
       if (closedWeeks.length > 0) {
         setSelectedWeek(closedWeeks[0]);
         fetchTasks(closedWeeks[0].id);
@@ -28,6 +30,7 @@ export function History() {
     }
   }, []);
 
+  // Buscar tasks de uma semana
   const fetchTasks = useCallback(async (weekId: number) => {
     try {
       const res = await api.get(`/weeks/${weekId}/tasks`);
@@ -37,10 +40,10 @@ export function History() {
     }
   }, []);
 
-  // Retry task pendente → envia para semana aberta
+  // Retry: move task pendente para semana aberta
   const handleRetry = async (task: Task) => {
     try {
-      await api.post(`/tasks/${task.id}/move-to-open`);
+      await api.post("/weeks/open/tasks", { taskId: task.id });
       alert(`Task "${task.title}" movida para a semana aberta.`);
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
     } catch (error) {
@@ -48,7 +51,7 @@ export function History() {
     }
   };
 
-  // Delete task
+  // Deletar task
   const handleDelete = async (task: Task) => {
     try {
       await api.delete(`/tasks/${task.id}`);
@@ -58,22 +61,23 @@ export function History() {
     }
   };
 
-  // Move automaticamente tasks in_progress para semana aberta
+  // Mover automaticamente tasks em andamento para semana aberta
   useEffect(() => {
-    tasks
-      .filter((t) => t.status === "in_progress")
-      .forEach(async (t) => {
-        try {
-          await api.post(`/tasks/${t.id}/move-to-open`);
-          if (t.notify)
-            alert(
-              `Task "${t.title}" em andamento foi movida para a semana aberta!`
-            );
-          setTasks((prev) => prev.filter((task) => task.id !== t.id));
-        } catch (error) {
-          console.error("Erro ao mover task em andamento:", error);
+    const inProgressTasks = tasks.filter((t) => t.status === "in_progress");
+
+    if (inProgressTasks.length === 0) return;
+
+    inProgressTasks.forEach(async (task) => {
+      try {
+        await api.post("/weeks/open/tasks", { taskId: task.id });
+        if (task.notify) {
+          alert(`Task "${task.title}" em andamento foi movida para a semana aberta!`);
         }
-      });
+        setTasks((prev) => prev.filter((t) => t.id !== task.id));
+      } catch (error) {
+        console.error("Erro ao mover task em andamento:", error);
+      }
+    });
   }, [tasks]);
 
   useEffect(() => {
@@ -87,15 +91,12 @@ export function History() {
     <Container>
       <h1 className={styles.title}>Histórico de Semanas</h1>
 
+      {/* Seleção de semanas */}
       <div className={styles.weeksWrapper}>
         {weeks.map((week) => (
           <button
             key={week.id}
-            className={
-              selectedWeek?.id === week.id
-                ? styles.activeWeek
-                : styles.weekButton
-            }
+            className={selectedWeek?.id === week.id ? styles.activeWeek : styles.weekButton}
             onClick={() => {
               setSelectedWeek(week);
               fetchTasks(week.id);
@@ -107,6 +108,7 @@ export function History() {
         ))}
       </div>
 
+      {/* Tasks da semana */}
       <div className={styles.tasksSection}>
         {tasks.length === 0 && <p>Nenhuma task encontrada nesta semana.</p>}
 
@@ -114,9 +116,11 @@ export function History() {
           <TaskCard
             key={task.id}
             task={task}
-            isWeekClosed={true}
+            isWeekClosed={true} // histórico = semana fechada
             onDelete={() => handleDelete(task)}
-            onRetry={() => handleRetry(task)}
+            onEdit={
+              task.status === "pending" ? () => handleRetry(task) : undefined
+            }
           />
         ))}
       </div>

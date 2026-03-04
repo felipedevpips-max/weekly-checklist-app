@@ -15,57 +15,22 @@ async function createTask(data) {
   const dueDate = data.dueDate || data.due_date || week.end_date;
 
   const result = await pool.query(
-    `INSERT INTO tasks
-      (title, description, priority, status, notify, due_date, week_id)
-     VALUES ($1,$2,$3,$4,$5,$6,$7)
-     RETURNING *`,
-    [
-      data.title,
-      data.description || "",
-      priority,
-      status,
-      notify,
-      dueDate,
-      week.id,
-    ]
+    `INSERT INTO tasks (title, description, priority, status, notify, due_date, week_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+    [data.title, data.description || "", priority, status, notify, dueDate, week.id]
   );
 
   return result.rows[0];
 }
 
 // ----------------------------
-// LISTAR TODAS TASKS
-// ----------------------------
-async function getTasks() {
-  const result = await pool.query(
-    `SELECT t.*, w.closed as week_closed
-     FROM tasks t
-     JOIN weeks w ON w.id = t.week_id
-     ORDER BY t.id DESC`
-  );
-
-  return result.rows;
-}
-
-// ----------------------------
-// LISTAR TASKS DE UMA SEMANA ESPECÍFICA
+// LISTAR TASKS DE UMA SEMANA
 // ----------------------------
 async function getTasksByWeek(weekId) {
   const result = await pool.query(
-    `
-    SELECT
-      t.*,
-      w.closed as week_closed,
-      w.start_date,
-      w.end_date
-    FROM tasks t
-    JOIN weeks w ON w.id = t.week_id
-    WHERE t.week_id = $1
-    ORDER BY t.id ASC
-    `,
+    `SELECT * FROM tasks WHERE week_id = $1 ORDER BY id ASC`,
     [weekId]
   );
-
   return result.rows;
 }
 
@@ -74,13 +39,9 @@ async function getTasksByWeek(weekId) {
 // ----------------------------
 async function updateTask(id, data) {
   const checkResult = await pool.query(
-    `SELECT w.closed
-     FROM tasks t
-     JOIN weeks w ON w.id = t.week_id
-     WHERE t.id = $1`,
+    `SELECT w.closed FROM tasks t JOIN weeks w ON w.id = t.week_id WHERE t.id = $1`,
     [id]
   );
-
   if (!checkResult.rows.length) throw new Error("Task not found");
   if (checkResult.rows[0].closed) throw new Error("Week closed");
 
@@ -95,17 +56,8 @@ async function updateTask(id, data) {
        status = COALESCE($4,status),
        notify = COALESCE($5,notify),
        due_date = COALESCE($6,due_date)
-     WHERE id = $7
-     RETURNING *`,
-    [
-      data.title,
-      data.description,
-      data.priority,
-      data.status,
-      data.notify,
-      data.dueDate,
-      id,
-    ]
+     WHERE id = $7 RETURNING *`,
+    [data.title, data.description, data.priority, data.status, data.notify, data.dueDate, id]
   );
 
   return result.rows[0];
@@ -116,13 +68,9 @@ async function updateTask(id, data) {
 // ----------------------------
 async function deleteTask(id) {
   const checkResult = await pool.query(
-    `SELECT w.closed
-     FROM tasks t
-     JOIN weeks w ON w.id = t.week_id
-     WHERE t.id = $1`,
+    `SELECT w.closed FROM tasks t JOIN weeks w ON w.id = t.week_id WHERE t.id = $1`,
     [id]
   );
-
   if (!checkResult.rows.length) throw new Error("Task not found");
   if (checkResult.rows[0].closed) throw new Error("Week closed");
 
@@ -159,23 +107,10 @@ async function moveTaskToOpenWeek(taskId) {
   }
 }
 
-// ----------------------------
-// CLOSE CURRENT WEEK (manual ou automático)
-// ----------------------------
-async function closeCurrentWeek() {
-  const week = await ensureActiveWeek();
-
-  await pool.query(`UPDATE weeks SET closed = true WHERE id = $1`, [week.id]);
-
-  return true;
-}
-
 module.exports = {
   createTask,
-  getTasks,
-  getTasksByWeek,      // 🔹 ESSENCIAL
+  getTasksByWeek,
   updateTask,
   deleteTask,
   moveTaskToOpenWeek,
-  closeCurrentWeek,
 };

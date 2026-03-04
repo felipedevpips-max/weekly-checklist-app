@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import styles from "./home.module.css";
 import type { Task } from "../../types/task";
 import { CreateTaskForm } from "../../components/CreateTaskForm/CreateTaskForm";
@@ -8,6 +7,7 @@ import { Container } from "../../components/Container/Container";
 import { useTasks } from "../../hooks/useTasks";
 import { ConfirmDeleteModal } from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import { EditTaskModal } from "../../components/EditTaskModal/EditTaskModal";
+import { api } from "../../services/api"; // ✅ ADICIONADO
 
 export function Home() {
   const { tasks: initialTasks, loading, error } = useTasks();
@@ -26,8 +26,17 @@ export function Home() {
     );
   };
 
-  const handleDelete = (id: number) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+  // ✅ DELETE REAL + SINCRONIZAÇÃO TOTAL
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/tasks/${id}`);
+
+      // refetch completo para garantir que backend e frontend estejam iguais
+      const response = await api.get("/tasks");
+      setTasks(response.data);
+    } catch (error) {
+      console.error("Erro ao deletar:", error);
+    }
   };
 
   const handleCreate = (newTask: Task) => {
@@ -53,7 +62,6 @@ export function Home() {
         />
       ))}
 
-      {/* Modal de edição centralizado */}
       {editingTask && (
         <EditTaskModal
           isOpen={!!editingTask}
@@ -66,14 +74,13 @@ export function Home() {
         />
       )}
 
-      {/* Modal de confirmação centralizado */}
       {taskToDelete && (
         <ConfirmDeleteModal
           isOpen={!!taskToDelete}
           taskTitle={taskToDelete.title}
           onClose={() => setTaskToDelete(null)}
-          onConfirm={() => {
-            handleDelete(taskToDelete.id);
+          onConfirm={async () => {
+            await handleDelete(taskToDelete.id);
             setTaskToDelete(null);
           }}
         />

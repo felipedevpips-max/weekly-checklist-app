@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./home.module.css";
 import type { Task } from "../../types/task";
 
@@ -15,16 +15,12 @@ import { TaskList } from "../../components/Tasklist/TaskList";
 export function Home() {
   const { tasks: initialTasks, loading, error } = useTasks();
 
-  const { tasks, syncTasks, createTask, updateTask, deleteTask } =
-    useTaskActions({ initialTasks });
+  const { tasks, createTask, updateTask, deleteTask } = useTaskActions({
+    initialTasks,
+  });
 
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-
-  // 🔄 sincroniza quando backend responde
-  useEffect(() => {
-    syncTasks(initialTasks);
-  }, [initialTasks]);
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;

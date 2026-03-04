@@ -1,34 +1,79 @@
+/* Container das semanas */
 .weeksWrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 30px;
+  justify-content: flex-start;
 }
 
+/* Botão das semanas */
 .weekButton {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   border: 1px solid var(--card-border);
   background: var(--background-card);
   color: var(--text-color);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .weekButton:hover {
   border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Botão da semana selecionada */
 .activeWeek {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   background: var(--primary-color);
   color: white;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
 }
 
+.activeWeek:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Seção de tasks */
 .tasksSection {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Título da seção */
+.tasksSection h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-color);
+}
+
+/* Mensagens de loading ou sem tarefas */
+.tasksSection p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  text-align: center;
   margin-top: 20px;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .weekButton,
+  .activeWeek {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
 }

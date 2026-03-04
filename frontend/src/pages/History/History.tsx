@@ -10,24 +10,25 @@ export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loadingWeeks, setLoadingWeeks] = useState(false);
+  const [loadingWeeks, setLoadingWeeks] = useState(true);
   const [loadingTasks, setLoadingTasks] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // 📅 Buscar todas as semanas (histórico)
+  // 📅 Buscar todas as semanas fechadas
   useEffect(() => {
     async function fetchWeeks() {
       setLoadingWeeks(true);
-      setError(null);
-
       try {
-        const res = await api.get("/weeks");
-        // filtrar apenas semanas fechadas
+        const res = await api.get("/weeks"); // rota correta do backend
         const closedWeeks = res.data.filter((w: Week) => w.closed);
         setWeeks(closedWeeks);
-      } catch (err) {
-        console.error("Erro ao buscar semanas:", err);
-        setError("Não foi possível carregar o histórico de semanas.");
+
+        // opcional: selecionar automaticamente a semana mais recente
+        if (closedWeeks.length > 0) {
+          loadTasks(closedWeeks[0]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar semanas:", error);
+        setWeeks([]);
       } finally {
         setLoadingWeeks(false);
       }
@@ -40,15 +41,13 @@ export function History() {
   async function loadTasks(week: Week) {
     setLoadingTasks(true);
     setSelectedWeek(week);
-    setError(null);
 
     try {
-      const res = await api.get(`/weeks/${week.id}/tasks`);
+      const res = await api.get(`/weeks/${week.id}/tasks`); // rota correta
       setTasks(res.data);
-    } catch (err) {
-      console.error("Erro ao buscar tasks:", err);
+    } catch (error) {
+      console.error("Erro ao buscar tarefas da semana:", error);
       setTasks([]);
-      setError("Não foi possível carregar as tarefas desta semana.");
     } finally {
       setLoadingTasks(false);
     }
@@ -58,10 +57,7 @@ export function History() {
     <Container>
       <h1>Histórico de Semanas</h1>
 
-      {/* Erro geral */}
-      {error && <p className={styles.error}>{error}</p>}
-
-      {/* Lista de semanas */}
+      {/* 📅 Lista de semanas */}
       <div className={styles.weeksWrapper}>
         {loadingWeeks ? (
           <p>Carregando semanas...</p>
@@ -85,11 +81,12 @@ export function History() {
         )}
       </div>
 
-      {/* Lista de tarefas da semana selecionada */}
+      {/* 📋 Lista de tarefas da semana selecionada */}
       {selectedWeek && (
         <div className={styles.tasksSection}>
           <h2>
-            Semana de {new Date(selectedWeek.start_date).toLocaleDateString()} a{" "}
+            Semana de{" "}
+            {new Date(selectedWeek.start_date).toLocaleDateString()} -{" "}
             {new Date(selectedWeek.end_date).toLocaleDateString()}
           </h2>
 

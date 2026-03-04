@@ -32,7 +32,7 @@ async function ensureActiveWeek() {
     const { start, end } = getWeekDates();
     const newWeek = await pool.query(
       `INSERT INTO weeks (start_date, end_date, closed) VALUES ($1,$2,false) RETURNING *`,
-      [start, end]
+      [start, end],
     );
     return newWeek.rows[0];
   }
@@ -63,10 +63,11 @@ async function closeWeek(weekId) {
 
     const weekResult = await client.query(
       `SELECT * FROM weeks WHERE id=$1 AND closed=false`,
-      [weekId]
+      [weekId],
     );
 
-    if (!weekResult.rows.length) throw new Error("Semana não encontrada ou já fechada");
+    if (!weekResult.rows.length)
+      throw new Error("Semana não encontrada ou já fechada");
 
     const currentWeek = weekResult.rows[0];
 
@@ -77,7 +78,7 @@ async function closeWeek(weekId) {
 
     const newWeekResult = await client.query(
       `INSERT INTO weeks (start_date,end_date,closed) VALUES ($1,$2,false) RETURNING *`,
-      [start, end]
+      [start, end],
     );
 
     const newWeekId = newWeekResult.rows[0].id;
@@ -85,7 +86,7 @@ async function closeWeek(weekId) {
     // 🔹 Só atualizar tasks não deletadas
     await client.query(
       `UPDATE tasks SET week_id=$1 WHERE week_id=$2 AND status != 'done' AND deleted_at IS NULL`,
-      [newWeekId, weekId]
+      [newWeekId, weekId],
     );
 
     await client.query(`UPDATE weeks SET closed=true WHERE id=$1`, [weekId]);
@@ -113,7 +114,7 @@ async function getCurrentWeekWithTasks() {
      JOIN weeks w ON w.id = t.week_id
      WHERE t.week_id=$1 AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
-    [week.id]
+    [week.id],
   );
 
   return { week, tasks: tasksResult.rows };
@@ -123,12 +124,16 @@ async function getCurrentWeekWithTasks() {
 // 📚 HISTÓRICO SEMANAS
 // =============================
 async function getAllWeeks() {
-  const result = await pool.query(`SELECT * FROM weeks ORDER BY start_date DESC`);
+  const result = await pool.query(
+    `SELECT * FROM weeks ORDER BY start_date DESC`,
+  );
   return result.rows;
 }
 
 async function getClosedWeeks() {
-  const result = await pool.query(`SELECT * FROM weeks WHERE closed=true ORDER BY start_date DESC`);
+  const result = await pool.query(
+    `SELECT * FROM weeks WHERE closed=true ORDER BY start_date DESC`,
+  );
   return result.rows;
 }
 
@@ -142,7 +147,7 @@ async function getWeekTasks(weekId) {
      JOIN weeks w ON w.id = t.week_id
      WHERE t.week_id=$1 AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
-    [weekId]
+    [weekId],
   );
   return result.rows;
 }

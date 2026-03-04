@@ -105,13 +105,24 @@
   font-weight: 600;
 }
 
-.closed {
-  padding: 6px 10px;
-  background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
-  border-radius: 6px;
-  font-size: 0.8rem;
+.closedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(90deg, #f0f0f0, #e0e0e0);
+  color: #6b46c1;
   font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.lockIcon {
+  font-size: 0.9rem;
 }
 
 .actions {
@@ -137,9 +148,7 @@
 
 .primaryButton:hover:not(:disabled) {
   opacity: 0.9;
-
   transform: translateY(-2px);
-
   background: var(--hover-submit);
 }
 
@@ -147,6 +156,7 @@
   background: var(--edit-submit);
   color: white;
 }
+
 .editButton:hover:not(:disabled) {
   opacity: 0.9;
   transform: translateY(-2px);
@@ -165,7 +175,7 @@
 }
 
 .actions button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -181,40 +191,6 @@
 }
 
 /* Animação Pulse */
-@keyframes donePulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-  }
-}
-
-.pulse {
-  animation: donePulse 0.5s ease;
-}
-
-.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.closed {
-  font-weight: bold;
-  color: #6b46c1;
-  margin-top: 10px;
-}
-
-.pulse {
-  animation: pulseAnim 0.5s ease;
-}
-
 @keyframes pulseAnim {
   0% {
     transform: scale(1);
@@ -225,4 +201,13 @@
   100% {
     transform: scale(1);
   }
+}
+
+.pulse {
+  animation: pulseAnim 0.5s ease;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

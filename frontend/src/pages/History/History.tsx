@@ -1,55 +1,72 @@
-import { useEffect, useState } from "react";
-import { api } from "../../services/api";
-import type { Week } from "../../types/week";
+import { useState, useEffect } from "react";
 import type { Task } from "../../types/task";
-import { TaskCard } from "../../components/TaskCard/TaskCard";
+import type { Week } from "../../types/week";
+import { api } from "../../services/api";
 import { Container } from "../../components/Container/Container";
+import { TaskCard } from "../../components/TaskCard/TaskCard";
+import { ConfirmDeleteModal } from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import styles from "./history.module.css";
 
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loadingWeeks, setLoadingWeeks] = useState(true);
   const [loadingTasks, setLoadingTasks] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  // 📅 Buscar todas as semanas fechadas
+  // 🔹 Buscar semanas fechadas
   useEffect(() => {
     async function fetchWeeks() {
-      setLoadingWeeks(true);
       try {
-        const res = await api.get("/weeks"); // rota correta do backend
+        const res = await api.get("/weeks"); // rota: getAllWeeks
         const closedWeeks = res.data.filter((w: Week) => w.closed);
         setWeeks(closedWeeks);
-
-        // opcional: selecionar automaticamente a semana mais recente
-        if (closedWeeks.length > 0) {
-          loadTasks(closedWeeks[0]);
-        }
       } catch (error) {
         console.error("Erro ao buscar semanas:", error);
-        setWeeks([]);
-      } finally {
-        setLoadingWeeks(false);
       }
     }
-
     fetchWeeks();
   }, []);
 
-  // 📋 Buscar tasks de uma semana específica
+  // 🔹 Buscar tarefas de uma semana
   async function loadTasks(week: Week) {
     setLoadingTasks(true);
     setSelectedWeek(week);
 
     try {
-      const res = await api.get(`/weeks/${week.id}/tasks`); // rota correta
+      const res = await api.get(`/weeks/${week.id}/tasks`);
       setTasks(res.data);
     } catch (error) {
-      console.error("Erro ao buscar tarefas da semana:", error);
+      console.error("Erro ao buscar tarefas:", error);
       setTasks([]);
     } finally {
       setLoadingTasks(false);
+    }
+  }
+
+  // 🔹 Deletar tarefa
+  async function handleDeleteTask(taskId: number) {
+    if (!window.confirm("Tem certeza que deseja deletar esta tarefa?")) return;
+
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+      setTaskToDelete(null);
+    } catch (error) {
+      console.error("Erro ao deletar tarefa:", error);
+      alert("Erro ao deletar tarefa");
+    }
+  }
+
+  // 🔹 Tentar novamente → mover para semana atual aberta
+  async function handleRetryTask(taskId: number) {
+    try {
+      await api.post(`/tasks/${taskId}/retry`); // backend deve mover para semana atual
+      alert("Tarefa movida para a semana atual!");
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    } catch (error) {
+      console.error("Erro ao mover tarefa:", error);
+      alert("Erro ao tentar novamente");
     }
   }
 
@@ -57,37 +74,25 @@ export function History() {
     <Container>
       <h1>Histórico de Semanas</h1>
 
-      {/* 📅 Lista de semanas */}
+      {/* 🔹 Lista de semanas */}
       <div className={styles.weeksWrapper}>
-        {loadingWeeks ? (
-          <p>Carregando semanas...</p>
-        ) : weeks.length === 0 ? (
-          <p>Nenhuma semana fechada encontrada.</p>
-        ) : (
-          weeks.map((w) => (
-            <button
-              key={w.id}
-              onClick={() => loadTasks(w)}
-              className={
-                selectedWeek?.id === w.id
-                  ? styles.activeWeek
-                  : styles.weekButton
-              }
-            >
-              {new Date(w.start_date).toLocaleDateString()} -{" "}
-              {new Date(w.end_date).toLocaleDateString()}
-            </button>
-          ))
-        )}
+        {weeks.map((w) => (
+          <button
+            key={w.id}
+            onClick={() => loadTasks(w)}
+            className={selectedWeek?.id === w.id ? styles.activeWeek : styles.weekButton}
+          >
+            {new Date(w.start_date).toLocaleDateString()} -{" "}
+            {new Date(w.end_date).toLocaleDateString()}
+          </button>
+        ))}
       </div>
 
-      {/* 📋 Lista de tarefas da semana selecionada */}
+      {/* 🔹 Tarefas da semana selecionada */}
       {selectedWeek && (
         <div className={styles.tasksSection}>
           <h2>
-            Semana de{" "}
-            {new Date(selectedWeek.start_date).toLocaleDateString()} -{" "}
-            {new Date(selectedWeek.end_date).toLocaleDateString()}
+            Semana de {new Date(selectedWeek.start_date).toLocaleDateString()}
           </h2>
 
           {loadingTasks ? (
@@ -95,9 +100,35 @@ export function History() {
           ) : tasks.length === 0 ? (
             <p>Nenhuma tarefa nesta semana.</p>
           ) : (
-            tasks.map((task) => <TaskCard key={task.id} task={task} />)
+            tasks.map((task) => {
+              // Somente exibe cards de tarefas que devem aparecer no histórico
+              if (task.status === "in_progress") {
+                // 💡 Lógica: tarefas em andamento já foram movidas → não exibe aqui
+                return null;
+              }
+
+              return (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  isWeekClosed
+                  onDelete={() => handleDeleteTask(task.id)}
+                  onEdit={task.status === "pending" ? () => handleRetryTask(task.id) : undefined}
+                />
+              );
+            })
           )}
         </div>
+      )}
+
+      {/* 🔹 Modal de confirmação de exclusão */}
+      {taskToDelete && (
+        <ConfirmDeleteModal
+          isOpen
+          taskTitle={taskToDelete.title}
+          onClose={() => setTaskToDelete(null)}
+          onConfirm={() => handleDeleteTask(taskToDelete.id)}
+        />
       )}
     </Container>
   );

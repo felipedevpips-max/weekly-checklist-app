@@ -112,7 +112,12 @@ export function TaskCard({
       )}
 
       {/* Semana fechada */}
-      {isWeekClosed && <div className={styles.closed}>🔒 Semana encerrada</div>}
+      {isWeekClosed && (
+        <div className={styles.closedBadge}>
+          <span className={styles.lockIcon}>🔒</span>
+          Semana encerrada
+        </div>
+      )}
 
       {/* Ações */}
       {!isWeekClosed && (

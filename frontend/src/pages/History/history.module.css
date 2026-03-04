@@ -69,11 +69,60 @@
   margin-top: 20px;
 }
 
+/* Ações dos cards de tarefa */
+.taskActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.retryButton,
+.deleteButton {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryButton {
+  background: var(--primary-color);
+  color: white;
+}
+
+.retryButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.deleteButton {
+  background: var(--accent-color);
+  color: white;
+}
+
+.deleteButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 /* Responsividade */
 @media (max-width: 480px) {
   .weekButton,
   .activeWeek {
     padding: 6px 12px;
     font-size: 12px;
+  }
+
+  .taskActions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .retryButton,
+  .deleteButton {
+    width: 100%;
   }
 }

@@ -4,6 +4,7 @@ import styles from "./taskList.module.css";
 
 interface Props {
   tasks: Task[];
+  isWeekClosed?: boolean;
   onUpdate: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
@@ -15,12 +16,11 @@ export function TaskList({ tasks, onUpdate, onEdit, onDelete }: Props) {
       <div className={styles.emptyState}>
         <div className={styles.emptyIcon}>📋</div>
 
-        <h3 className={styles.emptyTitle}>
-          Nenhuma tarefa criada
-        </h3>
+        <h3 className={styles.emptyTitle}>Nenhuma tarefa criada</h3>
 
         <p className={styles.emptyText}>
-          Comece adicionando sua primeira tarefa acima e organize sua semana com mais clareza.
+          Comece adicionando sua primeira tarefa acima e organize sua semana com
+          mais clareza.
         </p>
       </div>
     );

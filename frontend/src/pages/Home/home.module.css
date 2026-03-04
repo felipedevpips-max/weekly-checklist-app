@@ -5,3 +5,18 @@
   font-weight: 700;
 }
 
+.closeWeekButton {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #6b46c1;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.closeWeekButton:hover {
+  opacity: 0.85;
+}

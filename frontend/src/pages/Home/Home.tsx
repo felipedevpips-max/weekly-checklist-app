@@ -12,6 +12,7 @@ import { TaskFilter } from "../../components/TaskFilter/TaskFilter";
 
 import { useCurrentWeek } from "../../hooks/useCurrentWeek";
 import { useTaskActions } from "../../hooks/useTaskActions";
+import { api } from "../../services/api";
 
 type FilterType = "all" | "pending" | "in_progress" | "done";
 
@@ -36,9 +37,41 @@ export function Home() {
 
   if (loading) return <p>Carregando semana...</p>;
 
+  // -----------------------------
+  // 🔒 Função Encerrar Semana (usando endpoint correto)
+  // -----------------------------
+  async function handleCloseWeek() {
+    if (!week) return;
+
+    const confirmClose = window.confirm(
+      "Tem certeza que deseja encerrar esta semana?",
+    );
+    if (!confirmClose) return;
+
+    try {
+      // ⚡ usa endpoint do taskController que fecha a semana atual
+      await api.post("/tasks/close-week");
+
+      // 🔁 recarrega a página para pegar nova semana e tasks
+      window.location.reload();
+    } catch (error) {
+      console.error("Erro ao encerrar semana", error);
+      alert("Erro ao encerrar semana. Tente novamente.");
+    }
+  }
+
   return (
     <Container>
       <h1 className={styles.title}>Checklist Semanal</h1>
+
+      {/* -----------------------------
+          Botão Encerrar Semana
+      ----------------------------- */}
+      {week && !week.closed && (
+        <button className={styles.closeWeekButton} onClick={handleCloseWeek}>
+          Encerrar Semana
+        </button>
+      )}
 
       {/* 📅 Informações da semana ativa */}
       {week && (
@@ -60,6 +93,7 @@ export function Home() {
       {/* 📋 Lista */}
       <TaskList
         tasks={filteredTasks}
+        isWeekClosed={week?.closed} // bloqueio visual
         onUpdate={updateTask}
         onEdit={setEditingTask}
         onDelete={setTaskToDelete}

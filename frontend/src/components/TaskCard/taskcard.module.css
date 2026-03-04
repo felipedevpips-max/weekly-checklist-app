@@ -144,7 +144,7 @@
 }
 
 .editButton {
-  background:var(--edit-submit);
+  background: var(--edit-submit);
   color: white;
 }
 .editButton:hover:not(:disabled) {
@@ -198,4 +198,31 @@
 
 .pulse {
   animation: donePulse 0.5s ease;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.closed {
+  font-weight: bold;
+  color: #6b46c1;
+  margin-top: 10px;
+}
+
+.pulse {
+  animation: pulseAnim 0.5s ease;
+}
+
+@keyframes pulseAnim {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

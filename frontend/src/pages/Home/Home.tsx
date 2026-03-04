@@ -7,7 +7,8 @@ import { Container } from "../../components/Container/Container";
 import { useTasks } from "../../hooks/useTasks";
 import { ConfirmDeleteModal } from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import { EditTaskModal } from "../../components/EditTaskModal/EditTaskModal";
-import { api } from "../../services/api"; // ✅ ADICIONADO
+import { api } from "../../services/api";
+import { ProgressSection } from "../../components/ProgressSection/ProgressSection";
 
 export function Home() {
   const { tasks: initialTasks, loading, error } = useTasks();
@@ -15,12 +16,6 @@ export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-
-  /* barra de progresso */
-  const totalTasks = tasks.length;
-  const doneTasks = tasks.filter((t) => t.status === "done").length;
-  const progressPercentage =
-    totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
 
   useEffect(() => {
     setTasks(initialTasks);
@@ -58,28 +53,7 @@ export function Home() {
 
       <CreateTaskForm onCreate={handleCreate} />
 
-      <div className={styles.progressWrapper}>
-        <div className={styles.progressHeader}>
-          <span className={styles.progressTitle}>Progresso da semana</span>
-
-          <span className={styles.progressPercentage}>
-            {progressPercentage}%
-          </span>
-        </div>
-
-        <div className={styles.progressBar}>
-          <div
-            className={`${styles.progressFill} ${
-              progressPercentage === 100 ? styles.progressComplete : ""
-            }`}
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
-
-        <div className={styles.progressInfo}>
-          {doneTasks} de {totalTasks} tarefas concluídas
-        </div>
-      </div>
+      <ProgressSection tasks={tasks} />
 
       {tasks.map((task) => (
         <TaskCard

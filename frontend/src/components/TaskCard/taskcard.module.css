@@ -2,9 +2,14 @@
   background: var(--background-card);
   border-radius: 16px;
   padding: 1.6rem;
+
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+
+  height: 100%;
+  justify-content: space-between;
+
   border: 1px solid var(--card-border);
   box-shadow: var(--box-shadow-card);
   transition: all 0.25s ease;
@@ -25,11 +30,28 @@
   gap: 1rem;
 }
 
-.title { font-size: 1.3rem; font-weight: 700; color: var(--text); }
-.doneTitle { text-decoration: line-through; opacity: 0.7; }
-.description { font-size: 0.9rem; color: var(--text-color); margin-top: 4px; }
+.title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
 
-.badges { display: flex; gap: 8px; align-items: flex-start; }
+.doneTitle {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  margin-top: 4px;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
 
 .status {
   padding: 4px 10px;
@@ -38,9 +60,21 @@
   font-weight: 600;
   text-transform: capitalize;
 }
-.pending { background: rgba(255, 193, 7, 0.15); color: #f59e0b; }
-.in_progress { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.done { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+.pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #f59e0b;
+}
+
+.in_progress {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.done {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
 
 .priorityBadge {
   padding: 4px 8px;
@@ -50,46 +84,79 @@
   color: white;
 }
 
-.notifyBadge { font-size: 0.9rem; }
+.notifyBadge {
+  font-size: 0.9rem;
+}
 
-.divider { height: 1px; background: var(--card-border); }
+.divider {
+  height: 1px;
+  background: var(--card-border);
+}
 
-.dates { display: flex; flex-direction: column; font-size: 0.8rem; color: var(--text-color); gap: 4px; }
+.dates {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  gap: 4px;
+}
 
-.notifyText { font-size: 0.8rem; color: var(--accent-color); font-weight: 600; }
+/* área fixa para avisos */
 
-/* ✨ Badge semana encerrada moderno */
+.infoArea {
+  min-height: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.notifyText {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
 .closedBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+
   background: linear-gradient(90deg, #f3e8ff, #ede9fe);
   color: #6b46c1;
+
   font-weight: 700;
   font-size: 0.85rem;
+
   padding: 6px 12px;
   border-radius: 999px;
+
   border: 1px solid #c4b5fd;
-  margin-top: 10px;
+
   box-shadow: 0 2px 8px rgba(107, 70, 193, 0.15);
 }
 
-.lockIcon { font-size: 0.9rem; }
+.lockIcon {
+  font-size: 0.9rem;
+}
 
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 6px;
+  margin-top: auto;
 }
 
 .actions button {
   flex: 1;
   padding: 8px;
+
   border-radius: 8px;
   font-weight: 600;
+
   border: none;
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
@@ -112,7 +179,6 @@
 .editButton:hover:not(:disabled) {
   opacity: 0.9;
   transform: translateY(-2px);
-  background: var(--edit-submit);
 }
 
 .deleteButton {
@@ -123,7 +189,6 @@
 .deleteButton:hover:not(:disabled) {
   opacity: 0.9;
   transform: translateY(-2px);
-  background: var(--delete-submit);
 }
 
 .actions button:disabled {
@@ -134,16 +199,24 @@
 .doneCard {
   background-color: #f0fdf4;
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-  transition: all 0.3s ease;
 }
 
 .pulse {
   animation: pulseAnim 0.5s ease;
 }
+
 @keyframes pulseAnim {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
 
-.disabled { opacity: 0.5; cursor: not-allowed; }
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+.hiddenNotify {
+  visibility: hidden;
+}

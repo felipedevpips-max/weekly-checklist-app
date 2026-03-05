@@ -84,6 +84,7 @@ export function TaskCard({
           >
             {task.title}
           </h3>
+
           {task.description && (
             <p className={styles.description}>{task.description}</p>
           )}
@@ -91,9 +92,11 @@ export function TaskCard({
 
         <div className={styles.badges}>
           {task.notify && <span className={styles.notifyBadge}>🔔</span>}
+
           <span className={`${styles.status} ${styles[task.status]}`}>
             {statusLabels[task.status]}
           </span>
+
           <span className={styles.priorityBadge}>
             {priorityLabels[task.priority]}
           </span>
@@ -107,19 +110,25 @@ export function TaskCard({
         <span>⏰ Encerra: {formatDate(task.due_date)}</span>
       </div>
 
-      {task.notify && (
-        <div className={styles.notifyText}>Notificação ativa</div>
-      )}
-
-      {isWeekClosed && (
-        <div className={styles.closedBadge}>
-          <span className={styles.lockIcon}>🔒</span>
-          Semana encerrada
+      {/* área fixa para avisos */}
+      <div className={styles.infoArea}>
+        <div
+          className={`${styles.notifyText} ${
+            !task.notify ? styles.hiddenNotify : ""
+          }`}
+        >
+          Notificação ativa
         </div>
-      )}
+
+        {isWeekClosed && (
+          <div className={styles.closedBadge}>
+            <span className={styles.lockIcon}>🔒</span>
+            Semana encerrada
+          </div>
+        )}
+      </div>
 
       <div className={styles.actions}>
-        {/* Lógica histórica */}
         {isWeekClosed ? (
           <>
             {task.status === "pending" && (
@@ -131,6 +140,7 @@ export function TaskCard({
                 >
                   Tentar novamente
                 </button>
+
                 <button
                   onClick={onDelete}
                   disabled={loading}
@@ -140,6 +150,7 @@ export function TaskCard({
                 </button>
               </>
             )}
+
             {task.status === "done" && (
               <button
                 onClick={onDelete}
@@ -149,11 +160,9 @@ export function TaskCard({
                 Deletar
               </button>
             )}
-            {/* em_progress não mostra botões */}
           </>
         ) : (
           <>
-            {/* Semana aberta */}
             {task.status !== "done" && (
               <button
                 onClick={handleNextStatus}
@@ -163,6 +172,7 @@ export function TaskCard({
                 {statusButtonText}
               </button>
             )}
+
             {onEdit && (
               <button
                 onClick={onEdit}
@@ -172,6 +182,7 @@ export function TaskCard({
                 Editar
               </button>
             )}
+
             {onDelete && (
               <button
                 onClick={onDelete}

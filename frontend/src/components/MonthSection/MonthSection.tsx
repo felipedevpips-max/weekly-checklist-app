@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-
+import { useState } from "react";
 import type { Week } from "../../types/week";
+import { getWeekNumber } from "../../utils/getWeekNumber";
 import styles from "./monthSection.module.css";
 
 interface Props {
@@ -16,23 +16,38 @@ export function MonthSection({
   selectedWeekId,
   onSelectWeek,
 }: Props) {
-  // estado inicial lendo localStorage
-  const [collapsed, setCollapsed] = useState(() => {
+
+  // verifica se existe semana ativa neste mês
+  const hasActiveWeek = weeks.some((w) => w.id === selectedWeekId);
+
+  // estado inicial com localStorage
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
     const saved = localStorage.getItem(`month-collapse-${month}`);
-    return saved ? JSON.parse(saved) : true; // fechado por padrão
+
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+
+    // padrão: fechado (exceto se tiver semana ativa)
+    return !hasActiveWeek;
   });
 
-  // salva quando mudar
-  useEffect(() => {
-    localStorage.setItem(`month-collapse-${month}`, JSON.stringify(collapsed));
-  }, [collapsed, month]);
-
   const toggleCollapse = () => {
-    setCollapsed((prev: boolean) => !prev);
+    setCollapsed((prev: boolean) => {
+      const newValue = !prev;
+
+      localStorage.setItem(
+        `month-collapse-${month}`,
+        JSON.stringify(newValue)
+      );
+
+      return newValue;
+    });
   };
 
   return (
     <div className={styles.monthSection}>
+
       {/* HEADER DO MÊS */}
       <div className={styles.monthHeader} onClick={toggleCollapse}>
         <h3 className={styles.monthTitle}>{month}</h3>
@@ -46,28 +61,32 @@ export function MonthSection({
         </span>
       </div>
 
-      {/* SEMANAS */}
+      {/* LISTA DE SEMANAS */}
       <div
         className={`${styles.weeksContainer} ${
           collapsed ? styles.collapsed : ""
         }`}
       >
-        {weeks.map((week, index) => {
+        {weeks.map((week) => {
           const isActive = selectedWeekId === week.id;
 
           return (
             <div key={week.id} className={styles.timelineRow}>
+              
               <div className={styles.timelineDot}></div>
 
               <button
-                className={isActive ? styles.activeWeek : styles.weekButton}
+                className={
+                  isActive ? styles.activeWeek : styles.weekButton
+                }
                 onClick={(e) => {
-                  e.stopPropagation(); // evita fechar o mês ao clicar
+                  e.stopPropagation();
                   onSelectWeek(week);
                 }}
               >
-                Semana {index + 1}
+                Semana {getWeekNumber(week.start_date)}
               </button>
+
             </div>
           );
         })}

@@ -18,5 +18,14 @@ export function groupWeeksByMonth(weeks: Week[]) {
     groups[month].push(week);
   });
 
+  // ordenar semanas dentro do mês
+  Object.keys(groups).forEach((month) => {
+    groups[month].sort(
+      (a, b) =>
+        new Date(b.start_date).getTime() -
+        new Date(a.start_date).getTime()
+    );
+  });
+
   return groups;
 }

@@ -44,14 +44,11 @@ export function History() {
 
       setWeeks(closedWeeks);
 
-      if (closedWeeks.length > 0) {
-        setSelectedWeek(closedWeeks[0]);
-        fetchTasks(closedWeeks[0].id);
-      }
+      // não seleciona semana automaticamente ao carregar
     } finally {
       setLoading(false);
     }
-  }, [fetchTasks]);
+  }, []);
 
   useEffect(() => {
     fetchWeeks();
@@ -94,16 +91,27 @@ export function History() {
         weeksByMonth={weeksByMonth}
         selectedWeekId={selectedWeek?.id}
         onSelectWeek={(week) => {
+          // se clicar na mesma semana -> desseleciona
           if (selectedWeek?.id === week.id) {
             handleDeselectWeek();
             return;
           }
 
+          // seleciona semana
           setSelectedWeek(week);
           fetchTasks(week.id);
+
+          // scroll suave até as tasks
+          setTimeout(() => {
+            window.scrollTo({
+              top: document.body.scrollHeight,
+              behavior: "smooth",
+            });
+          }, 100);
         }}
       />
 
+      {/* TASKS GRID */}
       {selectedWeek && (
         <TasksGrid
           tasks={visibleTasks}
@@ -111,6 +119,21 @@ export function History() {
           onDelete={handleDeleteClick}
         />
       )}
+
+      {/* EMPTY STATE */}
+      {!selectedWeek && (
+        <div className={styles.emptyState}>
+          <span className={styles.emptyIcon}>📅</span>
+
+          <p className={styles.emptyTitle}>Nenhuma semana selecionada</p>
+
+          <p className={styles.emptySubtitle}>
+            Selecione uma semana na linha do tempo para visualizar as tarefas
+          </p>
+        </div>
+      )}
+
+      {/* MODALS */}
 
       <MoveHistoryModal
         visible={modalMoveVisible}
@@ -124,18 +147,6 @@ export function History() {
         onConfirm={confirmDelete}
         onCancel={() => setModalDeleteVisible(false)}
       />
-
-      {!selectedWeek && (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}>📅</span>
-
-          <p className={styles.emptyTitle}>Nenhuma semana selecionada</p>
-
-          <p className={styles.emptySubtitle}>
-            Selecione uma semana na linha do tempo para visualizar as tarefas
-          </p>
-        </div>
-      )}
     </Container>
   );
 }

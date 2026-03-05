@@ -150,3 +150,30 @@
   background: #553c9a;
   transform: translateY(-2px);
 }
+
+.monthsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.monthSection {
+  background: var(--background-card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.monthTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.weeksRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

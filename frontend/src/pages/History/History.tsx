@@ -8,6 +8,30 @@ import styles from "./history.module.css";
 import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
 import { MoveHistoryModal } from "../../components/MoveHistoryModal/MoveHistoryModal";
 
+// =============================
+// 📦 Agrupar semanas por mês
+// =============================
+function groupWeeksByMonth(weeks: Week[]) {
+  const groups: Record<string, Week[]> = {};
+
+  weeks.forEach((week) => {
+    const date = new Date(week.start_date);
+
+    const month = date.toLocaleString("pt-BR", {
+      month: "long",
+      year: "numeric",
+    });
+
+    if (!groups[month]) {
+      groups[month] = [];
+    }
+
+    groups[month].push(week);
+  });
+
+  return groups;
+}
+
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
@@ -22,10 +46,10 @@ export function History() {
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-
-
-
-  
+  // =============================
+  // 📊 Agrupamento de semanas
+  // =============================
+  const weeksByMonth = groupWeeksByMonth(weeks);
 
   // =============================
   // 📥 Buscar tasks da semana
@@ -46,6 +70,7 @@ export function History() {
     try {
       const res = await api.get("/weeks");
       const closedWeeks = res.data.filter((w: Week) => w.closed);
+
       setWeeks(closedWeeks);
 
       if (closedWeeks.length > 0) {
@@ -64,19 +89,18 @@ export function History() {
   }, [fetchWeeks]);
 
   // =============================
-  // 🔁 Mover task manualmente (apenas pending)
+  // 🔁 Mover task manualmente
   // =============================
   const handleRetry = async (task: Task) => {
     try {
       await api.post(`/weeks/open/tasks`, { taskId: task.id });
 
-      // Remove visualmente da lista do histórico
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
 
       setModalMoveTasks([task]);
       setModalMoveVisible(true);
     } catch (error) {
-      console.error("Erro ao mover task para semana aberta:", error);
+      console.error("Erro ao mover task:", error);
     }
   };
 
@@ -93,7 +117,10 @@ export function History() {
 
     try {
       await api.delete(`/tasks/${taskToDelete.id}`);
-      setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id));
+
+      setTasks((prev) =>
+        prev.filter((t) => t.id !== taskToDelete.id)
+      );
     } catch (error) {
       console.error("Erro ao deletar task:", error);
     } finally {
@@ -108,10 +135,11 @@ export function History() {
   };
 
   // =============================
-  // 🛡 FILTRO DEFENSIVO
-  // Nunca renderiza in_progress no histórico
+  // 🛡 Filtro defensivo
   // =============================
-  const visibleTasks = tasks.filter((task) => task.status !== "in_progress");
+  const visibleTasks = tasks.filter(
+    (task) => task.status !== "in_progress"
+  );
 
   if (loading) return <p>Carregando histórico...</p>;
   if (weeks.length === 0) return <p>Nenhuma semana fechada encontrada.</p>;
@@ -120,25 +148,40 @@ export function History() {
     <Container>
       <h1 className={styles.title}>Histórico de Semanas</h1>
 
-      <div className={styles.weeksWrapper}>
-        {weeks.map((week) => (
-          <button
-            key={week.id}
-            className={
-              selectedWeek?.id === week.id
-                ? styles.activeWeek
-                : styles.weekButton
-            }
-            onClick={() => {
-              setSelectedWeek(week);
-              fetchTasks(week.id);
-            }}
-          >
-            {new Date(week.start_date).toLocaleDateString()} -{" "}
-            {new Date(week.end_date).toLocaleDateString()}
-          </button>
+      {/* =============================
+          MESES
+      ============================= */}
+
+      <div className={styles.monthsWrapper}>
+        {Object.entries(weeksByMonth).map(([month, monthWeeks]) => (
+          <div key={month} className={styles.monthSection}>
+            <h3 className={styles.monthTitle}>{month}</h3>
+
+            <div className={styles.weeksRow}>
+              {monthWeeks.map((week, index) => (
+                <button
+                  key={week.id}
+                  className={
+                    selectedWeek?.id === week.id
+                      ? styles.activeWeek
+                      : styles.weekButton
+                  }
+                  onClick={() => {
+                    setSelectedWeek(week);
+                    fetchTasks(week.id);
+                  }}
+                >
+                  Semana {index + 1}
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
+
+      {/* =============================
+          TASKS
+      ============================= */}
 
       <div className={styles.tasksSection}>
         {visibleTasks.length === 0 && (
@@ -151,7 +194,9 @@ export function History() {
             task={task}
             isWeekClosed={true}
             onRetry={
-              task.status === "pending" ? () => handleRetry(task) : undefined
+              task.status === "pending"
+                ? () => handleRetry(task)
+                : undefined
             }
             onDelete={() => handleDeleteClick(task)}
           />

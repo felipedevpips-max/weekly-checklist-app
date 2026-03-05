@@ -1,58 +1,200 @@
 .monthSection {
-  background: var(--background-card);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 16px;
+  position: relative;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--card-border);
 }
+
+/* ============================= */
+/* HEADER DO MÊS */
+/* ============================= */
+
+.monthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 14px;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.monthHeader:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateX(2px);
+}
+
+/* título do mês */
 
 .monthTitle {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  margin-bottom: 12px;
   color: var(--text);
   text-transform: capitalize;
+  letter-spacing: 0.4px;
 }
 
-.weeksRow {
+/* seta collapse */
+
+.arrow {
+  font-size: 0.75rem;
+  color: var(--text-color);
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.arrowCollapsed {
+  transform: rotate(-90deg);
+}
+
+/* ============================= */
+/* CONTAINER DAS SEMANAS */
+/* ============================= */
+
+.weeksContainer {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 14px;
+
+  padding-left: 22px;
+  margin-top: 14px;
+
+  overflow: hidden;
+
+  max-height: 500px;
+
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
-/* Botões das semanas */
+.collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* ============================= */
+/* TIMELINE */
+/* ============================= */
+
+.timelineRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  position: relative;
+}
+
+/* linha vertical */
+
+.timelineRow::before {
+  content: "";
+  position: absolute;
+
+  left: -12px;
+  top: -16px;
+  bottom: -16px;
+
+  width: 2px;
+
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--card-border),
+    var(--card-border),
+    transparent
+  );
+}
+
+/* ponto da timeline */
+
+.timelineDot {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: var(--accent-color);
+
+  flex-shrink: 0;
+
+  transition: all 0.25s ease;
+}
+
+/* quando passa o mouse */
+
+.timelineRow:hover .timelineDot {
+  transform: scale(1.2);
+  box-shadow: 0 0 6px var(--accent-color);
+}
+
+/* ============================= */
+/* BOTÕES DAS SEMANAS */
+/* ============================= */
 
 .weekButton {
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 999px;
+
   border: 1px solid var(--card-border);
   background: var(--background-card);
+
   color: var(--text-color);
-  cursor: pointer;
-  transition: all 0.2s ease;
   font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+  cursor: pointer;
+
+  transition:
+    all 0.2s ease,
+    transform 0.15s ease;
 }
 
 .weekButton:hover {
-  border-color: var(--primary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
+  color: var(--text);
+
+  transform: translateX(3px);
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* ============================= */
+/* SEMANA ATIVA */
+/* ============================= */
+
 .activeWeek {
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 999px;
+
+  border: none;
+
   background: var(--primary-color);
   color: white;
-  border: none;
-  cursor: pointer;
+
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+
+  box-shadow: var(--box-shadow-card);
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .activeWeek:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  transform: translateX(3px);
+  opacity: 0.95;
+}
+
+/* destaque do ponto ativo */
+
+.activeWeek + .timelineDot,
+.timelineRow:has(.activeWeek) .timelineDot {
+  background: #fff;
+  box-shadow: 0 0 8px var(--accent-color);
 }

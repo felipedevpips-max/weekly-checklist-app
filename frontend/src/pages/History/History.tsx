@@ -118,9 +118,7 @@ export function History() {
     try {
       await api.delete(`/tasks/${taskToDelete.id}`);
 
-      setTasks((prev) =>
-        prev.filter((t) => t.id !== taskToDelete.id)
-      );
+      setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id));
     } catch (error) {
       console.error("Erro ao deletar task:", error);
     } finally {
@@ -137,9 +135,7 @@ export function History() {
   // =============================
   // 🛡 Filtro defensivo
   // =============================
-  const visibleTasks = tasks.filter(
-    (task) => task.status !== "in_progress"
-  );
+  const visibleTasks = tasks.filter((task) => task.status !== "in_progress");
 
   if (loading) return <p>Carregando histórico...</p>;
   if (weeks.length === 0) return <p>Nenhuma semana fechada encontrada.</p>;
@@ -194,9 +190,7 @@ export function History() {
             task={task}
             isWeekClosed={true}
             onRetry={
-              task.status === "pending"
-                ? () => handleRetry(task)
-                : undefined
+              task.status === "pending" ? () => handleRetry(task) : undefined
             }
             onDelete={() => handleDeleteClick(task)}
           />

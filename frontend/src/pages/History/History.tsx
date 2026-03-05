@@ -4,10 +4,8 @@ import type { Task } from "../../types/task";
 import { api } from "../../services/api";
 import { Container } from "../../components/Container/Container";
 
-
 import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
 import { MoveHistoryModal } from "../../components/MoveHistoryModal/MoveHistoryModal";
-
 
 import styles from "./history.module.css";
 import { MonthList } from "../../components/MonthList/MonthList";
@@ -27,6 +25,11 @@ export function History() {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const weeksByMonth = groupWeeksByMonth(weeks);
+
+  const handleDeselectWeek = () => {
+    setSelectedWeek(null);
+    setTasks([]);
+  };
 
   const fetchTasks = useCallback(async (weekId: number) => {
     const res = await api.get(`/weeks/${weekId}/tasks`);
@@ -91,18 +94,23 @@ export function History() {
         weeksByMonth={weeksByMonth}
         selectedWeekId={selectedWeek?.id}
         onSelectWeek={(week) => {
+          if (selectedWeek?.id === week.id) {
+            handleDeselectWeek();
+            return;
+          }
+
           setSelectedWeek(week);
           fetchTasks(week.id);
         }}
       />
 
-      <TasksGrid
-        tasks={visibleTasks}
-        onRetry={handleRetry}
-        onDelete={handleDeleteClick}
-      />
-
-      
+      {selectedWeek && (
+        <TasksGrid
+          tasks={visibleTasks}
+          onRetry={handleRetry}
+          onDelete={handleDeleteClick}
+        />
+      )}
 
       <MoveHistoryModal
         visible={modalMoveVisible}
@@ -116,6 +124,18 @@ export function History() {
         onConfirm={confirmDelete}
         onCancel={() => setModalDeleteVisible(false)}
       />
+
+      {!selectedWeek && (
+        <div className={styles.emptyState}>
+          <span className={styles.emptyIcon}>📅</span>
+
+          <p className={styles.emptyTitle}>Nenhuma semana selecionada</p>
+
+          <p className={styles.emptySubtitle}>
+            Selecione uma semana na linha do tempo para visualizar as tarefas
+          </p>
+        </div>
+      )}
     </Container>
   );
 }

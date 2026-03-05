@@ -110,3 +110,49 @@
     transform: translateY(0);
   }
 }
+
+
+
+.emptyState {
+  margin-top: 40px;
+  padding: 48px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  border-radius: 14px;
+  border: 1px dashed var(--card-border);
+
+  background: var(--background-card);
+
+  color: var(--text-color);
+  text-align: center;
+
+  box-shadow: var(--box-shadow-card);
+
+  transition: all 0.25s ease;
+}
+
+.emptyState:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+}
+
+.emptyIcon {
+  font-size: 32px;
+  opacity: 0.7;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.emptySubtitle {
+  font-size: 14px;
+  color: var(--text-color);
+}

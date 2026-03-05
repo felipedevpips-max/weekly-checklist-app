@@ -13,8 +13,6 @@
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
-  
-  
 }
 
 body.dark {

@@ -3,10 +3,14 @@ import type { Week } from "../../types/week";
 import type { Task } from "../../types/task";
 import { api } from "../../services/api";
 import { Container } from "../../components/Container/Container";
-import { TaskCard } from "../../components/TaskCard/TaskCard";
-import styles from "./history.module.css";
+
 import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
 import { MoveHistoryModal } from "../../components/MoveHistoryModal/MoveHistoryModal";
+
+import styles from "./history.module.css";
+import { MonthList } from "../../components/MonthList/MonthList";
+import { TasksGrid } from "../../components/TasksGrid/TasksGrid";
+import { groupWeeksByMonth } from "../../utils/groupWeeksByMonth";
 
 export function History() {
   const [weeks, setWeeks] = useState<Week[]>([]);
@@ -14,75 +18,51 @@ export function History() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal mover tasks
   const [modalMoveVisible, setModalMoveVisible] = useState(false);
   const [modalMoveTasks, setModalMoveTasks] = useState<Task[]>([]);
 
-  // Modal deletar task
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
+  const weeksByMonth = groupWeeksByMonth(weeks);
 
+  const handleDeselectWeek = () => {
+    setSelectedWeek(null);
+    setTasks([]);
+  };
 
-
-  
-
-  // =============================
-  // 📥 Buscar tasks da semana
-  // =============================
   const fetchTasks = useCallback(async (weekId: number) => {
-    try {
-      const res = await api.get(`/weeks/${weekId}/tasks`);
-      setTasks(res.data);
-    } catch (error) {
-      console.error("Erro ao buscar tasks da semana:", error);
-    }
+    const res = await api.get(`/weeks/${weekId}/tasks`);
+    setTasks(res.data);
   }, []);
 
-  // =============================
-  // 📥 Buscar semanas fechadas
-  // =============================
   const fetchWeeks = useCallback(async () => {
     try {
       const res = await api.get("/weeks");
+
       const closedWeeks = res.data.filter((w: Week) => w.closed);
+
       setWeeks(closedWeeks);
 
-      if (closedWeeks.length > 0) {
-        setSelectedWeek(closedWeeks[0]);
-        fetchTasks(closedWeeks[0].id);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar semanas:", error);
+      // não seleciona semana automaticamente ao carregar
     } finally {
       setLoading(false);
     }
-  }, [fetchTasks]);
+  }, []);
 
   useEffect(() => {
     fetchWeeks();
   }, [fetchWeeks]);
 
-  // =============================
-  // 🔁 Mover task manualmente (apenas pending)
-  // =============================
   const handleRetry = async (task: Task) => {
-    try {
-      await api.post(`/weeks/open/tasks`, { taskId: task.id });
+    await api.post(`/weeks/open/tasks`, { taskId: task.id });
 
-      // Remove visualmente da lista do histórico
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
+    setTasks((prev) => prev.filter((t) => t.id !== task.id));
 
-      setModalMoveTasks([task]);
-      setModalMoveVisible(true);
-    } catch (error) {
-      console.error("Erro ao mover task para semana aberta:", error);
-    }
+    setModalMoveTasks([task]);
+    setModalMoveVisible(true);
   };
 
-  // =============================
-  // 🗑 Deletar task
-  // =============================
   const handleDeleteClick = (task: Task) => {
     setTaskToDelete(task);
     setModalDeleteVisible(true);
@@ -91,86 +71,81 @@ export function History() {
   const confirmDelete = async () => {
     if (!taskToDelete) return;
 
-    try {
-      await api.delete(`/tasks/${taskToDelete.id}`);
-      setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id));
-    } catch (error) {
-      console.error("Erro ao deletar task:", error);
-    } finally {
-      setTaskToDelete(null);
-      setModalDeleteVisible(false);
-    }
-  };
+    await api.delete(`/tasks/${taskToDelete.id}`);
 
-  const cancelDelete = () => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskToDelete.id));
+
     setTaskToDelete(null);
     setModalDeleteVisible(false);
   };
 
-  // =============================
-  // 🛡 FILTRO DEFENSIVO
-  // Nunca renderiza in_progress no histórico
-  // =============================
   const visibleTasks = tasks.filter((task) => task.status !== "in_progress");
 
   if (loading) return <p>Carregando histórico...</p>;
-  if (weeks.length === 0) return <p>Nenhuma semana fechada encontrada.</p>;
 
   return (
     <Container>
       <h1 className={styles.title}>Histórico de Semanas</h1>
 
-      <div className={styles.weeksWrapper}>
-        {weeks.map((week) => (
-          <button
-            key={week.id}
-            className={
-              selectedWeek?.id === week.id
-                ? styles.activeWeek
-                : styles.weekButton
-            }
-            onClick={() => {
-              setSelectedWeek(week);
-              fetchTasks(week.id);
-            }}
-          >
-            {new Date(week.start_date).toLocaleDateString()} -{" "}
-            {new Date(week.end_date).toLocaleDateString()}
-          </button>
-        ))}
-      </div>
+      <MonthList
+        weeksByMonth={weeksByMonth}
+        selectedWeekId={selectedWeek?.id}
+        onSelectWeek={(week) => {
+          // se clicar na mesma semana -> desseleciona
+          if (selectedWeek?.id === week.id) {
+            handleDeselectWeek();
+            return;
+          }
 
-      <div className={styles.tasksSection}>
-        {visibleTasks.length === 0 && (
-          <p>Nenhuma task encontrada nesta semana.</p>
-        )}
+          // seleciona semana
+          setSelectedWeek(week);
+          fetchTasks(week.id);
 
-        {visibleTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            isWeekClosed={true}
-            onRetry={
-              task.status === "pending" ? () => handleRetry(task) : undefined
-            }
-            onDelete={() => handleDeleteClick(task)}
-          />
-        ))}
-      </div>
+          // scroll suave até as tasks
+          setTimeout(() => {
+            window.scrollTo({
+              top: document.body.scrollHeight,
+              behavior: "smooth",
+            });
+          }, 100);
+        }}
+      />
 
-      {/* Modal mover tasks */}
+      {/* TASKS GRID */}
+      {selectedWeek && (
+        <TasksGrid
+          tasks={visibleTasks}
+          onRetry={handleRetry}
+          onDelete={handleDeleteClick}
+        />
+      )}
+
+      {/* EMPTY STATE */}
+      {!selectedWeek && (
+        <div className={styles.emptyState}>
+          <span className={styles.emptyIcon}>📅</span>
+
+          <p className={styles.emptyTitle}>Nenhuma semana selecionada</p>
+
+          <p className={styles.emptySubtitle}>
+            Selecione uma semana na linha do tempo para visualizar as tarefas
+          </p>
+        </div>
+      )}
+
+      {/* MODALS */}
+
       <MoveHistoryModal
         visible={modalMoveVisible}
         tasks={modalMoveTasks}
         onClose={() => setModalMoveVisible(false)}
       />
 
-      {/* Modal deletar task */}
       <DeleteHistoryModal
         visible={modalDeleteVisible}
         task={taskToDelete ?? undefined}
         onConfirm={confirmDelete}
-        onCancel={cancelDelete}
+        onCancel={() => setModalDeleteVisible(false)}
       />
     </Container>
   );

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import type { Week } from "../../types/week";
 import styles from "./monthSection.module.css";
 
@@ -15,10 +16,19 @@ export function MonthSection({
   selectedWeekId,
   onSelectWeek,
 }: Props) {
-  const [collapsed, setCollapsed] = useState(true);
+  // estado inicial lendo localStorage
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem(`month-collapse-${month}`);
+    return saved ? JSON.parse(saved) : true; // fechado por padrão
+  });
+
+  // salva quando mudar
+  useEffect(() => {
+    localStorage.setItem(`month-collapse-${month}`, JSON.stringify(collapsed));
+  }, [collapsed, month]);
 
   const toggleCollapse = () => {
-    setCollapsed((prev) => !prev);
+    setCollapsed((prev: boolean) => !prev);
   };
 
   return (
@@ -51,7 +61,10 @@ export function MonthSection({
 
               <button
                 className={isActive ? styles.activeWeek : styles.weekButton}
-                onClick={() => onSelectWeek(week)}
+                onClick={(e) => {
+                  e.stopPropagation(); // evita fechar o mês ao clicar
+                  onSelectWeek(week);
+                }}
               >
                 Semana {index + 1}
               </button>

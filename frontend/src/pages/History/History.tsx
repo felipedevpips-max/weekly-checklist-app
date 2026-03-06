@@ -23,6 +23,7 @@ export function History() {
 
   const [undoToastVisible, setUndoToastVisible] = useState(false);
   const [lastMovedTask, setLastMovedTask] = useState<Task | null>(null);
+  const [lastWeekId, setLastWeekId] = useState<number | null>(null);
 
   const weeksByMonth = groupWeeksByMonth(weeks);
 
@@ -52,28 +53,42 @@ export function History() {
     fetchWeeks();
   }, [fetchWeeks]);
 
+  // ----------------------------
+  // RETRY (mover para semana aberta)
+  // ----------------------------
   const handleRetry = async (task: Task) => {
+    if (!selectedWeek) return;
+
     await api.post(`/weeks/open/tasks`, { taskId: task.id });
 
     setTasks((prev) => prev.filter((t) => t.id !== task.id));
 
     setLastMovedTask(task);
+    setLastWeekId(selectedWeek.id);
     setUndoToastVisible(true);
   };
 
+  // ----------------------------
+  // UNDO
+  // ----------------------------
   const handleUndoMove = async () => {
-    if (!lastMovedTask || !selectedWeek) return;
+    if (!lastMovedTask || !lastWeekId) return;
 
-    await api.post(`/weeks/${selectedWeek.id}/tasks`, {
+    await api.post("/weeks/move-back", {
       taskId: lastMovedTask.id,
+      weekId: lastWeekId,
     });
 
-    setTasks((prev) => [...prev, lastMovedTask]);
+    await fetchTasks(lastWeekId);
 
     setUndoToastVisible(false);
     setLastMovedTask(null);
+    setLastWeekId(null);
   };
 
+  // ----------------------------
+  // DELETE
+  // ----------------------------
   const handleDeleteClick = (task: Task) => {
     setTaskToDelete(task);
     setModalDeleteVisible(true);
@@ -92,11 +107,16 @@ export function History() {
 
   const visibleTasks = tasks.filter((task) => task.status !== "in_progress");
 
+  // ----------------------------
+  // AUTO HIDE TOAST
+  // ----------------------------
   useEffect(() => {
     if (!undoToastVisible) return;
 
     const timer = setTimeout(() => {
       setUndoToastVisible(false);
+      setLastMovedTask(null);
+      setLastWeekId(null);
     }, 5000);
 
     return () => clearTimeout(timer);

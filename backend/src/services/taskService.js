@@ -27,7 +27,7 @@ async function createTask(data) {
       notify,
       dueDate,
       week.id,
-    ]
+    ],
   );
 
   return result.rows[0];
@@ -44,7 +44,7 @@ async function getTasks(weekId = null) {
 
   const result = await pool.query(
     `SELECT * FROM tasks ${whereClause} ORDER BY id ASC`,
-    params
+    params,
   );
 
   return result.rows;
@@ -56,7 +56,7 @@ async function getTasks(weekId = null) {
 async function updateTask(id, data) {
   const checkResult = await pool.query(
     `SELECT w.closed FROM tasks t JOIN weeks w ON w.id = t.week_id WHERE t.id = $1`,
-    [id]
+    [id],
   );
 
   if (!checkResult.rows.length) throw new Error("Task not found");
@@ -85,7 +85,7 @@ async function updateTask(id, data) {
       data.notify,
       data.dueDate,
       id,
-    ]
+    ],
   );
 
   return result.rows[0];
@@ -96,17 +96,13 @@ async function updateTask(id, data) {
 // ----------------------------
 async function deleteTask(id) {
   // apenas marca deleted_at, ignora se semana fechada
-  const checkResult = await pool.query(
-    `SELECT * FROM tasks WHERE id = $1`,
-    [id]
-  );
+  const checkResult = await pool.query(`SELECT * FROM tasks WHERE id = $1`, [
+    id,
+  ]);
 
   if (!checkResult.rows.length) throw new Error("Task not found");
 
-  await pool.query(
-    `UPDATE tasks SET deleted_at = NOW() WHERE id = $1`,
-    [id]
-  );
+  await pool.query(`UPDATE tasks SET deleted_at = NOW() WHERE id = $1`, [id]);
 
   return true;
 }
@@ -121,7 +117,7 @@ async function moveTaskToOpenWeek(taskId) {
 
     const taskRes = await client.query(
       `SELECT * FROM tasks WHERE id = $1 AND deleted_at IS NULL`,
-      [taskId]
+      [taskId],
     );
     if (!taskRes.rows.length) throw new Error("Task não encontrada");
 
@@ -130,7 +126,7 @@ async function moveTaskToOpenWeek(taskId) {
 
     await client.query(
       `UPDATE tasks SET week_id = $1, status = 'pending' WHERE id = $2`,
-      [activeWeek.id, taskId]
+      [activeWeek.id, taskId],
     );
 
     await client.query("COMMIT");
@@ -141,6 +137,23 @@ async function moveTaskToOpenWeek(taskId) {
   } finally {
     client.release();
   }
+}
+
+// ----------------------------
+// MOVE TASK PARA SEMANA ESPECÍFICA (UNDO)
+// ----------------------------
+async function moveTaskToWeek(taskId, weekId) {
+  const result = await pool.query(
+    `UPDATE tasks
+     SET week_id = $1
+     WHERE id = $2
+     RETURNING *`,
+    [weekId, taskId],
+  );
+
+  if (!result.rows.length) throw new Error("Task não encontrada");
+
+  return result.rows[0];
 }
 
 // ----------------------------
@@ -158,5 +171,6 @@ module.exports = {
   updateTask,
   deleteTask,
   moveTaskToOpenWeek,
+  moveTaskToWeek,
   closeCurrentWeek,
 };

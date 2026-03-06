@@ -1,0 +1,158 @@
+/* ============================= */
+/* CONTAINER */
+/* ============================= */
+
+.container {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 32px;
+
+  background: var(--background-card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+
+  box-shadow: var(--box-shadow-card);
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  transition: all 0.25s ease;
+}
+
+.container:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+}
+
+/* ============================= */
+/* TITLES */
+/* ============================= */
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 10px;
+  color: var(--text);
+}
+
+/* ============================= */
+/* TEXT */
+/* ============================= */
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* ============================= */
+/* LIST */
+/* ============================= */
+
+.list {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.list li {
+  position: relative;
+}
+
+/* ============================= */
+/* TECH GRID */
+/* ============================= */
+
+.techGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+/* ============================= */
+/* TECH CARD */
+/* ============================= */
+
+.techCard {
+  background: var(--background-card);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  gap: 8px;
+
+  transition: all 0.2s ease;
+}
+
+.techCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-color);
+  box-shadow: var(--box-shadow-card);
+}
+
+/* ============================= */
+/* TECH ICON */
+/* ============================= */
+
+.techIcon {
+  width: 36px;
+  height: 36px;
+}
+
+/* ============================= */
+/* TECH TEXT */
+/* ============================= */
+
+.techCard h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.techCard p {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  line-height: 1.4;
+}
+
+/* ============================= */
+/* LOADING */
+/* ============================= */
+
+.loading {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* ============================= */
+/* RESPONSIVO */
+/* ============================= */
+
+@media (max-width: 600px) {
+  .container {
+    padding: 24px;
+  }
+
+  .techGrid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}

@@ -17,4 +17,7 @@ router.get("/:id/tasks", weekController.getWeekTasks);
 // Mover task para semana aberta
 router.post("/open/tasks", weekController.moveTaskToOpenWeek);
 
+// Mover task de volta para semana específica (undo)
+router.post("/move-back", weekController.moveTaskBackToWeek);
+
 module.exports = router;

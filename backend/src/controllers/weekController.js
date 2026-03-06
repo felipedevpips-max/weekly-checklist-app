@@ -5,7 +5,10 @@ const taskService = require("../services/taskService");
 async function getCurrentWeek(req, res) {
   try {
     const data = await weekService.getCurrentWeekWithTasks();
-    if (!data) return res.status(404).json({ message: "Nenhuma semana ativa encontrada" });
+    if (!data)
+      return res
+        .status(404)
+        .json({ message: "Nenhuma semana ativa encontrada" });
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -55,10 +58,25 @@ async function moveTaskToOpenWeek(req, res) {
   }
 }
 
+// Mover task de volta para semana específica (undo)
+
+async function moveTaskBackToWeek(req, res) {
+  try {
+    const { taskId, weekId } = req.body;
+
+    const task = await taskService.moveTaskToWeek(taskId, weekId);
+
+    res.json(task);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
 module.exports = {
   getCurrentWeek,
   closeWeek,
   getAllWeeks,
   getWeekTasks,
+  moveTaskBackToWeek,
   moveTaskToOpenWeek,
 };

@@ -19,8 +19,8 @@ export function DeleteHistoryModal({ visible, task, onConfirm, onCancel }: Delet
           Deseja realmente deletar a task: <span className={styles.taskTitle}>{task.title}</span>?
         </p>
         <div className={styles.buttons}>
-          <button onClick={onCancel} className={styles.cancel}>Cancelar</button>
           <button onClick={onConfirm} className={styles.delete}>Deletar</button>
+          <button onClick={onCancel} className={styles.cancel}>Cancelar</button>
         </div>
       </div>
     </div>

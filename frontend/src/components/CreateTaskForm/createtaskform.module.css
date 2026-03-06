@@ -156,9 +156,9 @@ button {
   transition: all 0.2s ease;
 }
 .submitButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  
-  background: var(--hover-submit);
+  border-color: var(--accent-color);
+  color: var(--text);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 button:hover:not(:disabled) {

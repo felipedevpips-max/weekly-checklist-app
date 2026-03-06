@@ -63,29 +63,69 @@
 }
 
 .cancel {
-  background: var(--input-bg);
-  color: var(--text);
+  flex: 1;
+
+  background: var(--primary-color);
+  border: none;
+  padding: 12px;
+
+  border-radius: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .cancel:hover {
-  background: var(--card-border);
+  transform: translateY(-2px);
+
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 .delete {
-  background: var(--primary-color);
-  color: white;
+  flex: 1;
+
+  background: var(--delete-submit);
+  border: none;
+  padding: 12px;
+
+  border-radius: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .delete:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(40px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

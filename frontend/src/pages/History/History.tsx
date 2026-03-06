@@ -5,7 +5,7 @@ import { api } from "../../services/api";
 import { Container } from "../../components/Container/Container";
 
 import { DeleteHistoryModal } from "../../components/DeleteHistoryModal/DeleteHistoryModal";
-import { MoveHistoryModal } from "../../components/MoveHistoryModal/MoveHistoryModal";
+import { UndoToast } from "../../components/UndoToast/UndoToast";
 
 import styles from "./history.module.css";
 import { MonthList } from "../../components/MonthList/MonthList";
@@ -18,11 +18,11 @@ export function History() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [modalMoveVisible, setModalMoveVisible] = useState(false);
-  const [modalMoveTasks, setModalMoveTasks] = useState<Task[]>([]);
-
   const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+
+  const [undoToastVisible, setUndoToastVisible] = useState(false);
+  const [lastMovedTask, setLastMovedTask] = useState<Task | null>(null);
 
   const weeksByMonth = groupWeeksByMonth(weeks);
 
@@ -43,8 +43,6 @@ export function History() {
       const closedWeeks = res.data.filter((w: Week) => w.closed);
 
       setWeeks(closedWeeks);
-
-      // não seleciona semana automaticamente ao carregar
     } finally {
       setLoading(false);
     }
@@ -59,8 +57,21 @@ export function History() {
 
     setTasks((prev) => prev.filter((t) => t.id !== task.id));
 
-    setModalMoveTasks([task]);
-    setModalMoveVisible(true);
+    setLastMovedTask(task);
+    setUndoToastVisible(true);
+  };
+
+  const handleUndoMove = async () => {
+    if (!lastMovedTask || !selectedWeek) return;
+
+    await api.post(`/weeks/${selectedWeek.id}/tasks`, {
+      taskId: lastMovedTask.id,
+    });
+
+    setTasks((prev) => [...prev, lastMovedTask]);
+
+    setUndoToastVisible(false);
+    setLastMovedTask(null);
   };
 
   const handleDeleteClick = (task: Task) => {
@@ -81,6 +92,16 @@ export function History() {
 
   const visibleTasks = tasks.filter((task) => task.status !== "in_progress");
 
+  useEffect(() => {
+    if (!undoToastVisible) return;
+
+    const timer = setTimeout(() => {
+      setUndoToastVisible(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [undoToastVisible]);
+
   if (loading) return <p>Carregando histórico...</p>;
 
   return (
@@ -91,17 +112,14 @@ export function History() {
         weeksByMonth={weeksByMonth}
         selectedWeekId={selectedWeek?.id}
         onSelectWeek={(week) => {
-          // se clicar na mesma semana -> desseleciona
           if (selectedWeek?.id === week.id) {
             handleDeselectWeek();
             return;
           }
 
-          // seleciona semana
           setSelectedWeek(week);
           fetchTasks(week.id);
 
-          // scroll suave até as tasks
           setTimeout(() => {
             window.scrollTo({
               top: document.body.scrollHeight,
@@ -111,7 +129,6 @@ export function History() {
         }}
       />
 
-      {/* TASKS GRID */}
       {selectedWeek && (
         <TasksGrid
           tasks={visibleTasks}
@@ -120,7 +137,6 @@ export function History() {
         />
       )}
 
-      {/* EMPTY STATE */}
       {!selectedWeek && (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>📅</span>
@@ -133,19 +149,17 @@ export function History() {
         </div>
       )}
 
-      {/* MODALS */}
-
-      <MoveHistoryModal
-        visible={modalMoveVisible}
-        tasks={modalMoveTasks}
-        onClose={() => setModalMoveVisible(false)}
-      />
-
       <DeleteHistoryModal
         visible={modalDeleteVisible}
         task={taskToDelete ?? undefined}
         onConfirm={confirmDelete}
         onCancel={() => setModalDeleteVisible(false)}
+      />
+
+      <UndoToast
+        visible={undoToastVisible}
+        taskTitle={lastMovedTask?.title ?? ""}
+        onUndo={handleUndoMove}
       />
     </Container>
   );

@@ -7,7 +7,11 @@ interface MoveHistoryModalProps {
   onClose: () => void;
 }
 
-export function MoveHistoryModal({ visible, tasks, onClose }: MoveHistoryModalProps) {
+export function MoveHistoryModal({
+  visible,
+  tasks,
+  onClose,
+}: MoveHistoryModalProps) {
   if (!visible) return null;
 
   return (

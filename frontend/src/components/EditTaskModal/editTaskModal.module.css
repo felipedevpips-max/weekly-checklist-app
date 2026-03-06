@@ -93,14 +93,17 @@
   font-weight: 600;
 
   cursor: pointer;
-  color: white;
 
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .saveButton:hover {
   transform: translateY(-2px);
-  opacity: 0.9;
+
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 .saveButton:disabled {
@@ -111,23 +114,26 @@
 .cancelButton {
   flex: 1;
 
-  background: transparent;
-  border: 1px solid var(--card-border);
-
+  background: var(--delete-submit);
+  border: none;
   padding: 12px;
-  border-radius: 10px;
 
+  border-radius: 10px;
   font-weight: 600;
+
   cursor: pointer;
 
-  color: var(--text);
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .cancelButton:hover {
-  background: var(--input-bg);
-}
+  transform: translateY(-2px);
 
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
+}
 
 .modal {
   backdrop-filter: blur(12px);
@@ -136,8 +142,12 @@
 /* animações */
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {

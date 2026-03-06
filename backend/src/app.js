@@ -5,7 +5,8 @@ const cors = require("cors");
 
 const taskRoutes = require("./routes/taskRoutes");
 const weekRoutes = require("./routes/weekRoutes");
-const notificationRoutes = require("./routes/notificationRoutes"); // ✅ nova rota
+const notificationRoutes = require("./routes/notificationRoutes");
+const techsRoutes = require("./routes/techsRoutes"); // ✅ NOVA ROTA
 
 pool
   .connect()
@@ -17,8 +18,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ROTAS
 app.use("/tasks", taskRoutes);
 app.use("/weeks", weekRoutes);
-app.use("/notifications", notificationRoutes); // ✅ registrando rota de notificação
+app.use("/notifications", notificationRoutes);
+app.use("/techs", techsRoutes);
 
 app.listen(3000, () => console.log("Servidor rodando na porta 3000"));

@@ -11,9 +11,8 @@ export function About() {
         <h1 className={styles.title}>Sobre o Projeto</h1>
 
         <p className={styles.description}>
-          Este projeto é um sistema de gerenciamento de tarefas semanais
-          desenvolvido para organizar atividades, acompanhar progresso e
-          visualizar histórico de semanas anteriores.
+          Weekify é um sistema simples de gerenciamento semanal de tarefas
+          feito para ajudar a organizar metas e acompanhar progresso.
         </p>
 
         {/* ================= FUNCIONALIDADES ================= */}

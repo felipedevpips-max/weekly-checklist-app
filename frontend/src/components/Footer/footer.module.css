@@ -1,0 +1,36 @@
+.footer {
+  margin-top: 80px;
+  padding: 40px 20px;
+  border-top: 1px solid #1e293b;
+  background: transparent;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #60a5fa;
+  margin-bottom: 12px;
+}
+
+.description {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.tech {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.copy {
+  color: #475569;
+  font-size: 12px;
+}

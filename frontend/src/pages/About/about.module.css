@@ -1,0 +1,101 @@
+/* ============================= */
+/* CONTAINER */
+/* ============================= */
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  margin-top: 32px;
+  padding: 32px;
+
+  background: var(--background-card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+
+  box-shadow: var(--box-shadow-card);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  transition: all 0.25s ease;
+}
+
+.container:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+}
+
+/* ============================= */
+/* TITLES */
+/* ============================= */
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 10px;
+  color: var(--text);
+}
+
+/* ============================= */
+/* TEXT */
+/* ============================= */
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* ============================= */
+/* LIST */
+/* ============================= */
+
+.list {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.list li {
+  position: relative;
+}
+
+/* ============================= */
+/* TECH STACK */
+/* ============================= */
+
+.techList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.techItem {
+  padding: 6px 12px;
+
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  background: var(--accent-color);
+  color: white;
+
+  transition: all 0.2s ease;
+}
+
+.techItem:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-card);
+}

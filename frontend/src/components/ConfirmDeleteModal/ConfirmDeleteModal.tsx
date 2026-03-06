@@ -18,8 +18,8 @@ export function ConfirmDeleteModal({ isOpen, onClose, onConfirm, taskTitle }: Pr
       </p>
 
       <div className={styles.buttons}>
-        <button className={styles.cancel} onClick={onClose}>Cancelar</button>
         <button className={styles.delete} onClick={onConfirm}>Excluir</button>
+        <button className={styles.cancel} onClick={onClose}>Cancelar</button>
       </div>
     </BaseModal>
   );

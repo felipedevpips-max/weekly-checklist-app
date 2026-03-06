@@ -66,21 +66,27 @@
 }
 
 .cancel {
-  background: var(--input-bg); /* visível no light */
-  color: var(--text);
+  background: var(--primary-color); /* visível no light */
 }
 
 .cancel:hover {
-  background: var(--card-border);
+  transform: translateY(-2px);
+
+  border-color: var(--accent-color);
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 .delete {
-  background: var(--primary-color);
-  color: white;
+  background: var(--delete-submit);
 }
 
 .delete:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+
+  border-color: var(--accent-color);
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 @keyframes fadeIn {

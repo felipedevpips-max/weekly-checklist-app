@@ -20,9 +20,15 @@
   transform: translateY(-4px);
 }
 
-.high { border-left: 4px solid #ef4444; }
-.medium { border-left: 4px solid #f59e0b; }
-.low { border-left: 4px solid #10b981; }
+.high {
+  border-left: 4px solid #ef4444;
+}
+.medium {
+  border-left: 4px solid #f59e0b;
+}
+.low {
+  border-left: 4px solid #10b981;
+}
 
 .header {
   display: flex;
@@ -166,9 +172,11 @@
 }
 
 .primaryButton:hover:not(:disabled) {
-  opacity: 0.9;
   transform: translateY(-2px);
-  background: var(--hover-submit);
+
+  border-color: var(--accent-color);
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 .editButton {
@@ -177,8 +185,11 @@
 }
 
 .editButton:hover:not(:disabled) {
-  opacity: 0.9;
   transform: translateY(-2px);
+
+  border-color: var(--accent-color);
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 .deleteButton {
@@ -187,8 +198,11 @@
 }
 
 .deleteButton:hover:not(:disabled) {
-  opacity: 0.9;
   transform: translateY(-2px);
+
+  border-color: var(--accent-color);
+  color: var(--text);
+  box-shadow: var(--box-shadow-card);
 }
 
 .actions button:disabled {
@@ -206,16 +220,21 @@
 }
 
 @keyframes pulseAnim {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
 
 .hiddenNotify {
   visibility: hidden;

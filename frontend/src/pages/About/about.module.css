@@ -3,9 +3,8 @@
 /* ============================= */
 
 .container {
-  max-width: 720px;
-  margin: 0 auto;
-  margin-top: 32px;
+  max-width: 900px;
+  margin: 32px auto;
   padding: 32px;
 
   background: var(--background-card);
@@ -16,7 +15,7 @@
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 
   transition: all 0.25s ease;
 }
@@ -73,29 +72,87 @@
 }
 
 /* ============================= */
-/* TECH STACK */
+/* TECH GRID */
 /* ============================= */
 
-.techList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.techGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
 }
 
-.techItem {
-  padding: 6px 12px;
+/* ============================= */
+/* TECH CARD */
+/* ============================= */
 
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
+.techCard {
+  background: var(--background-card);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
 
-  background: var(--accent-color);
-  color: white;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  gap: 8px;
 
   transition: all 0.2s ease;
 }
 
-.techItem:hover {
-  transform: translateY(-2px);
+.techCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-color);
   box-shadow: var(--box-shadow-card);
+}
+
+/* ============================= */
+/* TECH ICON */
+/* ============================= */
+
+.techIcon {
+  width: 36px;
+  height: 36px;
+}
+
+/* ============================= */
+/* TECH TEXT */
+/* ============================= */
+
+.techCard h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.techCard p {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  line-height: 1.4;
+}
+
+/* ============================= */
+/* LOADING */
+/* ============================= */
+
+.loading {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* ============================= */
+/* RESPONSIVO */
+/* ============================= */
+
+@media (max-width: 600px) {
+  .container {
+    padding: 24px;
+  }
+
+  .techGrid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
 }

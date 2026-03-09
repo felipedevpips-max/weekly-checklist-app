@@ -1,7 +1,10 @@
 /* ================= HEADER ================= */
 
 .header {
+  position: sticky;
+  top: 0;
   width: 100%;
+  z-index: 999;
 }
 
 .headerContainer {
@@ -196,5 +199,19 @@
 
   .buttonContainer {
     gap: 1rem;
+  }
+}
+
+/* ================= NOME DO USUÁRIO ================= */
+.userName {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secundary);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .userName {
+    display: none;
   }
 }

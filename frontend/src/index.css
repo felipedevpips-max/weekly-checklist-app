@@ -12,8 +12,11 @@
   --text-hover: #ffffff;
   --secundary-color: linear-gradient(180deg, #0a0f1d, #020617);
   --check-color: #034ba3;
+  --tech-color: #7d8996;
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
 }
+
+
 
 body.dark {
   --background-card-header: linear-gradient(180deg, #0b0f1a, #101a3a);

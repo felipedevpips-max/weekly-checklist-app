@@ -2,7 +2,7 @@
   margin-top: 80px;
   padding: 40px 20px;
   border-top: 1px solid #1e293b;
-  background: transparent;
+  background: var(--background-card-header);
 }
 
 .content {
@@ -14,23 +14,23 @@
 .logo {
   font-size: 20px;
   font-weight: 700;
-  color: #60a5fa;
+  color: var(--check-color);
   margin-bottom: 12px;
 }
 
 .description {
-  color: #94a3b8;
+  color: var(--text-secundary);
   font-size: 14px;
   margin-bottom: 10px;
 }
 
 .tech {
-  color: #64748b;
+  color:var(--tech-color);
   font-size: 13px;
   margin-bottom: 16px;
 }
 
 .copy {
-  color: #475569;
+  color: var(--text-secundary);
   font-size: 12px;
 }

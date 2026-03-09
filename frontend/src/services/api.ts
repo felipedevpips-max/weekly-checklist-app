@@ -7,8 +7,11 @@ export const api = axios.create({
 // Injeta o token JWT automaticamente em toda requisição
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
+
   if (token) {
+    config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });

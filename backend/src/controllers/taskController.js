@@ -3,14 +3,9 @@ const taskService = require("../services/taskService");
 // CREATE
 async function createTask(req, res) {
   try {
-    const {
-      title,
-      priority,
-      status,
-      description,
-      dueDate,
-      notify, // ✅ agora recebe notify
-    } = req.body;
+    const userId = req.userId;
+
+    const { title, priority, status, description, dueDate, notify } = req.body;
 
     console.log("BODY RECEBIDO:", req.body);
 
@@ -20,14 +15,17 @@ async function createTask(req, res) {
       });
     }
 
-    const task = await taskService.createTask({
-      title,
-      priority: priority || "low",
-      status: status || "pending",
-      description: description || "",
-      dueDate,
-      notify: notify || false, // ✅ salva notify
-    });
+    const task = await taskService.createTask(
+      {
+        title,
+        priority: priority || "low",
+        status: status || "pending",
+        description: description || "",
+        dueDate,
+        notify: notify || false,
+      },
+      userId,
+    );
 
     return res.status(201).json(task);
   } catch (error) {
@@ -42,9 +40,13 @@ async function createTask(req, res) {
 // GET
 async function getTasks(req, res) {
   try {
+    const userId = req.userId;
     const { weekId } = req.query;
 
-    const tasks = await taskService.getTasks(weekId ? Number(weekId) : null);
+    const tasks = await taskService.getTasks(
+      userId,
+      weekId ? Number(weekId) : null,
+    );
 
     return res.json(tasks);
   } catch (error) {
@@ -59,17 +61,18 @@ async function getTasks(req, res) {
 // UPDATE
 async function updateTask(req, res) {
   try {
+    const userId = req.userId;
     const { id } = req.params;
 
     const { title, priority, status, description, dueDate, notify } = req.body;
 
-    const updatedTask = await taskService.updateTask(Number(id), {
+    const updatedTask = await taskService.updateTask(Number(id), userId, {
       title,
       priority,
       status,
       description,
       dueDate,
-      notify, // ✅ suporta update notify
+      notify,
     });
 
     if (!updatedTask) {
@@ -90,11 +93,11 @@ async function updateTask(req, res) {
 
 // DELETE
 async function deleteTask(req, res) {
-  console.log("DELETE ID:", req.params.id);
   try {
+    const userId = req.userId;
     const { id } = req.params;
 
-    await taskService.deleteTask(Number(id));
+    await taskService.deleteTask(Number(id), userId);
 
     return res.json({
       message: "Task deletada com sucesso",
@@ -111,7 +114,9 @@ async function deleteTask(req, res) {
 // CLOSE WEEK
 async function closeWeek(req, res) {
   try {
-    await taskService.closeCurrentWeek();
+    const userId = req.userId;
+
+    await taskService.closeCurrentWeek(userId);
 
     return res.json({
       message: "Week closed successfully",

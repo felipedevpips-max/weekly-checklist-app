@@ -7,8 +7,9 @@ const allowedPriority = ["low", "medium", "high"];
 // ----------------------------
 // CRIAR TASK
 // ----------------------------
-async function createTask(data) {
-  const week = await ensureActiveWeek();
+async function createTask(data, userId) {
+  const week = await ensureActiveWeek(userId);
+
   const status = data.status || "pending";
   const priority = data.priority || "low";
   const notify = data.notify === true;
@@ -16,8 +17,8 @@ async function createTask(data) {
 
   const result = await pool.query(
     `INSERT INTO tasks
-      (title, description, priority, status, notify, due_date, week_id, archived)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,false)
+      (title, description, priority, status, notify, due_date, week_id, user_id, archived)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,false)
      RETURNING *`,
     [
       data.title,
@@ -27,6 +28,7 @@ async function createTask(data) {
       notify,
       dueDate,
       week.id,
+      userId,
     ],
   );
 
@@ -34,13 +36,14 @@ async function createTask(data) {
 }
 
 // ----------------------------
-// LISTAR TASKS (somente não deletadas)
+// LISTAR TASKS
 // ----------------------------
-async function getTasks(weekId = null) {
+async function getTasks(userId, weekId = null) {
   const whereClause = weekId
-    ? `WHERE week_id = $1 AND deleted_at IS NULL`
-    : `WHERE deleted_at IS NULL`;
-  const params = weekId ? [weekId] : [];
+    ? `WHERE week_id = $1 AND user_id = $2 AND deleted_at IS NULL`
+    : `WHERE user_id = $1 AND deleted_at IS NULL`;
+
+  const params = weekId ? [weekId, userId] : [userId];
 
   const result = await pool.query(
     `SELECT * FROM tasks ${whereClause} ORDER BY id ASC`,
@@ -53,10 +56,13 @@ async function getTasks(weekId = null) {
 // ----------------------------
 // UPDATE TASK
 // ----------------------------
-async function updateTask(id, data) {
+async function updateTask(id, userId, data) {
   const checkResult = await pool.query(
-    `SELECT w.closed FROM tasks t JOIN weeks w ON w.id = t.week_id WHERE t.id = $1`,
-    [id],
+    `SELECT w.closed
+     FROM tasks t
+     JOIN weeks w ON w.id = t.week_id
+     WHERE t.id = $1 AND t.user_id = $2`,
+    [id, userId],
   );
 
   if (!checkResult.rows.length) throw new Error("Task not found");
@@ -64,6 +70,7 @@ async function updateTask(id, data) {
 
   if (data.status && !allowedStatus.includes(data.status))
     throw new Error("Invalid status");
+
   if (data.priority && !allowedPriority.includes(data.priority))
     throw new Error("Invalid priority");
 
@@ -75,7 +82,7 @@ async function updateTask(id, data) {
        status = COALESCE($4,status),
        notify = COALESCE($5,notify),
        due_date = COALESCE($6,due_date)
-     WHERE id = $7
+     WHERE id = $7 AND user_id = $8
      RETURNING *`,
     [
       data.title,
@@ -85,6 +92,7 @@ async function updateTask(id, data) {
       data.notify,
       data.dueDate,
       id,
+      userId,
     ],
   );
 
@@ -94,15 +102,18 @@ async function updateTask(id, data) {
 // ----------------------------
 // SOFT DELETE TASK
 // ----------------------------
-async function deleteTask(id) {
-  // apenas marca deleted_at, ignora se semana fechada
-  const checkResult = await pool.query(`SELECT * FROM tasks WHERE id = $1`, [
-    id,
-  ]);
+async function deleteTask(id, userId) {
+  const checkResult = await pool.query(
+    `SELECT * FROM tasks WHERE id = $1 AND user_id = $2`,
+    [id, userId],
+  );
 
   if (!checkResult.rows.length) throw new Error("Task not found");
 
-  await pool.query(`UPDATE tasks SET deleted_at = NOW() WHERE id = $1`, [id]);
+  await pool.query(
+    `UPDATE tasks SET deleted_at = NOW() WHERE id = $1 AND user_id = $2`,
+    [id, userId],
+  );
 
   return true;
 }
@@ -110,26 +121,32 @@ async function deleteTask(id) {
 // ----------------------------
 // MOVE TASK PARA SEMANA ABERTA
 // ----------------------------
-async function moveTaskToOpenWeek(taskId) {
+async function moveTaskToOpenWeek(taskId, userId) {
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
     const taskRes = await client.query(
-      `SELECT * FROM tasks WHERE id = $1 AND deleted_at IS NULL`,
-      [taskId],
+      `SELECT * FROM tasks 
+       WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL`,
+      [taskId, userId],
     );
+
     if (!taskRes.rows.length) throw new Error("Task não encontrada");
 
     const task = taskRes.rows[0];
-    const activeWeek = await ensureActiveWeek();
+    const activeWeek = await ensureActiveWeek(userId);
 
     await client.query(
-      `UPDATE tasks SET week_id = $1, status = 'pending' WHERE id = $2`,
-      [activeWeek.id, taskId],
+      `UPDATE tasks 
+       SET week_id = $1, status = 'pending'
+       WHERE id = $2 AND user_id = $3`,
+      [activeWeek.id, taskId, userId],
     );
 
     await client.query("COMMIT");
+
     return { ...task, week_id: activeWeek.id, status: "pending" };
   } catch (error) {
     await client.query("ROLLBACK");
@@ -140,15 +157,15 @@ async function moveTaskToOpenWeek(taskId) {
 }
 
 // ----------------------------
-// MOVE TASK PARA SEMANA ESPECÍFICA (UNDO)
+// MOVE TASK PARA SEMANA ESPECÍFICA
 // ----------------------------
-async function moveTaskToWeek(taskId, weekId) {
+async function moveTaskToWeek(taskId, weekId, userId) {
   const result = await pool.query(
     `UPDATE tasks
      SET week_id = $1
-     WHERE id = $2
+     WHERE id = $2 AND user_id = $3
      RETURNING *`,
-    [weekId, taskId],
+    [weekId, taskId, userId],
   );
 
   if (!result.rows.length) throw new Error("Task não encontrada");
@@ -159,9 +176,14 @@ async function moveTaskToWeek(taskId, weekId) {
 // ----------------------------
 // CLOSE CURRENT WEEK
 // ----------------------------
-async function closeCurrentWeek() {
-  const week = await ensureActiveWeek();
-  await pool.query(`UPDATE weeks SET closed = true WHERE id = $1`, [week.id]);
+async function closeCurrentWeek(userId) {
+  const week = await ensureActiveWeek(userId);
+
+  await pool.query(
+    `UPDATE weeks SET closed = true WHERE id = $1 AND user_id = $2`,
+    [week.id, userId],
+  );
+
   return true;
 }
 

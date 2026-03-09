@@ -2,7 +2,6 @@ const pool = require("../config/db");
 
 // =============================
 // 📅 GERAR DATAS FIXAS DA SEMANA
-// Domingo 00:00 → Sábado 23:59
 // =============================
 function getWeekDates(baseDate = new Date()) {
   const start = new Date(baseDate);
@@ -17,17 +16,18 @@ function getWeekDates(baseDate = new Date()) {
 }
 
 // =============================
-// 🔒 FECHAR SEMANA (CORRIGIDO)
+// 🔒 FECHAR SEMANA
 // =============================
-async function closeWeek(weekId) {
+async function closeWeek(weekId, userId) {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
     const weekResult = await client.query(
-      `SELECT * FROM weeks WHERE id=$1 AND closed=false`,
-      [weekId],
+      `SELECT * FROM weeks 
+       WHERE id=$1 AND user_id=$2 AND closed=false`,
+      [weekId, userId],
     );
 
     if (!weekResult.rows.length)
@@ -35,45 +35,43 @@ async function closeWeek(weekId) {
 
     const currentWeek = weekResult.rows[0];
 
-    // 1️⃣ FECHAR PRIMEIRO
-    await client.query(`UPDATE weeks SET closed=true WHERE id=$1`, [weekId]);
+    await client.query(
+      `UPDATE weeks SET closed=true 
+       WHERE id=$1 AND user_id=$2`,
+      [weekId, userId],
+    );
 
-    // 2️⃣ Criar base da próxima semana
     const nextWeekBase = new Date(currentWeek.end_date);
     nextWeekBase.setDate(nextWeekBase.getDate() + 1);
 
     const { start, end } = getWeekDates(nextWeekBase);
 
-    // 3️⃣ Criar nova semana
     const newWeekResult = await client.query(
-      `INSERT INTO weeks (start_date,end_date,closed)
-       VALUES ($1,$2,false)
+      `INSERT INTO weeks (start_date,end_date,closed,user_id)
+       VALUES ($1,$2,false,$3)
        RETURNING *`,
-      [start, end],
+      [start, end, userId],
     );
 
     const newWeekId = newWeekResult.rows[0].id;
 
-    // 4️⃣ Mover tasks in_progress
     const moveResult = await client.query(
       `UPDATE tasks
        SET week_id=$1,
            status='pending'
        WHERE week_id=$2
+       AND user_id=$3
        AND status='in_progress'
-       AND deleted_at IS NULL
-       RETURNING id`,
-      [newWeekId, weekId],
+       AND deleted_at IS NULL`,
+      [newWeekId, weekId, userId],
     );
-
-    const movedCount = moveResult.rowCount;
 
     await client.query("COMMIT");
 
     return {
       message: "Semana fechada com sucesso",
       newWeekId,
-      movedCount,
+      movedCount: moveResult.rowCount,
     };
   } catch (err) {
     await client.query("ROLLBACK");
@@ -86,62 +84,48 @@ async function closeWeek(weekId) {
 // =============================
 // 🧠 GARANTIR SEMANA ATIVA
 // =============================
-async function ensureActiveWeek() {
-  const result = await pool.query(`
-    SELECT *
-    FROM weeks
-    WHERE closed = false
-    ORDER BY start_date DESC
-    LIMIT 1
-  `);
+async function ensureActiveWeek(userId) {
+  const result = await pool.query(
+    `SELECT *
+     FROM weeks
+     WHERE closed=false
+     AND user_id=$1
+     ORDER BY start_date DESC
+     LIMIT 1`,
+    [userId],
+  );
 
   if (result.rows.length === 0) {
     const { start, end } = getWeekDates();
+
     const newWeek = await pool.query(
-      `INSERT INTO weeks (start_date, end_date, closed)
-       VALUES ($1,$2,false)
+      `INSERT INTO weeks (start_date,end_date,closed,user_id)
+       VALUES ($1,$2,false,$3)
        RETURNING *`,
-      [start, end],
+      [start, end, userId],
     );
-    return newWeek.rows[0];
-  }
-
-  const currentWeek = result.rows[0];
-  const now = new Date();
-  const endDate = new Date(currentWeek.end_date);
-
-  // Se passou da data final, fecha automaticamente
-  if (now > endDate) {
-    const closeResult = await closeWeek(currentWeek.id);
-
-    if (closeResult.alreadyClosed) {
-      return currentWeek;
-    }
-
-    const newWeek = await pool.query(`SELECT * FROM weeks WHERE id = $1`, [
-      closeResult.newWeekId,
-    ]);
 
     return newWeek.rows[0];
   }
 
-  return currentWeek;
+  return result.rows[0];
 }
 
 // =============================
-// 📋 GET SEMANA ATUAL COM TASKS
+// 📋 SEMANA ATUAL COM TASKS
 // =============================
-async function getCurrentWeekWithTasks() {
-  const week = await ensureActiveWeek();
+async function getCurrentWeekWithTasks(userId) {
+  const week = await ensureActiveWeek(userId);
 
   const tasksResult = await pool.query(
-    `SELECT t.*, w.closed as week_closed, w.start_date, w.end_date
+    `SELECT t.*, w.closed as week_closed
      FROM tasks t
      JOIN weeks w ON w.id = t.week_id
      WHERE t.week_id=$1
+     AND t.user_id=$2
      AND t.deleted_at IS NULL
      ORDER BY t.id ASC`,
-    [week.id],
+    [week.id, userId],
   );
 
   return { week, tasks: tasksResult.rows };
@@ -150,33 +134,43 @@ async function getCurrentWeekWithTasks() {
 // =============================
 // 📚 HISTÓRICO SEMANAS
 // =============================
-async function getAllWeeks() {
+async function getAllWeeks(userId) {
   const result = await pool.query(
-    `SELECT * FROM weeks ORDER BY start_date DESC`,
+    `SELECT * FROM weeks
+     WHERE user_id=$1
+     ORDER BY start_date DESC`,
+    [userId],
   );
+
   return result.rows;
 }
 
-async function getClosedWeeks() {
+async function getClosedWeeks(userId) {
   const result = await pool.query(
-    `SELECT * FROM weeks WHERE closed=true ORDER BY start_date DESC`,
+    `SELECT * FROM weeks
+     WHERE user_id=$1
+     AND closed=true
+     ORDER BY start_date DESC`,
+    [userId],
   );
+
   return result.rows;
 }
 
 // =============================
 // 📚 TASKS DE UMA SEMANA
 // =============================
-async function getWeekTasks(weekId) {
+async function getWeekTasks(weekId, userId) {
   const result = await pool.query(
-    `SELECT t.*, w.closed as week_closed, w.start_date, w.end_date
-     FROM tasks t
-     JOIN weeks w ON w.id = t.week_id
-     WHERE t.week_id=$1
-     AND t.deleted_at IS NULL
-     ORDER BY t.id ASC`,
-    [weekId],
+    `SELECT *
+     FROM tasks
+     WHERE week_id=$1
+     AND user_id=$2
+     AND deleted_at IS NULL
+     ORDER BY id ASC`,
+    [weekId, userId],
   );
+
   return result.rows;
 }
 

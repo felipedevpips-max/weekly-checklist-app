@@ -18,7 +18,7 @@ export function Footer() {
         </p>
 
         <p className={styles.copy}>
-          © {year} Weekify — Projeto de estudo Fullstack
+          © {year} Weekify — by FelipeCosta
         </p>
       </div>
     </footer>

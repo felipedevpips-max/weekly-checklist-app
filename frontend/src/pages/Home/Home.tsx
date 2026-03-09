@@ -12,6 +12,8 @@ import { TaskList } from "../../components/Tasklist/TaskList";
 import { TaskFilter } from "../../components/TaskFilter/TaskFilter";
 import { ConfirmCloseWeekModal } from "../../components/ConfirmCloseWeekModal/ConfirmCloseWeekModal";
 import { WeekClosedModal } from "../../components/WeekClosedModal/WeekClosedModal";
+import { SkeletonLoader } from "../../components/SkeletonLoader/SkeletonLoader";
+import { ErrorState } from "../../components/ErrorState/ErrorState";
 
 import { useCurrentWeek } from "../../hooks/useCurrentWeek";
 import { useTaskActions } from "../../hooks/useTaskActions";
@@ -20,15 +22,13 @@ import { api } from "../../services/api";
 type FilterType = "all" | "pending" | "in_progress" | "done";
 
 export function Home() {
-  const { week, tasks, setTasks, loading, refetchWeek } = useCurrentWeek();
-
+  const { week, tasks, setTasks, loading, error, refetchWeek } = useCurrentWeek();
   const { createTask, updateTask, deleteTask } = useTaskActions({ setTasks });
 
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [filter, setFilter] = useState<FilterType>("all");
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
-
   const [showWeekModal, setShowWeekModal] = useState(false);
   const [movedTasks, setMovedTasks] = useState<Task[]>([]);
 
@@ -37,23 +37,30 @@ export function Home() {
     return tasks.filter((task) => task.status === filter);
   }, [tasks, filter]);
 
-  if (loading) return <p>Carregando semana...</p>;
+  if (loading) {
+    return (
+      <Container>
+        <SkeletonLoader variant="header" count={1} />
+        <SkeletonLoader variant="card" count={4} />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <ErrorState message={error} onRetry={refetchWeek} />
+      </Container>
+    );
+  }
 
   async function handleCloseWeek() {
     if (!week) return;
-
     try {
-      // 🔥 captura tasks em andamento antes de fechar semana
       const moved = tasks.filter((task) => task.status === "in_progress");
-
       await api.post(`/weeks/${week.id}/close`);
-
       setMovedTasks(moved);
-
-      // 🔄 atualiza semana e tasks
       await refetchWeek();
-
-      // 🔔 mostra modal
       setShowWeekModal(true);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -68,34 +75,23 @@ export function Home() {
     <Container>
       <h1 className={styles.title}>Checklist Semanal</h1>
 
-      {/* Botão Encerrar Semana */}
       {week && !week.closed && (
-        <button
-          className={styles.closeWeekButton}
-          onClick={() => setIsCloseModalOpen(true)}
-        >
+        <button className={styles.closeWeekButton} onClick={() => setIsCloseModalOpen(true)}>
           Encerrar Semana
         </button>
       )}
 
-      {/* Datas da semana */}
       {week && (
         <p className={styles.weekInfo}>
-          Semana atual: {new Date(week.start_date).toLocaleDateString()} -{" "}
+          Semana atual: {new Date(week.start_date).toLocaleDateString()} —{" "}
           {new Date(week.end_date).toLocaleDateString()}
         </p>
       )}
 
-      {/* Criar task */}
       <CreateTaskForm onCreate={createTask} />
-
-      {/* Progresso */}
       <ProgressSection tasks={tasks} />
-
-      {/* Filtro */}
       <TaskFilter activeFilter={filter} onChange={setFilter} />
 
-      {/* Lista */}
       <TaskList
         tasks={filteredTasks}
         isWeekClosed={week?.closed}
@@ -104,45 +100,27 @@ export function Home() {
         onDelete={setTaskToDelete}
       />
 
-      {/* Modal editar */}
       {editingTask && (
-        <EditTaskModal
-          isOpen
-          task={editingTask}
+        <EditTaskModal isOpen task={editingTask}
           onClose={() => setEditingTask(null)}
-          onSave={(updatedTask) => {
-            updateTask(updatedTask);
-            setEditingTask(null);
-          }}
+          onSave={(updatedTask) => { updateTask(updatedTask); setEditingTask(null); }}
         />
       )}
 
-      {/* Modal deletar */}
       {taskToDelete && (
-        <ConfirmDeleteModal
-          isOpen
-          taskTitle={taskToDelete.title}
+        <ConfirmDeleteModal isOpen taskTitle={taskToDelete.title}
           onClose={() => setTaskToDelete(null)}
-          onConfirm={async () => {
-            await deleteTask(taskToDelete.id);
-            setTaskToDelete(null);
-          }}
+          onConfirm={async () => { await deleteTask(taskToDelete.id); setTaskToDelete(null); }}
         />
       )}
 
-      {/* Modal confirmar encerrar semana */}
       {isCloseModalOpen && (
-        <ConfirmCloseWeekModal
-          isOpen
+        <ConfirmCloseWeekModal isOpen
           onClose={() => setIsCloseModalOpen(false)}
-          onConfirm={async () => {
-            await handleCloseWeek();
-            setIsCloseModalOpen(false);
-          }}
+          onConfirm={async () => { await handleCloseWeek(); setIsCloseModalOpen(false); }}
         />
       )}
 
-      {/* Modal resultado encerramento */}
       <WeekClosedModal
         visible={showWeekModal}
         movedTasks={movedTasks}

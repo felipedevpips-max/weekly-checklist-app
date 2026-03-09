@@ -7,17 +7,24 @@ export function useCurrentWeek() {
   const [week, setWeek] = useState<Week | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchWeek = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
 
       const res = await api.get("/weeks/current");
 
       setWeek(res.data.week);
       setTasks(res.data.tasks);
-    } catch (error) {
-      console.error("Erro ao buscar semana:", error);
+    } catch (err) {
+      console.error("Erro ao buscar semana:", err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro inesperado ao carregar a semana.");
+      }
     } finally {
       setLoading(false);
     }
@@ -32,6 +39,7 @@ export function useCurrentWeek() {
     tasks,
     setTasks,
     loading,
-    refetchWeek: fetchWeek, // 👈 AGORA EXISTE
+    error,
+    refetchWeek: fetchWeek,
   };
 }

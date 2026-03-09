@@ -42,6 +42,12 @@ function getTechs(req, res) {
       description: "Gerenciamento de rotas no frontend",
       icon: "reactrouter.svg",
     },
+    {
+      id: 7,
+      name: "Docker",
+      description: "Ambiente de Desenvolvimento",
+      icon: "docker.svg",
+    },
   ]);
 }
 

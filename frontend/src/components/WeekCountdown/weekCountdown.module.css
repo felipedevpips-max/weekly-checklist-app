@@ -1,0 +1,99 @@
+/* frontend/src/components/WeekCountdown/weekCountdown.module.css */
+
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--card-background, #fff);
+  border: 1.5px solid var(--card-border, #e2e8f0);
+  margin: 8px 0;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.urgent {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+[data-theme="dark"] .urgent {
+  background: #2a1f00;
+  border-color: #f59e0b;
+}
+
+.expired {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+[data-theme="dark"] .expired {
+  background: #1e1b4b;
+  border-color: #6366f1;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.urgent .label {
+  color: #d97706;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-color, #1e293b);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.urgent .value {
+  color: #d97706;
+}
+
+.unitLabel {
+  font-size: 0.6rem;
+  color: var(--text-secondary, #94a3b8);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.sep {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-secondary, #cbd5e1);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.expiredIcon {
+  font-size: 1.2rem;
+}
+
+.expiredText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6366f1;
+}

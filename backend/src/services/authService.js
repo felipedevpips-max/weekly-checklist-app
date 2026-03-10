@@ -1,6 +1,7 @@
 const { pool } = require("../database/connection");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { notifyWelcome } = require("./notificationService");
 
 // =============================
 // 📝 REGISTRAR USUÁRIO
@@ -30,6 +31,11 @@ async function registerUser(data) {
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
+  );
+
+  // Dispara notificação de boas-vindas em background (não bloqueia o registro)
+  notifyWelcome({ name: user.name, email: user.email, phone: user.phone }).catch((err) =>
+    console.error("[Auth] Falha ao enviar notificação de boas-vindas:", err.message)
   );
 
   return { user, token };

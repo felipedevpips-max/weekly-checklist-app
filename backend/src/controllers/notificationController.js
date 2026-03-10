@@ -1,31 +1,50 @@
 // backend/controllers/notificationController.js
 const taskService = require("../services/taskService");
+const authService = require("../services/authService");
+const { notifyTaskCreated, emailEnabled, twilioEnabled } = require("../services/notificationService");
 
-// Simulação do envio de notificação (email/WhatsApp)
+// Envia notificação manual para uma task
 async function sendNotification(req, res) {
   try {
-    const { taskId, message } = req.body;
+    const userId = req.userId;
+    const { taskId } = req.body;
 
-    if (!taskId || !message) {
-      return res.status(400).json({ error: "taskId e message são obrigatórios" });
+    if (!taskId) {
+      return res.status(400).json({ error: "taskId é obrigatório" });
     }
 
-    // Buscar task
-    const tasks = await taskService.getTasks();
-    const task = tasks.find((t) => t.id === taskId);
+    const tasks = await taskService.getTasks(userId);
+    const task = tasks.find((t) => t.id === Number(taskId));
     if (!task) return res.status(404).json({ error: "Task não encontrada" });
 
-    // Só envia se a task estiver marcada para notify
-    if (task.notify) {
-      // Aqui você integraria com email/WhatsApp real
-      console.log(`🔔 Notificação para Task "${task.title}": ${message}`);
+    if (!task.notify) {
+      return res.json({ message: "Notificações desativadas para esta task" });
     }
 
-    return res.json({ message: "Notificação enviada (ou ignorada se notify=false)" });
+    const user = await authService.getUserById(userId);
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+
+    await notifyTaskCreated({ user, task });
+
+    return res.json({
+      message: "Notificação enviada com sucesso",
+      channels: {
+        email: emailEnabled(),
+        whatsapp: twilioEnabled() && !!user.phone,
+      },
+    });
   } catch (error) {
     console.error("Erro ao enviar notificação:", error);
     return res.status(500).json({ error: "Erro ao enviar notificação" });
   }
 }
 
-module.exports = { sendNotification };
+// Retorna status dos canais de notificação configurados
+async function getNotificationStatus(req, res) {
+  return res.json({
+    email: emailEnabled(),
+    whatsapp: twilioEnabled(),
+  });
+}
+
+module.exports = { sendNotification, getNotificationStatus };

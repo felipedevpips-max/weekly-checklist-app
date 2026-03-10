@@ -1,4 +1,6 @@
 const taskService = require("../services/taskService");
+const authService = require("../services/authService");
+const { notifyTaskCreated, notifyTaskToggle } = require("../services/notificationService");
 
 // CREATE
 async function createTask(req, res) {
@@ -26,6 +28,13 @@ async function createTask(req, res) {
       },
       userId,
     );
+
+    // Dispara notificação em background se notify = true
+    if (task.notify) {
+      authService.getUserById(userId)
+        .then((user) => user && notifyTaskCreated({ user, task }))
+        .catch((err) => console.error("[Task] Falha ao notificar criação:", err.message));
+    }
 
     return res.status(201).json(task);
   } catch (error) {
@@ -79,6 +88,13 @@ async function updateTask(req, res) {
       return res.status(404).json({
         message: "Task not found",
       });
+    }
+
+    // Se notify foi explicitamente enviado, dispara notificação em background
+    if (notify !== undefined) {
+      authService.getUserById(userId)
+        .then((user) => user && notifyTaskToggle({ user, task: updatedTask }))
+        .catch((err) => console.error("[Task] Falha ao notificar toggle:", err.message));
     }
 
     return res.json(updatedTask);

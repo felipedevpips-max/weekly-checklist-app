@@ -1,8 +1,13 @@
 /* ─── Page Layout ──────────────────────────────────── */
-.page {
+.wrapper {
   min-height: 100vh;
   display: flex;
-  overflow: hidden;
+  flex-direction: column;
+}
+
+.page {
+  flex: 1;
+  display: flex;
 }
 
 /* ─── Left Panel ──────────────────────────────────── */

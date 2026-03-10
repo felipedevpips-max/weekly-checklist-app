@@ -1,9 +1,9 @@
-import styles from "./App.module.css";
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import { Header } from "./components/Header/Header";
-import { Footer } from "./components/Footer/Footer";
+import { AuthProvider } from "./context/AuthProvider";
+import { PrivateRoute } from "./components/PrivateRoute/PrivateRoute";
+
+import { Layout } from "./components/Layout/Layout";
 
 import { Home } from "./pages/Home/Home";
 import { History } from "./pages/History/History";
@@ -12,63 +12,27 @@ import { About } from "./pages/About/About";
 import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
 
-import { AuthProvider } from "./context/AuthProvider";
-import { PrivateRoute } from "./components/PrivateRoute/PrivateRoute";
-
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Rotas públicas */}
+          {/* rotas públicas */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Rotas privadas */}
+          {/* rotas privadas com layout */}
           <Route
-            path="/"
             element={
               <PrivateRoute>
-                <>
-                  <Header />
-                  <div className={styles.container}>
-                    <Home />
-                  </div>
-                  <Footer />
-                </>
+                <Layout />
               </PrivateRoute>
             }
-          />
-
-          <Route
-            path="/history"
-            element={
-              <PrivateRoute>
-                <>
-                  <Header />
-                  <div className={styles.container}>
-                    <History />
-                  </div>
-                  <Footer />
-                </>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/about"
-            element={
-              <PrivateRoute>
-                <>
-                  <Header />
-                  <div className={styles.container}>
-                    <About />
-                  </div>
-                  <Footer />
-                </>
-              </PrivateRoute>
-            }
-          />
+          >
+            <Route path="/" element={<Home />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/about" element={<About />} />
+          </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -1,8 +1,8 @@
 .footer {
-  margin-top: 80px;
   padding: 40px 20px;
   border-top: 1px solid #1e293b;
   background: var(--background-card-header);
+  
 }
 
 .content {

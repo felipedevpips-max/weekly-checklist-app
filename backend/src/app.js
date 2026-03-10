@@ -22,9 +22,13 @@ pool
 
 const app = express();
 
-app.use(
+aapp.use(
   cors({
-    origin: process.env.ALLOWED_ORIGIN,
+    origin: [
+      "http://localhost:5173",
+      "https://weekly-checklist-app.vercel.app",
+    ],
+    credentials: true,
   }),
 );
 app.use(express.json());

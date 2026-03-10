@@ -16,6 +16,9 @@
   --box-shadow-card: 0 12px 35px rgba(124, 108, 255, 0.25);
 }
 
+html, body, #root {
+  height: 100%;
+}
 
 
 body.dark {

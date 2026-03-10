@@ -1,8 +1,13 @@
 /* ─── Page Layout ──────────────────────────────────── */
-.page {
+.wrapper {
   min-height: 100vh;
   display: flex;
-  overflow: hidden;
+  flex-direction: column;
+}
+
+.page {
+  flex: 1;
+  display: flex;
 }
 
 /* ─── Left Panel ──────────────────────────────────── */
@@ -39,7 +44,7 @@
 .logoText {
   font-size: 1.2rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-hover);
   letter-spacing: -0.02em;
 }
 
@@ -54,7 +59,7 @@
 .panelHeading {
   font-size: 2rem;
   font-weight: 800;
-  color: white;
+  color: var(--text-hover);
   line-height: 1.2;
   margin-bottom: 1rem;
   letter-spacing: -0.03em;
@@ -91,7 +96,7 @@
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-hover);
   flex-shrink: 0;
 }
 
@@ -224,7 +229,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #034ba3;
+  border-color:var(--check-color);
   box-shadow: 0 0 0 3px rgba(3, 75, 163, 0.12);
 }
 

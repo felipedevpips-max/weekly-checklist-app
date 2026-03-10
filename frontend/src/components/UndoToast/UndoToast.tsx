@@ -7,10 +7,8 @@ interface UndoToastProps {
 }
 
 export function UndoToast({ visible, taskTitle, onUndo }: UndoToastProps) {
-  if (!visible) return null;
-
   return (
-    <div className={styles.toast}>
+    <div className={`${styles.toast} ${visible ? styles.visible : ""}`}>
       <span className={styles.message}>
         Tarefa <strong>{taskTitle}</strong> movida para a semana aberta
       </span>

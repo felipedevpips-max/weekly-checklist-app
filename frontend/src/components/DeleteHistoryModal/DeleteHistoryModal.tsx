@@ -7,7 +7,7 @@ interface DeleteHistoryModalProps {
   onConfirm: () => void;
   onCancel: () => void;
 }
-
+ 
 export function DeleteHistoryModal({ visible, task, onConfirm, onCancel }: DeleteHistoryModalProps) {
   if (!visible || !task) return null;
 

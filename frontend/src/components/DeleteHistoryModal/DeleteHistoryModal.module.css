@@ -103,7 +103,7 @@
     opacity 0.2s ease;
 }
 
-.delete:hover {
+.delete:hover { 
   transform: translateY(-2px);
 
   color: var(--text);

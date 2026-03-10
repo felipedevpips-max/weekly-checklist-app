@@ -24,7 +24,18 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGIN,
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        origin.endsWith(".vercel.app") ||
+        origin === process.env.ALLOWED_ORIGIN
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   }),
 );
 app.use(express.json());

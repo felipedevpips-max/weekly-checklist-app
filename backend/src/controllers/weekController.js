@@ -22,19 +22,11 @@ async function getCurrentWeek(req, res) {
   }
 }
 
-// Fechar semana
+// Fechar semana — BLOQUEADO (fechamento é automático via scheduler)
 async function closeWeek(req, res) {
-  try {
-    const userId = req.userId;
-    const { id } = req.params;
-
-    const result = await weekService.closeWeek(Number(id), userId);
-
-    res.json(result);
-  } catch (err) {
-    console.error("CLOSE WEEK ERROR:", err);
-    res.status(400).json({ error: err.message });
-  }
+  return res.status(403).json({
+    error: "O encerramento de semana é automático. A semana é fechada todo sábado às 23:59.",
+  });
 }
 
 // Histórico de semanas fechadas

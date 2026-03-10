@@ -91,7 +91,36 @@
 }
 
 .notifyBadge {
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1.5px solid var(--accent-color, #034ba3);
+  background: transparent;
+  color: var(--accent-color, #034ba3);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.notifyBadge:hover:not(:disabled) {
+  background: var(--accent-color, #034ba3);
+  color: #fff;
+  transform: scale(1.04);
+}
+
+.notifyBadge:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.notifySent {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #fff !important;
 }
 
 .divider {

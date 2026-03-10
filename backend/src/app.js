@@ -10,10 +10,14 @@ const weekRoutes = require("./routes/weekRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const techsRoutes = require("./routes/techsRoutes");
 const authRoutes = require("./routes/authRoutes");
+const { startScheduler } = require("./services/weekScheduler");
 
 pool
   .connect()
-  .then(() => console.log("Banco conectado com sucesso!"))
+  .then(() => {
+    console.log("Banco conectado com sucesso!");
+    startScheduler();
+  })
   .catch((err) => console.error("Erro ao conectar:", err));
 
 const app = express();

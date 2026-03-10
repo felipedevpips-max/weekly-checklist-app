@@ -11,11 +11,13 @@ import { About } from "./pages/About/About";
 
 import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
+import { Background } from "./components/Background/Background";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Background/>
         <Routes>
           {/* rotas públicas */}
           <Route path="/login" element={<Login />} />

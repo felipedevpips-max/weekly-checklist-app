@@ -1,5 +1,5 @@
 import type { Task } from "../../types/task";
-import styles from "./deleteHistoryModal.module.css";
+import styles from "./DeleteHistoryModal.module.css";
 
 interface DeleteHistoryModalProps {
   visible: boolean;

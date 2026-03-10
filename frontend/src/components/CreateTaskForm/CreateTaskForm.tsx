@@ -7,6 +7,7 @@ type Props = {
   onCreate: (task: Task) => void;
 };
 
+
 export function CreateTaskForm({ onCreate }: Props) {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<"" | "low" | "medium" | "high">("");

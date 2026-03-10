@@ -1,15 +1,24 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./MenuHamburguer.module.css";
 import Logout from "../../assets/logout.svg?react";
 import About from "../../assets/menu/about.svg?react";
 import History from "../../assets/menu/history.svg?react";
 import Home from "../../assets/menu/home.svg?react";
+import { useAuth } from "../../hooks/useAuth";
 
 export const MenuHamburguer = () => {
   const [open, setOpen] = useState(false);
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const handleClose = () => setOpen(false);
+
+  function handleLogout() {
+    handleClose();
+    logout();
+    navigate("/login");
+  }
 
   return (
     <>
@@ -22,8 +31,26 @@ export const MenuHamburguer = () => {
       {open && <div className={styles.overlay} onClick={handleClose} />}
 
       <aside className={`${styles.mobileMenu} ${open ? styles.open : ""}`}>
-        <nav>
-          <NavLink to="/" onClick={handleClose} className={styles.homeMobile}>
+        <div className={styles.menuHeader}>
+          {user && (
+            <div className={styles.userInfo}>
+              <div className={styles.userAvatar}>
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span className={styles.userName}>Olá, {user.name.split(" ")[0]}</span>
+            </div>
+          )}
+        </div>
+
+        <nav className={styles.nav}>
+          <NavLink
+            to="/"
+            end
+            onClick={handleClose}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navActive : ""}`
+            }
+          >
             <Home />
             Início
           </NavLink>
@@ -31,7 +58,9 @@ export const MenuHamburguer = () => {
           <NavLink
             to="/history"
             onClick={handleClose}
-            className={styles.historyMobile}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navActive : ""}`
+            }
           >
             <History />
             Histórico
@@ -40,20 +69,21 @@ export const MenuHamburguer = () => {
           <NavLink
             to="/about"
             onClick={handleClose}
-            className={styles.aboutMobile}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navActive : ""}`
+            }
           >
             <About />
             Sobre
           </NavLink>
-          <NavLink
-            to="/logout"
-            onClick={handleClose}
-            className={styles.logoutMobile}
-          >
-            <Logout />
-            Logout
-          </NavLink>
         </nav>
+
+        <div className={styles.menuFooter}>
+          <button onClick={handleLogout} className={styles.logoutButton}>
+            <Logout />
+            Sair
+          </button>
+        </div>
       </aside>
     </>
   );

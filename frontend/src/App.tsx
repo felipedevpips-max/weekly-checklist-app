@@ -14,37 +14,48 @@ import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
 
 import { Background } from "./components/Background/Background";
+import { ServerWarmup } from "./components/ServerWarmup/ServerWarmup";
+import { useServerWarmup } from "./hooks/useServerWarmup";
+
+function AppRoutes() {
+  const warmup = useServerWarmup();
+
+  if (warmup === "slow") {
+    return <ServerWarmup />;
+  }
+
+  return (
+    <Routes>
+      {/* rotas públicas */}
+      <Route element={<PublicLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+
+      {/* rotas privadas */}
+      <Route
+        element={
+          <PrivateRoute>
+            <Layout />
+          </PrivateRoute>
+        }
+      >
+        <Route path="/" element={<Home />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/about" element={<About />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Background />
-
-        <Routes>
-
-          {/* rotas públicas */}
-          <Route element={<PublicLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Route>
-
-          {/* rotas privadas */}
-          <Route
-            element={
-              <PrivateRoute>
-                <Layout />
-              </PrivateRoute>
-            }
-          >
-            <Route path="/" element={<Home />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/about" element={<About />} />
-          </Route>
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-
-        </Routes>
+        <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
   );

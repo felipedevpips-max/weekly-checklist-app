@@ -20,15 +20,23 @@ export function BaseModal({ isOpen, onClose, children }: BaseModalProps) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // Bloquear scroll do body
+  // Bloquear scroll do body (funciona no iOS também)
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
+    if (!isOpen) return;
+    const scrollY = window.scrollY;
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 
-  // Clicar fora para fechar
   function handleOverlayClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) onClose();
   }

@@ -21,11 +21,9 @@
 .hamburguer span.active:nth-child(1) {
   transform: translateY(7.5px) rotate(45deg);
 }
-
 .hamburguer span.active:nth-child(2) {
   opacity: 0;
 }
-
 .hamburguer span.active:nth-child(3) {
   transform: translateY(-7.5px) rotate(-45deg);
 }
@@ -53,13 +51,11 @@
   top: 0;
   right: 0;
   height: 100vh;
-  width: 280px;
+  width: 260px;
 
   background: var(--background-card-header);
   border-left: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
-
-  padding: 0;
 
   display: flex;
   flex-direction: column;
@@ -77,8 +73,8 @@
 /* ================= HEADER DO MENU ================= */
 
 .menuHeader {
-  padding: 2rem 1.5rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 1.75rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .userInfo {
@@ -88,8 +84,8 @@
 }
 
 .userAvatar {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--check-color);
   color: #fff;
@@ -102,9 +98,9 @@
 }
 
 .userName {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-hover);
 }
 
 /* ================= NAV ITEMS ================= */
@@ -121,15 +117,12 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-
   padding: 0.75rem 1rem;
   border-radius: 10px;
-
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-secundary);
   text-decoration: none;
-
   transition:
     background 0.2s ease,
     color 0.2s ease;
@@ -139,63 +132,26 @@
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  filter: brightness(0) invert(0.5);
+  filter: brightness(0) invert(1);
   transition: filter 0.2s ease;
 }
 
 .navItem:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text);
 }
 
 .navItem:hover svg {
-  filter: brightness(0) invert(0.2);
+  filter: brightness(0) invert(0.8);
 }
 
 .navActive {
-  background: rgba(var(--check-color-rgb, 99, 102, 241), 0.1);
+  background: rgba(3, 75, 163, 0.15);
   color: var(--check-color);
   font-weight: 600;
 }
 
 .navActive svg {
-  filter: none !important;
   opacity: 1;
-}
-
-/* ================= FOOTER DO MENU ================= */
-
-.menuFooter {
-  padding: 1rem 0.75rem 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.logoutButton {
-  all: unset;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  box-sizing: border-box;
-
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #ef4444;
-  cursor: pointer;
-
-  transition: background 0.2s ease;
-}
-
-.logoutButton svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  filter: invert(30%) sepia(90%) saturate(500%) hue-rotate(330deg);
-}
-
-.logoutButton:hover {
-  background: rgba(239, 68, 68, 0.08);
+  filter: brightness(0) invert(1);
 }

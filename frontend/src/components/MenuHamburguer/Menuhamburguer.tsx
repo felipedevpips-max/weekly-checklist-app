@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import styles from "./MenuHamburguer.module.css";
-import Logout from "../../assets/logout.svg?react";
 import About from "../../assets/menu/about.svg?react";
 import History from "../../assets/menu/history.svg?react";
 import Home from "../../assets/menu/home.svg?react";
@@ -9,16 +8,9 @@ import { useAuth } from "../../hooks/useAuth";
 
 export const MenuHamburguer = () => {
   const [open, setOpen] = useState(false);
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleClose = () => setOpen(false);
-
-  function handleLogout() {
-    handleClose();
-    logout();
-    navigate("/login");
-  }
 
   return (
     <>
@@ -31,16 +23,16 @@ export const MenuHamburguer = () => {
       {open && <div className={styles.overlay} onClick={handleClose} />}
 
       <aside className={`${styles.mobileMenu} ${open ? styles.open : ""}`}>
-        <div className={styles.menuHeader}>
-          {user && (
+        {user && (
+          <div className={styles.menuHeader}>
             <div className={styles.userInfo}>
               <div className={styles.userAvatar}>
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <span className={styles.userName}>Olá, {user.name.split(" ")[0]}</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <nav className={styles.nav}>
           <NavLink
@@ -77,13 +69,6 @@ export const MenuHamburguer = () => {
             Sobre
           </NavLink>
         </nav>
-
-        <div className={styles.menuFooter}>
-          <button onClick={handleLogout} className={styles.logoutButton}>
-            <Logout />
-            Sair
-          </button>
-        </div>
       </aside>
     </>
   );

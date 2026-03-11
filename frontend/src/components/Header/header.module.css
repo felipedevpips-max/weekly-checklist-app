@@ -189,10 +189,6 @@
   }
 
   /* 🔥 Aqui realmente remove do layout */
-  .logoutButton {
-    display: none;
-  }
-
   .headerContainer {
     padding: 0.75rem 1rem;
   }

@@ -22,7 +22,13 @@ export function Header() {
     <header className={styles.header}>
       <div className={styles.headerContainer}>
         <div>
-          <Logo className={styles.logo} />
+          <NavLink
+            to="/"
+            className={styles.logo}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <Logo className={styles.logo} />
+          </NavLink>
         </div>
 
         <div className={styles.navContainer}>

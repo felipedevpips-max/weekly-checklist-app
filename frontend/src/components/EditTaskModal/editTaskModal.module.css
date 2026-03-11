@@ -1,41 +1,8 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-    padding: 1rem;
-  z-index: 999;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal {
-  background: var(--background-card);
-  padding: 28px;
-  border-radius: 16px;
-
-  width: 100%;
-  max-width: 520px;
-
-  border: 1px solid var(--card-border);
-  box-shadow: var(--box-shadow-card);
-
-    max-height: 90dvh;
-  overflow-y: auto;
-  animation: slideUp 0.25s ease;
-}
-
 .title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   margin-bottom: 20px;
   text-align: center;
-
   background: var(--primary-color);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -45,16 +12,15 @@
 .textarea,
 .select {
   width: 100%;
-  padding: 12px;
-
+  padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid var(--card-border);
-
   background: var(--input-bg);
   color: var(--text);
-
+  font-size: 0.95rem;
   margin-bottom: 14px;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color-scheme: light dark;
 }
 
 .input:focus,
@@ -74,123 +40,53 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 18px;
-
-  color: var(--text-color);
   font-size: 0.9rem;
+  color: var(--text-color);
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.checkbox input {
+  accent-color: var(--accent-color);
+  width: 16px;
+  height: 16px;
 }
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
+}
+
+.saveButton,
+.cancelButton {
+  flex: 1;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .saveButton {
-  flex: 1;
-
   background: var(--primary-color);
-  border: none;
-  padding: 12px;
-
-  border-radius: 10px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.saveButton:hover {
-  transform: translateY(-2px);
-
-  color: var(--text);
-  box-shadow: var(--box-shadow-card);
-}
-
-.saveButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  color: #fff;
 }
 
 .cancelButton {
-  flex: 1;
-
   background: var(--delete-submit);
-  border: none;
-  padding: 12px;
-
-  border-radius: 10px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+  color: #fff;
 }
 
-.cancelButton:hover {
-  transform: translateY(-2px);
+.saveButton:hover:not(:disabled)   { opacity: 0.85; }
+.cancelButton:hover                { opacity: 0.85; }
 
-  color: var(--text);
-  box-shadow: var(--box-shadow-card);
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.modal {
-  backdrop-filter: blur(12px);
-}
-
-/* animações */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ── Mobile fix ── */
-@media (max-width: 480px) {
-  .overlay {
-    padding: 0.75rem;
-  }
-
-  .modal {
-    padding: 20px 16px;
-    border-radius: 12px;
-    max-height: 92dvh;
-    overflow-y: auto;
-  }
-
-  .buttons,
-  .actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .buttons button,
-  .actions button,
-  .cancel,
-  .delete,
-  .confirm,
-  .saveButton,
-  .cancelButton {
-    width: 100% !important;
-    min-width: unset;
-  }
+@media (max-width: 599px) {
+  .actions { flex-direction: column; }
 }

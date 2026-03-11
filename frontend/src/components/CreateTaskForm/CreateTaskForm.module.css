@@ -140,6 +140,11 @@
   accent-color: var(--accent-color);
   width: 16px;
   height: 16px;
+  cursor: pointer;
+}
+
+.checkboxRow label {
+  cursor: pointer;
 }
 
 /* BUTTON */

@@ -1,36 +1,7 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-    padding: 1rem;
-  z-index: 999;
-  animation: fadeIn 0.2s ease;
-}
-
-.modal {
-  background: var(--background-card);
-  padding: 28px;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 480px;
-  border: 1px solid var(--card-border);
-  box-shadow: var(--box-shadow-card);
-    max-height: 90dvh;
-  overflow-y: auto;
-  animation: slideUp 0.25s ease;
-}
-
 .title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 12px;
   text-align: center;
   background: var(--primary-color);
   -webkit-background-clip: text;
@@ -40,21 +11,21 @@
 .message {
   font-size: 0.95rem;
   color: var(--text-color);
-  margin-bottom: 24px;
   text-align: center;
+  line-height: 1.6;
+  margin-bottom: 24px;
 }
 
 .taskTitle {
   display: block;
   font-weight: 600;
-  color: var(--accent-color);
+  color: var(--text);
   margin-top: 6px;
 }
 
 .buttons {
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  gap: 10px;
 }
 
 .cancel,
@@ -63,82 +34,25 @@
   padding: 12px;
   border-radius: 10px;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s ease;
   border: none;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .cancel {
-  background: var(--primary-color); /* visível no light */
-}
-
-.cancel:hover {
-  transform: translateY(-2px);
-
-  border-color: var(--accent-color);
+  background: var(--input-bg);
   color: var(--text);
-  box-shadow: var(--box-shadow-card);
 }
 
 .delete {
   background: var(--delete-submit);
+  color: #fff;
 }
 
-.delete:hover {
-  transform: translateY(-2px);
+.cancel:hover { opacity: 0.8; }
+.delete:hover { opacity: 0.85; }
 
-  border-color: var(--accent-color);
-  color: var(--text);
-  box-shadow: var(--box-shadow-card);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ── Mobile fix ── */
-@media (max-width: 480px) {
-  .overlay {
-    padding: 0.75rem;
-  }
-
-  .modal {
-    padding: 20px 16px;
-    border-radius: 12px;
-    max-height: 92dvh;
-    overflow-y: auto;
-  }
-
-  .buttons,
-  .actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .buttons button,
-  .actions button,
-  .cancel,
-  .delete,
-  .confirm,
-  .saveButton,
-  .cancelButton {
-    width: 100% !important;
-    min-width: unset;
-  }
+@media (max-width: 599px) {
+  .buttons { flex-direction: column; }
 }

@@ -2,23 +2,35 @@
 require("dotenv").config();
 
 function emailEnabled() {
-  return !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+  return !!process.env.BREVO_API_KEY;
 }
 function twilioEnabled() {
   return !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_WHATSAPP_FROM);
 }
 
-let _transporter = null;
-function getTransporter() {
-  if (_transporter) return _transporter;
-  const nodemailer = require("nodemailer");
-  _transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT) === 465,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+async function sendEmailBrevo({ to, subject, html, text }) {
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: {
+        name: process.env.BREVO_FROM_NAME || "WeekTask",
+        email: process.env.BREVO_FROM_EMAIL,
+      },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+      textContent: text,
+    }),
   });
-  return _transporter;
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.message || "Brevo API error");
+  }
 }
 
 let _twilio = null;
@@ -42,10 +54,7 @@ async function sendEmail({ to, subject, html, text }) {
     return false;
   }
   try {
-    await getTransporter().sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to, subject, html, text,
-    });
+    await sendEmailBrevo({ to, subject, html, text });
     console.log(`[Notification] ✅ Email enviado → ${to}: ${subject}`);
     return true;
   } catch (err) {

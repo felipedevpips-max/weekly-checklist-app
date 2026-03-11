@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.3",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.2",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "resend": "^6.9.3"
   }
 }

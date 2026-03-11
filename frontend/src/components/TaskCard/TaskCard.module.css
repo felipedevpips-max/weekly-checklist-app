@@ -172,7 +172,8 @@
 .editButton:hover:not(:disabled),
 .deleteButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--box-shadow-card);
+  color: var(--text);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .actions button:disabled { opacity: 0.5; cursor: not-allowed; }

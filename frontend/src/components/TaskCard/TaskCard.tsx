@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Task } from "../../types/task";
 import { api } from "../../services/api";
-import { sendTaskNotification } from "../../hooks/useNotification";
 import styles from "./TaskCard.module.css";
 
 type Props = {
@@ -23,8 +22,7 @@ export function TaskCard({
 }: Props) {
   const [loading, setLoading] = useState(false);
   const [animateDone, setAnimateDone] = useState(false);
-  const [notifySent, setNotifySent] = useState(false);
-  const [notifyLoading, setNotifyLoading] = useState(false);
+
 
   useEffect(() => {
     if (task.status === "done") {
@@ -72,16 +70,6 @@ export function TaskCard({
 
   const statusButtonText = task.status === "pending" ? "Começar" : "Finalizar";
 
-  const handleSendReminder = async () => {
-    setNotifyLoading(true);
-    const ok = await sendTaskNotification(task.id);
-    setNotifyLoading(false);
-    if (ok) {
-      setNotifySent(true);
-      setTimeout(() => setNotifySent(false), 3000);
-    }
-  };
-
   return (
     <div
       className={`${styles.card} ${styles[task.priority]} ${
@@ -104,15 +92,10 @@ export function TaskCard({
         </div>
 
         <div className={styles.badges}>
-          {task.notify && !isWeekClosed && (
-            <button
-              className={`${styles.notifyBadge} ${notifySent ? styles.notifySent : ""}`}
-              onClick={handleSendReminder}
-              disabled={notifyLoading}
-              title={notifySent ? "Lembrete enviado!" : "Enviar lembrete agora"}
-            >
-              {notifyLoading ? "⏳" : notifySent ? "✅ Enviado!" : "🔔 Lembrete"}
-            </button>
+          {task.notify && (
+            <span className={styles.notifyIndicator} title="Notificações ativas">
+              🔔
+            </span>
           )}
 
           <span className={`${styles.status} ${styles[task.status]}`}>

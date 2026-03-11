@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import type { Task } from "../../types/task";
 import styles from "./weekClosedModal.module.css";
 
@@ -7,28 +8,21 @@ interface WeekClosedModalProps {
   onClose: () => void;
 }
 
-export function WeekClosedModal({
-  visible,
-  movedTasks,
-  onClose,
-}: WeekClosedModalProps) {
+export function WeekClosedModal({ visible, movedTasks, onClose }: WeekClosedModalProps) {
   if (!visible) return null;
 
   const hasMovedTasks = movedTasks.length > 0;
 
-  return (
+  return createPortal(
     <div className={styles.overlay}>
       <div className={styles.modal}>
-        <h2 className={styles.title}>
-          🎉 Semana encerrada com sucesso
-        </h2>
+        <h2 className={styles.title}>🎉 Semana encerrada com sucesso</h2>
 
         {hasMovedTasks ? (
           <>
             <p className={styles.message}>
               As seguintes tarefas estavam em andamento e foram movidas para a nova semana:
             </p>
-
             <ul className={styles.taskList}>
               {movedTasks.map((task) => (
                 <li key={task.id} className={styles.taskItem}>
@@ -46,11 +40,10 @@ export function WeekClosedModal({
         )}
 
         <div className={styles.buttons}>
-          <button onClick={onClose} className={styles.confirm}>
-            Entendi
-          </button>
+          <button onClick={onClose} className={styles.confirm}>Entendi</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

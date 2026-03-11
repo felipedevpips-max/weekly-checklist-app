@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import styles from "./baseModal.module.css";
 
 type BaseModalProps = {
@@ -43,11 +44,12 @@ export function BaseModal({ isOpen, onClose, children }: BaseModalProps) {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.modal} ref={modalRef}>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

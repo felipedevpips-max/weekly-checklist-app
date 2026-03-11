@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import type { Task } from "../../types/task";
 import styles from "./DeleteHistoryModal.module.css";
 
@@ -7,11 +8,11 @@ interface DeleteHistoryModalProps {
   onConfirm: () => void;
   onCancel: () => void;
 }
- 
+
 export function DeleteHistoryModal({ visible, task, onConfirm, onCancel }: DeleteHistoryModalProps) {
   if (!visible || !task) return null;
 
-  return (
+  return createPortal(
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <h2 className={styles.title}>Confirmar exclusão</h2>
@@ -23,6 +24,7 @@ export function DeleteHistoryModal({ visible, task, onConfirm, onCancel }: Delet
           <button onClick={onCancel} className={styles.cancel}>Cancelar</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

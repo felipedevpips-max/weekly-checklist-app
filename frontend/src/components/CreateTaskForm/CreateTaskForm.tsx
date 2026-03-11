@@ -104,11 +104,12 @@ export function CreateTaskForm({ onCreate }: Props) {
 
       <div className={styles.checkboxRow}>
         <input
+          id="notify"
           type="checkbox"
           checked={notify}
           onChange={(e) => setNotify(e.target.checked)}
         />
-        <span>Receber notificações</span>
+        <label htmlFor="notify">Receber notificações</label>
       </div>
 
       <button className={styles.submitButton} type="submit" disabled={loading}>

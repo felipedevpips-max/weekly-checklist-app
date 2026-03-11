@@ -43,6 +43,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/history" element={<History />} />
         <Route path="/about" element={<About />} />
+        
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

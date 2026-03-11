@@ -11,7 +11,7 @@ export function About() {
         <h1 className={styles.title}>Sobre o Projeto</h1>
 
         <p className={styles.description}>
-          Weekify é um sistema simples de gerenciamento semanal de tarefas
+          WeekTask é um sistema simples de gerenciamento semanal de tarefas
           feito para ajudar a organizar metas e acompanhar progresso.
         </p>
 
@@ -58,7 +58,7 @@ export function About() {
         <p className={styles.description}>
           O objetivo deste projeto é praticar arquitetura fullstack,
           organização de estado no frontend e regras de negócio no backend,
-          simulando um sistema real de produtividade semanal.
+          além de criar um sistema funcional e útil para gerenciamento de tarefas semanais.
         </p>
       </div>
     </Container>

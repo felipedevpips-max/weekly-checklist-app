@@ -1,64 +1,88 @@
-# WeekTask
+# 📋 WeekTask — Checklist Semanal
 
-**Sistema de gerenciamento semanal de tarefas** — organize sua semana, acompanhe seu progresso e receba notificações automáticas por email e WhatsApp.
+**WeekTask** é uma aplicação fullstack de gerenciamento semanal de tarefas. Organize suas metas, acompanhe o progresso e mantenha o histórico de todas as semanas — com notificações automáticas para te manter no ritmo.
 
-🔗 **Demo:** [weekly-checklist-app.vercel.app](https://weekly-checklist-app.vercel.app)
-
----
-
-## Sobre o projeto
-
-O WeekTask é uma aplicação fullstack que permite criar, organizar e acompanhar tarefas semanais. A semana é encerrada automaticamente todo sábado às 23:59, as tarefas não concluídas são movidas para a nova semana, e o usuário recebe um resumo por email.
+🔗 **Demo:** [weekly-checklist-app.vercel.app](https://weekly-checklist-app.vercel.app)  
+💻 **Repositório:** [github.com/felipedevpips-max/weekly-checklist-app](https://github.com/felipedevpips-max/weekly-checklist-app)
 
 ---
 
-## Funcionalidades
+## ✨ Funcionalidades
 
-- **Autenticação completa** — cadastro, login e sessão com JWT
-- **Gerenciamento de tarefas** — criar, editar, deletar, filtrar por status e prioridade
-- **Progresso visual** — barra de progresso da semana em tempo real
-- **Contador regressivo** — exibe quanto tempo falta para a semana encerrar
-- **Encerramento automático** — cron job fecha a semana todo sábado às 23:59 (BRT)
-- **Histórico de semanas** — visualize semanas anteriores e suas tarefas
-- **Sistema de notificações** por email e WhatsApp (Twilio):
-  - Boas-vindas ao se cadastrar
-  - Confirmação ao criar tarefa com notificação ativa
-  - Confirmação ao ativar notificação em tarefa existente
-  - Lembrete de véspera toda sexta às 09:00
-  - Resumo de tarefas pendentes no encerramento da semana
-- **Tema claro/escuro**
-- **Design responsivo**
+- **Autenticação completa** — cadastro e login com JWT + bcrypt
+- **Gestão de tarefas** — criar, editar, deletar e filtrar por status (`pending`, `in_progress`, `done`)
+- **Progresso visual** — barra de progresso e contagem regressiva da semana
+- **Fechamento automático de semana** — todo sábado às 23:59 (BRT), a semana é encerrada automaticamente via cron job
+- **Carry-over de tarefas** — tarefas `in_progress` são migradas automaticamente para a nova semana
+- **Histórico** — visualize semanas anteriores agrupadas por mês
+- **Notificações por e-mail** — lembrete na sexta-feira e resumo ao fechar a semana
+- **Tema claro/escuro** — alternância entre temas com persistência
+- **Background animado** — efeito visual com Three.js + Vanta.js
+- **Server warmup** — tela de espera enquanto o backend inicia (Render free tier)
+- **Self-ping** — o backend faz ping a cada 10 minutos para evitar cold start
 
 ---
 
-## Stack
+## 🛠️ Tecnologias
 
-**Frontend**
-- React 18
-- TypeScript
-- Vite
-- CSS Modules
+### Frontend
+| Tecnologia | Uso |
+|---|---|
+| React 19 + TypeScript | Interface e tipagem |
+| Vite | Bundler e dev server |
+| React Router DOM v7 | Roteamento client-side (SPA) |
+| Axios | Requisições HTTP |
+| Framer Motion | Animações |
+| Three.js + Vanta.js | Background animado |
+| CSS Modules | Estilização escopada |
 
-**Backend**
-- Node.js
-- Express
-- PostgreSQL
-- JWT (autenticação)
-- Nodemailer (email)
-- Twilio (WhatsApp)
-- node-cron (agendamento)
+### Backend
+| Tecnologia | Uso |
+|---|---|
+| Node.js + Express 5 | API REST |
+| PostgreSQL + pg | Banco de dados relacional |
+| JWT + bcryptjs | Autenticação segura |
+| node-cron | Agendamento de tarefas |
+| Nodemailer / Resend / Brevo | Envio de e-mails |
+| dotenv | Variáveis de ambiente |
 
-**Deploy**
-- Frontend: Vercel
-- Backend: Render
-- Banco de dados: Render PostgreSQL
+### Infraestrutura
+| Serviço | Uso |
+|---|---|
+| Vercel | Deploy do frontend |
+| Render | Deploy do backend (free tier) |
 
 ---
 
-## Como rodar localmente
+## 🏗️ Estrutura do Projeto
+
+```
+weekly-checklist-app/
+├── frontend/               # React + TypeScript (Vite)
+│   ├── src/
+│   │   ├── components/     # Componentes reutilizáveis
+│   │   ├── pages/          # Home, History, About, Login, Register
+│   │   ├── hooks/          # Hooks customizados
+│   │   ├── context/        # AuthContext, ThemeContext
+│   │   ├── services/       # Camada de API (Axios)
+│   │   └── types/          # Tipagens TypeScript
+│   └── vercel.json         # Rewrite para SPA routing
+│
+└── backend/                # Node.js + Express
+    └── src/
+        ├── controllers/    # authController, taskController, weekController...
+        ├── services/       # authService, taskService, weekScheduler, notificationService...
+        ├── repositories/   # taskRepository
+        ├── routes/         # authRoutes, taskRoutes, weekRoutes...
+        ├── middlewares/    # authMiddleware (JWT)
+        └── config/         # Configuração do banco
+```
+
+---
+
+## 🚀 Rodando localmente
 
 ### Pré-requisitos
-
 - Node.js 18+
 - PostgreSQL
 
@@ -69,67 +93,22 @@ cd backend
 npm install
 ```
 
-Crie um arquivo `.env` baseado no `.env.example`:
-
-```dotenv
-DATABASE_URL=postgresql://postgres:senha@localhost:5432/weekly
+Crie um `.env` na pasta `backend/`:
+```env
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/weektask
 JWT_SECRET=sua_chave_secreta
-APP_URL=http://localhost:5173
+BACKEND_URL=http://localhost:3000
 ALLOWED_ORIGIN=http://localhost:5173
 
-# Email (opcional para testes)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=seu@gmail.com
-SMTP_PASS=sua_senha_de_app
-SMTP_FROM="WeekTask <seu@gmail.com>"
-
-# WhatsApp via Twilio (opcional)
-# TWILIO_ACCOUNT_SID=ACxxx
-# TWILIO_AUTH_TOKEN=xxx
-# TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+# Opcional — notificações por e-mail
+BREVO_API_KEY=
+BREVO_FROM_EMAIL=
+BREVO_FROM_NAME=WeekTask
 ```
-
-Crie o banco e as tabelas:
-
-```sql
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  phone VARCHAR(50)
-);
-
-CREATE TABLE weeks (
-  id SERIAL PRIMARY KEY,
-  start_date TIMESTAMPTZ NOT NULL,
-  end_date TIMESTAMPTZ NOT NULL,
-  closed BOOLEAN DEFAULT false,
-  user_id INTEGER REFERENCES users(id)
-);
-
-CREATE TABLE tasks (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  description TEXT DEFAULT '',
-  status VARCHAR(50) DEFAULT 'pending',
-  priority VARCHAR(50) DEFAULT 'low',
-  notify BOOLEAN DEFAULT false,
-  due_date TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  completed_at TIMESTAMPTZ,
-  week_id INTEGER REFERENCES weeks(id),
-  user_id INTEGER REFERENCES users(id),
-  archived BOOLEAN DEFAULT false,
-  deleted_at TIMESTAMPTZ
-);
-```
-
-Inicie o servidor:
 
 ```bash
 npm run dev
+# Servidor rodando em http://localhost:3000
 ```
 
 ### Frontend
@@ -139,81 +118,73 @@ cd frontend
 npm install
 ```
 
-Crie um arquivo `.env`:
-
-```dotenv
+Crie um `.env` na pasta `frontend/`:
+```env
 VITE_API_URL=http://localhost:3000
 ```
 
-Inicie o frontend:
-
 ```bash
 npm run dev
-```
-
-Acesse `http://localhost:5173`
-
----
-
-## Estrutura do projeto
-
-```
-weekly-checklist-app/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   │   ├── authService.js
-│   │   │   ├── taskService.js
-│   │   │   ├── weekService.js
-│   │   │   ├── notificationService.js
-│   │   │   └── weekScheduler.js
-│   │   ├── routes/
-│   │   ├── middlewares/
-│   │   └── app.js
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── hooks/
-    │   ├── services/
-    │   └── types/
-    └── package.json
+# App rodando em http://localhost:5173
 ```
 
 ---
 
-## API — principais endpoints
+## 🔄 Lógica de semanas
 
+- Cada usuário tem uma **semana ativa** (domingo a sábado)
+- Todo **sábado às 23:59 BRT** um cron job fecha a semana automaticamente
+- Tarefas com status `in_progress` são **migradas** para a nova semana como `pending`
+- Toda **sexta às 09:00 BRT** o usuário recebe um lembrete por e-mail com as tarefas pendentes
+- Ao iniciar o servidor, um **catch-up** fecha semanas que expiraram durante o downtime
+
+---
+
+## 📡 Rotas da API
+
+### Autenticação
 | Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | /auth/register | Cadastro |
-| POST | /auth/login | Login |
-| GET | /weeks/current | Semana atual com tarefas |
-| POST | /tasks | Criar tarefa |
-| PATCH | /tasks/:id | Atualizar tarefa |
-| DELETE | /tasks/:id | Deletar tarefa |
-| GET | /notifications/status | Status dos canais de notificação |
-| POST | /notifications/send | Enviar lembrete manual |
+|---|---|---|
+| POST | `/auth/register` | Cadastro de usuário |
+| POST | `/auth/login` | Login e geração de JWT |
+
+### Tarefas
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/tasks` | Listar tarefas da semana atual |
+| POST | `/tasks` | Criar tarefa |
+| PUT | `/tasks/:id` | Atualizar tarefa |
+| DELETE | `/tasks/:id` | Deletar tarefa (soft delete) |
+
+### Semanas
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/weeks/current` | Semana atual do usuário |
+| GET | `/weeks/history` | Histórico de semanas |
+| POST | `/weeks/close` | Fechar semana manualmente |
+
+### Outros
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/health` | Health check (self-ping) |
+| GET | `/techs` | Lista de tecnologias usadas |
 
 ---
 
-## Deploy
+## ⚠️ Deploy no Vercel (SPA Routing)
 
-**Backend (Render)**
-- Build Command: `npm install`
-- Start Command: `npm start`
-- Variáveis de ambiente: configurar no painel do Render
+Por ser uma SPA com React Router, é necessário o arquivo `frontend/vercel.json` para que rotas como `/history` e `/about` funcionem ao recarregar a página:
 
-**Frontend (Vercel)**
-- Framework: Vite
-- Variável de ambiente: `VITE_API_URL=https://seu-backend.onrender.com`
+```json
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+Sem esse arquivo, o Vercel retorna **404** em qualquer rota que não seja a raiz.
 
 ---
 
-## Autor
 
-Desenvolvido por **Felipe Costa**
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Felipe_Costa-blue)](https://linkedin.com/in/felipecosta)

@@ -9,6 +9,7 @@
   align-items: center;
   justify-content: center;
 
+    padding: 1rem;
   z-index: 999;
   animation: fadeIn 0.2s ease;
 }
@@ -21,6 +22,8 @@
   max-width: 480px;
   border: 1px solid var(--card-border);
   box-shadow: var(--box-shadow-card);
+    max-height: 90dvh;
+  overflow-y: auto;
   animation: slideUp 0.25s ease;
 }
 
@@ -106,5 +109,36 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* ── Mobile fix ── */
+@media (max-width: 480px) {
+  .overlay {
+    padding: 0.75rem;
+  }
+
+  .modal {
+    padding: 20px 16px;
+    border-radius: 12px;
+    max-height: 92dvh;
+    overflow-y: auto;
+  }
+
+  .buttons,
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .buttons button,
+  .actions button,
+  .cancel,
+  .delete,
+  .confirm,
+  .saveButton,
+  .cancelButton {
+    width: 100% !important;
+    min-width: unset;
   }
 }

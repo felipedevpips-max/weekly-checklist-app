@@ -2,44 +2,36 @@
   background: var(--background-card);
   border-radius: 16px;
   padding: 1.6rem;
-
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-
   height: 100%;
   justify-content: space-between;
-
   border: 1px solid var(--card-border);
   box-shadow: var(--box-shadow-card);
   transition: all 0.25s ease;
   position: relative;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-}
+.card:hover { transform: translateY(-4px); }
 
-.high {
-  border-left: 4px solid #ef4444;
-}
-.medium {
-  border-left: 4px solid #f59e0b;
-}
-.low {
-  border-left: 4px solid #10b981;
-}
+.high   { border-left: 4px solid #ef4444; }
+.medium { border-left: 4px solid #f59e0b; }
+.low    { border-left: 4px solid #10b981; }
 
+/* Header empilha em telas pequenas */
 .header {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .title {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text);
+  word-break: break-word;
 }
 
 .doneTitle {
@@ -51,12 +43,16 @@
   font-size: 0.9rem;
   color: var(--text-color);
   margin-top: 4px;
+  word-break: break-word;
 }
 
+/* Badges quebram se necessário */
 .badges {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: flex-start;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .status {
@@ -64,23 +60,12 @@
   border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: capitalize;
+  white-space: nowrap;
 }
 
-.pending {
-  background: rgba(255, 193, 7, 0.15);
-  color: #f59e0b;
-}
-
-.in_progress {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-}
-
-.done {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-}
+.pending     { background: rgba(255,193,7,0.15);   color: #f59e0b; }
+.in_progress { background: rgba(59,130,246,0.15);  color: #3b82f6; }
+.done        { background: rgba(16,185,129,0.15);  color: #10b981; }
 
 .priorityBadge {
   padding: 4px 8px;
@@ -88,13 +73,14 @@
   border-radius: 6px;
   background: var(--accent-color);
   color: white;
+  white-space: nowrap;
 }
 
 .notifyBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 20px;
@@ -112,10 +98,7 @@
   transform: scale(1.04);
 }
 
-.notifyBadge:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
+.notifyBadge:disabled { opacity: 0.6; cursor: default; }
 
 .notifySent {
   background: #16a34a !important;
@@ -136,8 +119,6 @@
   gap: 4px;
 }
 
-/* área fixa para avisos */
-
 .infoArea {
   min-height: 32px;
   display: flex;
@@ -146,125 +127,90 @@
   gap: 6px;
 }
 
-.notifyText {
-  font-size: 0.8rem;
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
 .closedBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-
   background: linear-gradient(90deg, #f3e8ff, #ede9fe);
   color: #6b46c1;
-
   font-weight: 700;
   font-size: 0.85rem;
-
   padding: 6px 12px;
   border-radius: 999px;
-
   border: 1px solid #c4b5fd;
-
-  box-shadow: 0 2px 8px rgba(107, 70, 193, 0.15);
+  box-shadow: 0 2px 8px rgba(107,70,193,0.15);
 }
 
-.lockIcon {
-  font-size: 0.9rem;
-}
+.lockIcon { font-size: 0.9rem; }
 
+/* Actions nunca ficam espremidos */
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   margin-top: auto;
+  flex-wrap: wrap;
 }
 
 .actions button {
   flex: 1;
-  padding: 8px;
-
+  min-width: 80px;
+  padding: 8px 6px;
   border-radius: 8px;
   font-weight: 600;
-
   border: none;
   cursor: pointer;
-
   transition: all 0.2s ease;
+  font-size: 0.85rem;
 }
 
-.primaryButton {
-  background: var(--primary-color);
-  color: white;
-}
+.primaryButton { background: var(--primary-color); color: white; }
+.editButton    { background: var(--edit-submit);    color: white; }
+.deleteButton  { background: var(--delete-submit);  color: white; }
 
-.primaryButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-
-  border-color: var(--accent-color);
-  color: var(--text);
-  box-shadow: var(--box-shadow-card);
-}
-
-.editButton {
-  background: var(--edit-submit);
-  color: white;
-}
-
-.editButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-
-  border-color: var(--accent-color);
-  color: var(--text);
-  box-shadow: var(--box-shadow-card);
-}
-
-.deleteButton {
-  background: var(--delete-submit);
-  color: white;
-}
-
+.primaryButton:hover:not(:disabled),
+.editButton:hover:not(:disabled),
 .deleteButton:hover:not(:disabled) {
   transform: translateY(-2px);
-
-  border-color: var(--accent-color);
-  color: var(--text);
   box-shadow: var(--box-shadow-card);
 }
 
-.actions button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.actions button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .doneCard {
   background-color: #f0fdf4;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 4px 12px rgba(34,197,94,0.15);
 }
 
-.pulse {
-  animation: pulseAnim 0.5s ease;
-}
+.pulse { animation: pulseAnim 0.5s ease; }
 
 @keyframes pulseAnim {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
 }
 
-.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .card { padding: 1.1rem; }
 
-.hiddenNotify {
-  visibility: hidden;
+  .header {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .title { font-size: 1rem; }
+
+  .badges { justify-content: flex-start; }
+
+  .actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .actions button {
+    width: 100%;
+    min-width: unset;
+    font-size: 0.82rem;
+  }
 }

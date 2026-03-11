@@ -2,18 +2,23 @@
 require("dotenv").config();
 
 function emailEnabled() {
-  return !!process.env.RESEND_API_KEY;
+  return !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 function twilioEnabled() {
   return !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_WHATSAPP_FROM);
 }
 
-let _resend = null;
-function getResend() {
-  if (_resend) return _resend;
-  const { Resend } = require("resend");
-  _resend = new Resend(process.env.RESEND_API_KEY);
-  return _resend;
+let _transporter = null;
+function getTransporter() {
+  if (_transporter) return _transporter;
+  const nodemailer = require("nodemailer");
+  _transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: Number(process.env.SMTP_PORT) === 465,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+  return _transporter;
 }
 
 let _twilio = null;
@@ -37,14 +42,10 @@ async function sendEmail({ to, subject, html, text }) {
     return false;
   }
   try {
-    const { error } = await getResend().emails.send({
-      from: process.env.RESEND_FROM || "WeekTask <onboarding@resend.dev>",
-      to,
-      subject,
-      html,
-      text,
+    await getTransporter().sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to, subject, html, text,
     });
-    if (error) throw new Error(error.message);
     console.log(`[Notification] ✅ Email enviado → ${to}: ${subject}`);
     return true;
   } catch (err) {
